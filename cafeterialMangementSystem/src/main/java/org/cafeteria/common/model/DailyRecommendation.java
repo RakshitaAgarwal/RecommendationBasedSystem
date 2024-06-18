@@ -1,36 +1,36 @@
 package org.cafeteria.common.model;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class DailyRecommendation {
-    private String dailyRecommendationId;
-    private String menuItemId;
-    private MealType mealType;
+    private int id;
+    private int menuItemId;
+    private int mealTypeId;
     private int votes;
     private Date dateTime;
 
-    public String getDailyRecommendationId() {
-        return dailyRecommendationId;
+    public int getId() {
+        return id;
     }
 
-    public void setDailyRecommendationId(String dailyRecommendationId) {
-        this.dailyRecommendationId = dailyRecommendationId;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getMenuItemId() {
+    public int getMenuItemId() {
         return menuItemId;
     }
 
-    public void setMenuItemId(String menuItemId) {
+    public void setMenuItemId(int menuItemId) {
         this.menuItemId = menuItemId;
     }
 
-    public MealType getMealType() {
-        return mealType;
+    public int getMealTypeId() {
+        return mealTypeId;
     }
 
-    public void setMealType(MealType mealType) {
-        this.mealType = mealType;
+    public void setMealTypeId(int mealTypeId) {
+        this.mealTypeId = mealTypeId;
     }
 
     public int getVotes() {

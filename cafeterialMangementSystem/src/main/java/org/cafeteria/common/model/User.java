@@ -1,42 +1,42 @@
 package org.cafeteria.common.model;
 
 public class User {
-    private int userId;
-    private UserRole userRole;
+    private int id;
+    private int userRoleId;
 
     private String name;
 
-    private String password;
+    private String password = null;
     public User() {}
 
-    public User(int userId, String name) {
-        this.userId = userId;
+    public User(int id, String name) {
+        this.id = id;
         this.name = name;
-        this.userRole = null;
+        this.userRoleId = -1;
         this.password = null;
     }
 
-    public User(int userId, String name, UserRole userRole, String password) {
-        this.userId = userId;
+    public User(int id, String name, int userRoleId, String password) {
+        this.id = id;
         this.name = name;
-        this.userRole = userRole;
+        this.userRoleId = userRoleId;
         this.password = password;
     }
 
-    public int getUserId() {
-        return userId;
+    public int getId() {
+        return id;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public UserRole getUserRole() {
-        return userRole;
+    public int getUserRoleId() {
+        return userRoleId;
     }
 
-    public void setUserRole(UserRole userRole) {
-        this.userRole = userRole;
+    public void setUserRoleId(int userRoleId) {
+        this.userRoleId = userRoleId;
     }
 
     public String getName() {

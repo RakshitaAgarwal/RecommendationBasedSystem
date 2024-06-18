@@ -1,7 +1,7 @@
 package org.cafeteria.server.repositories;
 
 import org.cafeteria.common.model.User;
-import org.cafeteria.common.model.UserRole;
+import org.cafeteria.common.model.UserRoleEnum;
 import org.cafeteria.server.network.JdbcConnection;
 import org.cafeteria.server.repositories.interfaces.IUserRepository;
 
@@ -38,19 +38,19 @@ public class UserRepository implements IUserRepository {
 
     @Override
     public User getById(int id) throws SQLException {
-        String query = "SELECT * FROM user WHERE userid = ?";
+        String query = "SELECT * FROM user WHERE id = ?";
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setInt(1,id);
         ResultSet resultSet = statement.executeQuery();
         if (resultSet.next()) {
-            int userId = resultSet.getInt("userId");
+            int userId = resultSet.getInt("Id");
             String name = resultSet.getString("name");
-            UserRole userRole = UserRole.valueOf(resultSet.getString("userRole"));
+            int userRoleId = resultSet.getInt("userRoleId");
             String password = resultSet.getString("password");
             User user = new User();
-            user.setUserId(userId);
+            user.setId(userId);
             user.setName(name);
-            user.setUserRole(userRole);
+            user.setUserRoleId(userRoleId);
             user.setPassword(password);
             return user;
         }

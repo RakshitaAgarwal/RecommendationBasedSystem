@@ -3,42 +3,42 @@ package org.cafeteria.common.model;
 import java.sql.Date;
 
 public class Menu {
-    private String menuItemId;
-    private String menuItemName;
-    private float menuItemPrice;
-    private boolean isMenuItemAvailable;
+    private int id;
+    private String name;
+    private float price;
+    private boolean isAvailable;
     private Date lastTimePrepared;
 
-    public String getMenuItemId() {
-        return menuItemId;
+    public int getId() {
+        return id;
     }
 
-    public void setMenuItemId(String menuItemId) {
-        this.menuItemId = menuItemId;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getMenuItemName() {
-        return menuItemName;
+    public String getName() {
+        return name;
     }
 
-    public void setMenuItemName(String menuItemName) {
-        this.menuItemName = menuItemName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public float getMenuItemPrice() {
-        return menuItemPrice;
+    public float getPrice() {
+        return price;
     }
 
-    public void setMenuItemPrice(float menuItemPrice) {
-        this.menuItemPrice = menuItemPrice;
+    public void setPrice(float price) {
+        this.price = price;
     }
 
-    public boolean isMenuItemAvailable() {
-        return isMenuItemAvailable;
+    public boolean isAvailable() {
+        return isAvailable;
     }
 
-    public void setMenuItemAvailable(boolean menuItemAvailable) {
-        isMenuItemAvailable = menuItemAvailable;
+    public void setAvailable(boolean available) {
+        isAvailable = available;
     }
 
     public Date getLastTimePrepared() {

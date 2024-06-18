@@ -25,9 +25,6 @@ public class CustomProtocol {
 
     public static ParsedRequest parseRequest(String request) throws InvalidRequestException {
         String[] requestArr = request.split(PARSE_DELIMITER, 3);
-        for(int i=0; i<3; i++){
-            System.out.println(requestArr[i]);
-        }
         if(requestArr.length == 3 && REQUEST.equalsIgnoreCase(requestArr[0])){
             return new ParsedRequest(UserAction.valueOf(requestArr[1]), requestArr[2]);
         } else {

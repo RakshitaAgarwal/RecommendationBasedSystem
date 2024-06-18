@@ -16,7 +16,7 @@ public class UserService implements IUserService {
 
     @Override
     public User loginUser(User user) throws SQLException {
-        return _userRepository.getById(user.getUserId());
+        return _userRepository.getById(user.getId());
     }
 
     @Override

@@ -1,7 +1,7 @@
 package org.cafeteria.client;
 
 import org.cafeteria.common.model.UserAction;
-import org.cafeteria.common.model.UserRole;
+import org.cafeteria.common.model.UserRoleEnum;
 
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -9,10 +9,10 @@ import java.util.Set;
 
 public class RoleActionMapping {
 
-    private static final EnumMap<UserRole, Set<UserAction>> roleActionMap = new EnumMap<>(UserRole.class);
+    private static final EnumMap<UserRoleEnum, Set<UserAction>> roleActionMap = new EnumMap<>(UserRoleEnum.class);
 
     static {
-        roleActionMap.put(UserRole.ADMIN, EnumSet.of(
+        roleActionMap.put(UserRoleEnum.ADMIN, EnumSet.of(
                 UserAction.LOGIN,
                 UserAction.CREATE_USER,
                 UserAction.ADD_MENU_ITEM,
@@ -21,7 +21,7 @@ public class RoleActionMapping {
                 UserAction.SHOW_MENU
         ));
 
-        roleActionMap.put(UserRole.CHEF, EnumSet.of(
+        roleActionMap.put(UserRoleEnum.CHEF, EnumSet.of(
                 UserAction.LOGIN,
                 UserAction.CREATE_USER,
                 UserAction.SHOW_MENU,
@@ -29,7 +29,7 @@ public class RoleActionMapping {
                 UserAction.PROVIDE_NEXT_DAY_MENU_OPTIONS
         ));
 
-        roleActionMap.put(UserRole.EMP, EnumSet.of(
+        roleActionMap.put(UserRoleEnum.EMP, EnumSet.of(
                 UserAction.LOGIN,
                 UserAction.CREATE_USER,
                 UserAction.SEE_NOTIFICATIONS,
@@ -39,7 +39,7 @@ public class RoleActionMapping {
         ));
     }
 
-    public static Set<UserAction> getActionsForRole(UserRole role) {
+    public static Set<UserAction> getActionsForRole(UserRoleEnum role) {
         return roleActionMap.getOrDefault(role, EnumSet.noneOf(UserAction.class));
     }
 }

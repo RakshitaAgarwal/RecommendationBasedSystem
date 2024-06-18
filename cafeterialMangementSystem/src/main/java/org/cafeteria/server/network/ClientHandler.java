@@ -5,7 +5,6 @@ import org.cafeteria.common.customException.CustomExceptions;
 import org.cafeteria.common.model.ParsedRequest;
 import org.cafeteria.common.model.ResponseCode;
 import org.cafeteria.common.model.User;
-import org.cafeteria.server.Server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -88,7 +87,7 @@ public class ClientHandler implements Runnable {
 
     private void handleUserLogin(@NotNull ParsedRequest request) throws SQLException {
         User user = deserializeData(request.getJsonData(), User.class);
-        System.out.println(user.getUserId() + " " + user.getName());
+        System.out.println(user.getId() + " " + user.getName());
         User loggedInUser = userService.loginUser(user);
         String response;
         if (loggedInUser != null) {

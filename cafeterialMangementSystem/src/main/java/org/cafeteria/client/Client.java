@@ -7,6 +7,7 @@ import org.cafeteria.client.services.ChefService;
 import org.cafeteria.client.services.EmployeeService;
 import org.cafeteria.common.customException.CustomExceptions;
 import org.cafeteria.common.model.User;
+import org.cafeteria.common.model.UserRoleEnum;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -14,6 +15,7 @@ import java.util.Scanner;
 
 import static org.cafeteria.common.constants.Constants.SERVER_ADDRESS;
 import static org.cafeteria.common.constants.Constants.SERVER_PORT;
+import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 public class Client {
     private static final Scanner sc = new Scanner(System.in);
@@ -25,7 +27,7 @@ public class Client {
             setUpApplication();
             System.out.println("Welcome to Cafeteria Management System");
 
-            int choice;
+            int choice = 0;
             do {
                 System.out.println("Please Login to proceed.");
                 User userToLogin = fetchUserCredentialsForLogin();
@@ -34,7 +36,6 @@ public class Client {
                     showUserActionItems(user);
                 } catch (CustomExceptions.LoginFailedException e) {
                     System.out.println("Login Failed");
-                } finally {
                     System.out.println("Do you want to try again? If yes please enter 1.");
                     choice = sc.nextInt();
                 }
@@ -49,7 +50,8 @@ public class Client {
 
     private static void showUserActionItems(User user) {
         try {
-            switch (user.getUserRole()) {
+            UserRoleEnum userRole = getEnumFromOrdinal(UserRoleEnum.class, user.getUserRoleId());
+            switch (userRole) {
                 case ADMIN -> {
                     AdminService adminService = new AdminService(connection, user, sc);
                     adminService.showUserActionItems();
@@ -89,7 +91,7 @@ public class Client {
     }
 
     private static User fetchUserCredentialsForLogin() {
-        System.out.println("Please Enter your Employee ID:");
+        System.out.println("Enter your Employee ID:");
         int userId = sc.nextInt();
         sc.nextLine();
         System.out.print("Enter your Username: ");

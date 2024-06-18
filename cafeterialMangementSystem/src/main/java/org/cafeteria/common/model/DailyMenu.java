@@ -1,35 +1,35 @@
 package org.cafeteria.common.model;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class DailyMenu {
-    private String dailyMenuId;
-    private String menuItemId;
-    private MealType mealType;
+    private int id;
+    private int menuItemId;
+    private int mealTypeId;
     private Date dateTime;
 
-    public String getDailyMenuId() {
-        return dailyMenuId;
+    public int getId() {
+        return id;
     }
 
-    public void setDailyMenuId(String dailyMenuId) {
-        this.dailyMenuId = dailyMenuId;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getMenuItemId() {
+    public int getMenuItemId() {
         return menuItemId;
     }
 
-    public void setMenuItemId(String menuItemId) {
+    public void setMenuItemId(int menuItemId) {
         this.menuItemId = menuItemId;
     }
 
-    public MealType getMealType() {
-        return mealType;
+    public int getMealTypeId() {
+        return mealTypeId;
     }
 
-    public void setMealType(MealType mealType) {
-        this.mealType = mealType;
+    public void setMealTypeId(int mealTypeId) {
+        this.mealTypeId = mealTypeId;
     }
 
     public Date getDateTime() {
