@@ -1,0 +1,7 @@
+CREATE TABLE Menu (
+    Id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    price FLOAT NOT NULL,
+    isAvailable BOOLEAN NOT NULL,
+    lastTimePrepared DATE
+);
