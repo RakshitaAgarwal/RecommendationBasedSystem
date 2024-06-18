@@ -1,0 +1,16 @@
+CREATE TABLE UserRole (
+    Id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    userRole VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE MealType (
+    Id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    mealType VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE NotificationType (
+    Id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    notificationType VARCHAR(255) NOT NULL,
+    expirationTime FLOAT,
+    priority INT
+);
