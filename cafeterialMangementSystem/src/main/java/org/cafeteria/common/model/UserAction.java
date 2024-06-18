@@ -1,0 +1,15 @@
+package org.cafeteria.common.model;
+
+public enum UserAction {
+    LOGIN,
+    CREATE_USER,
+    ADD_MENU_ITEM,
+    DELETE_MENU_ITEM,
+    UPDATE_MENU_ITEM,
+    SHOW_MENU,
+    SEE_MONTHLY_REPORT,
+    PROVIDE_NEXT_DAY_MENU_OPTIONS,
+    PROVIDE_FEEDBACK,
+    SEE_NOTIFICATIONS,
+    VOTE_NEXT_DAY_MENU
+}
