@@ -1,7 +1,5 @@
 package org.cafeteria.client.network;
 
-import com.google.gson.Gson;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,7 +11,6 @@ public class ServerConnection {
     private Socket socket;
     private BufferedReader in;
     private PrintWriter out;
-    private Gson gson;
 
     private ServerConnection(String SERVER_ADDRESS, int SERVER_PORT) {
         try {
@@ -22,11 +19,10 @@ public class ServerConnection {
             out = new PrintWriter(socket.getOutputStream(), true);
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            gson = new Gson();
         }
     }
-    public static ServerConnection getInstance(String serverAddress, int serverPort) throws IOException {
+
+    public static ServerConnection getInstance(String serverAddress, int serverPort) {
         if (instance == null) {
             instance = new ServerConnection(serverAddress, serverPort);
         }
@@ -41,7 +37,6 @@ public class ServerConnection {
             throw new RuntimeException(e);
         }
     }
-
 
     public void close() throws IOException {
         in.close();

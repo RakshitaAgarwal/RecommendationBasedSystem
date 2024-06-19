@@ -3,13 +3,12 @@ package org.cafeteria.server.repositories;
 import org.cafeteria.common.model.MenuItem;
 import org.cafeteria.server.network.JdbcConnection;
 import org.cafeteria.server.repositories.interfaces.IMenuRepository;
+import static org.cafeteria.common.util.Utils.dateToTimestamp;
+import static org.cafeteria.common.util.Utils.timestampToDate;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.cafeteria.common.util.Utils.dateToTimestamp;
-import static org.cafeteria.common.util.Utils.timestampToDate;
 
 public class MenuRepository implements IMenuRepository {
     private Connection connection;

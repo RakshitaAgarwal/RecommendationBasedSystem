@@ -19,4 +19,3 @@ public class CustomExceptions extends Exception {
         }
     }
 }
-

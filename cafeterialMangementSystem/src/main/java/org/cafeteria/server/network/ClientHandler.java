@@ -2,6 +2,8 @@ package org.cafeteria.server.network;
 
 import org.cafeteria.common.customException.CustomExceptions;
 import org.cafeteria.common.model.ParsedRequest;
+import static org.cafeteria.common.communicationProtocol.CustomProtocol.parseRequest;
+import static org.cafeteria.server.Server.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,9 +12,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
 import java.sql.SQLException;
-
-import static org.cafeteria.common.communicationProtocol.CustomProtocol.parseRequest;
-import static org.cafeteria.server.Server.*;
 
 public class ClientHandler implements Runnable {
     private final Socket clientSocket;
@@ -64,7 +63,7 @@ public class ClientHandler implements Runnable {
 
             case UPDATE_MENU_ITEM -> response = menuHandler.updateMenuItem(request);
 
-            case SHOW_MENU -> response = menuHandler.ShowMenuItems(request);
+            case SHOW_MENU -> response = menuHandler.ShowMenuItems();
 
             case GET_MENU_ITEM_BY_NAME -> response = menuHandler.getMenuItemByName(request);
 

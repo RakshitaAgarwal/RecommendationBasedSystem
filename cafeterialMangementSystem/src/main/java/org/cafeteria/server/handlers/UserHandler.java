@@ -19,7 +19,6 @@ public class UserHandler {
 
     public String handleUserLogin(@NotNull ParsedRequest request) throws SQLException {
         User user = deserializeData(request.getJsonData(), User.class);
-        System.out.println(user.getId() + " " + user.getName());
         User loggedInUser = _userService.loginUser(user);
         String response;
         if (loggedInUser != null) {

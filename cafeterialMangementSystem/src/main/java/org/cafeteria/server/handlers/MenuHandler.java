@@ -1,6 +1,7 @@
 package org.cafeteria.server.handlers;
 
 import com.sun.istack.NotNull;
+import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 import org.cafeteria.common.model.MenuItem;
 import org.cafeteria.common.model.ParsedRequest;
 import org.cafeteria.common.model.ResponseCode;
@@ -9,8 +10,6 @@ import org.cafeteria.server.services.interfaces.IMenuService;
 
 import java.sql.SQLException;
 import java.util.List;
-
-import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 
 public class MenuHandler {
     private static IMenuService _menuService;
@@ -52,7 +51,7 @@ public class MenuHandler {
         return response;
     }
 
-    public String ShowMenuItems(@NotNull ParsedRequest request) throws SQLException {
+    public String ShowMenuItems() throws SQLException {
         List<MenuItem> menu = _menuService.getAll();
         String response;
         if (!menu.isEmpty()) {

@@ -1,7 +1,8 @@
 package org.cafeteria.server.network;
 
-import java.sql.*;
-
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import static org.cafeteria.common.constants.Constants.*;
 
 public class JdbcConnection {
@@ -19,11 +20,4 @@ public class JdbcConnection {
     public static Connection getConnection() {
         return connection;
     }
-
-//    public static ResultSet executeStatement(String query) throws SQLException {
-//        PreparedStatement preparedStatement = connection.prepareStatement(query);
-//        preparedStatement.set
-//        ResultSet resultSet = statement.executeQuery(query);
-//        return resultSet;
-//    }
 }

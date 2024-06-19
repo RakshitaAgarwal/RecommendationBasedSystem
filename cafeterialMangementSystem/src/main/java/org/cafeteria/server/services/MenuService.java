@@ -41,7 +41,6 @@ public class MenuService implements IMenuService {
 
     @Override
     public void getById(MenuItem object) {
-
     }
 
     @Override

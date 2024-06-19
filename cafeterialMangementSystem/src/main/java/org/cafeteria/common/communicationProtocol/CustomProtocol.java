@@ -43,7 +43,7 @@ public class CustomProtocol {
         if(responseArr.length == 3 && RESPONSE.equalsIgnoreCase(responseArr[0])){
             return new ParsedResponse(ResponseCode.fromString(responseArr[1]), responseArr[2]);
         } else {
-            throw new InvalidResponseException("Invalid Request Message");
+            throw new InvalidResponseException("Invalid Response Message");
         }
     }
 
