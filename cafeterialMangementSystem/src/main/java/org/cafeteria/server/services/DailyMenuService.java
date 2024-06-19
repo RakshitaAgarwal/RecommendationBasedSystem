@@ -1,7 +1,10 @@
 package org.cafeteria.server.services;
 
 import org.cafeteria.common.model.DailyMenu;
+import org.cafeteria.common.model.MenuItem;
 import org.cafeteria.server.services.interfaces.IDailyMenuService;
+
+import java.util.List;
 
 public class DailyMenuService implements IDailyMenuService {
     @Override
@@ -10,8 +13,9 @@ public class DailyMenuService implements IDailyMenuService {
     }
 
     @Override
-    public void add(DailyMenu object) {
+    public boolean add(DailyMenu object) {
 
+        return false;
     }
 
     @Override
@@ -25,8 +29,9 @@ public class DailyMenuService implements IDailyMenuService {
     }
 
     @Override
-    public void getAll(DailyMenu object) {
+    public List<DailyMenu> getAll() {
 
+        return null;
     }
 
     @Override

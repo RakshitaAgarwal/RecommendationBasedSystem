@@ -7,6 +7,9 @@ import org.cafeteria.common.model.ParsedRequest;
 import org.cafeteria.common.model.ParsedResponse;
 import org.cafeteria.common.model.ResponseCode;
 import org.cafeteria.common.model.UserAction;
+import java.lang.reflect.Type;
+import com.google.gson.reflect.TypeToken;
+import java.util.List;
 
 public class CustomProtocol {
     private static final String DELIMITER = "|";
@@ -46,6 +49,11 @@ public class CustomProtocol {
 
     public static <T> T deserializeData(String jsonData, Class<T> clazz) throws JsonSyntaxException {
         return gson.fromJson(jsonData, clazz);
+    }
+
+    public static <T> List<T> deserializeList(String jsonData, Class<T> clazz) throws JsonSyntaxException {
+        Type type = TypeToken.getParameterized(List.class, clazz).getType();
+        return gson.fromJson(jsonData, type);
     }
 
     public static String serializeData(Object dataObject) {

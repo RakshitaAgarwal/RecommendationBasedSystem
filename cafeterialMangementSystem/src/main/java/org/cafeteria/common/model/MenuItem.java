@@ -1,13 +1,22 @@
 package org.cafeteria.common.model;
 
-import java.sql.Date;
+import java.util.Date;
 
-public class Menu {
+public class MenuItem {
     private int id;
     private String name;
     private float price;
     private boolean isAvailable;
-    private Date lastTimePrepared;
+    private Date lastTimePrepared = null;
+
+    public MenuItem() {}
+
+    public MenuItem(String name, float price, boolean isAvailable) {
+        this.id = -1;
+        this.name = name;
+        this.price = price;
+        this.isAvailable = isAvailable;
+    }
 
     public int getId() {
         return id;

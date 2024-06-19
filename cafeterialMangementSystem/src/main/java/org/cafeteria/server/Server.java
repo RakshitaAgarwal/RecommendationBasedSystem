@@ -1,9 +1,9 @@
 package org.cafeteria.server;
 
 import org.cafeteria.client.Client;
+import org.cafeteria.server.handlers.*;
 import org.cafeteria.server.network.ClientConnection;
 import org.cafeteria.server.network.JdbcConnection;
-import org.cafeteria.server.services.*;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -11,11 +11,11 @@ import java.util.Properties;
 import static org.cafeteria.common.constants.Constants.*;
 
 public class Server {
-    public static UserService userService;
-    public static MenuService menuService;
-    public static FeedbackService feedbackService;
-    public static DailyRecommendationService dailyRecommendationService;
-    public static NotificationService notificationService;
+    public static UserHandler userHandler;
+    public static MenuHandler menuHandler;
+    public static FeedbackHandler feedbackHandler;
+    public static DailyRecommendationHandler dailyRecommendationHandler;
+    public static NotificationHandler notificationHandler;
 
     public static void main(String[] args) {
         initDatabaseProperties();
@@ -27,11 +27,11 @@ public class Server {
     }
 
     private static void initServices() {
-        userService = new UserService();
-        menuService = new MenuService();
-        feedbackService = new FeedbackService();
-        dailyRecommendationService = new DailyRecommendationService();
-        notificationService = new NotificationService();
+        userHandler = new UserHandler();
+        menuHandler = new MenuHandler();
+        feedbackHandler = new FeedbackHandler();
+        dailyRecommendationHandler = new DailyRecommendationHandler();
+        notificationHandler = new NotificationHandler();
     }
 
 
@@ -74,5 +74,4 @@ public class Server {
 
     private static void closeResources() {
     }
-
 }

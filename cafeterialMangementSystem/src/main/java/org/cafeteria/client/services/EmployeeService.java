@@ -26,7 +26,7 @@ public class EmployeeService extends UserManager {
 
             switch (choice) {
                 case 1:
-                    showFoodItemMenu();
+                    displayMenuFromServer();
                     break;
                 case 2:
                     seeNotifications();
@@ -45,7 +45,7 @@ public class EmployeeService extends UserManager {
     }
 
     @Override
-    public void showFoodItemMenu() throws IOException {
+    public void displayMenuFromServer() throws IOException {
     }
 
     public void seeNotifications() throws IOException {

@@ -3,10 +3,13 @@ package org.cafeteria.server.repositories;
 import org.cafeteria.common.model.NotificationType;
 import org.cafeteria.server.repositories.interfaces.INotificationTypeRepository;
 
+import java.util.List;
+
 public class NotificationTypeRepository implements INotificationTypeRepository {
     @Override
-    public void add(NotificationType item) {
+    public boolean add(NotificationType item) {
 
+        return false;
     }
 
     @Override
@@ -15,12 +18,13 @@ public class NotificationTypeRepository implements INotificationTypeRepository {
     }
 
     @Override
-    public void update(NotificationType item) {
+    public boolean update(NotificationType item) {
 
+        return false;
     }
 
     @Override
-    public NotificationType GetAll() {
+    public List<NotificationType> GetAll() {
         return null;
     }
 

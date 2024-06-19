@@ -1,13 +1,12 @@
 package org.cafeteria.server.repositories.interfaces;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
-// generic crud repository
 public interface ICrudRepository<T> {
-    void add(T item);
+    boolean add(T item) throws SQLException;
     void delete(T item);
-    void update(T item);
-    T GetAll();
+    boolean update(T item) throws SQLException;
+    List<T> GetAll() throws SQLException;
     T getById(int id) throws SQLException;
 }

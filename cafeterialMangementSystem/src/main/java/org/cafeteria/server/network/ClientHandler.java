@@ -1,10 +1,7 @@
 package org.cafeteria.server.network;
 
-import com.sun.istack.NotNull;
 import org.cafeteria.common.customException.CustomExceptions;
 import org.cafeteria.common.model.ParsedRequest;
-import org.cafeteria.common.model.ResponseCode;
-import org.cafeteria.common.model.User;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,7 +11,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.sql.SQLException;
 
-import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
+import static org.cafeteria.common.communicationProtocol.CustomProtocol.parseRequest;
 import static org.cafeteria.server.Server.*;
 
 public class ClientHandler implements Runnable {
@@ -37,45 +34,16 @@ public class ClientHandler implements Runnable {
                 System.out.println("message that is received from client: " + message);
                 ParsedRequest request = parseRequest(message);
                 System.out.println("parsed request that is received from client: " + request.getUserAction() + " " + request.getJsonData());
-                switch (request.getUserAction()) {
-                    case LOGIN -> {
-                        handleUserLogin(request);
-                    }
-                    case ADD_MENU_ITEM -> {
-//                        menuService.add();
-                    }
-                    case DELETE_MENU_ITEM -> {
-//                        menuService.delete();
-                    }
-                    case UPDATE_MENU_ITEM -> {
-//                        menuService.update();
-                    }
-                    case SHOW_MENU -> {
-//                        menuService.getAll();
-                    }
-                    case SEE_MONTHLY_REPORT -> {
-                        feedbackService.getFeedbackReport();
-                    }
-                    case PROVIDE_NEXT_DAY_MENU_OPTIONS -> {
-                        dailyRecommendationService.getDailyRecommendation();
-                    }
-                    case PROVIDE_FEEDBACK -> {
-//                        feedbackService.add();
-                    }
-                    case SEE_NOTIFICATIONS -> {
-                        notificationService.getUserNotification();
-                    }
-                    case VOTE_NEXT_DAY_MENU -> {
-                        dailyRecommendationService.voteForNextDayMenu();
-                    }
-                }
+                String response = handleRequest(request);
+                System.out.println("response that is sent to client: " + response);
+                out.println(response);
             }
+        } catch (SQLException | CustomExceptions.InvalidRequestException ex) {
+            throw new RuntimeException(ex);
         } catch (SocketException e) {
             System.out.println("Client Got disconnected");
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (CustomExceptions.InvalidRequestException | SQLException e) {
-            throw new RuntimeException(e);
         } finally {
             try {
                 clientSocket.close();
@@ -85,17 +53,32 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private void handleUserLogin(@NotNull ParsedRequest request) throws SQLException {
-        User user = deserializeData(request.getJsonData(), User.class);
-        System.out.println(user.getId() + " " + user.getName());
-        User loggedInUser = userService.loginUser(user);
-        String response;
-        if (loggedInUser != null) {
-            response = createResponse(ResponseCode.OK, serializeData(loggedInUser));
-        } else {
-            response = createResponse(ResponseCode.UNAUTHORIZED, null);
+    private String handleRequest(ParsedRequest request) throws SQLException {
+        String response = null;
+        switch (request.getUserAction()) {
+            case LOGIN -> response = userHandler.handleUserLogin(request);
+
+            case ADD_MENU_ITEM -> response = menuHandler.addMenuItem(request);
+
+            case DELETE_MENU_ITEM -> response = menuHandler.deleteMenuItem(request);
+
+            case UPDATE_MENU_ITEM -> response = menuHandler.updateMenuItem(request);
+
+            case SHOW_MENU -> response = menuHandler.ShowMenuItems(request);
+
+            case GET_MENU_ITEM_BY_NAME -> response = menuHandler.getMenuItemByName(request);
+
+            case SEE_MONTHLY_REPORT -> response = feedbackHandler.getFeedbackReport(request);
+
+            case PROVIDE_FEEDBACK -> response = feedbackHandler.addFeedback(request);
+
+            case PROVIDE_NEXT_DAY_MENU_OPTIONS -> response = dailyRecommendationHandler.getDailyRecommendation(request);
+
+            case VOTE_NEXT_DAY_MENU -> response = dailyRecommendationHandler.voteForNextDayMenu(request);
+
+            case SEE_NOTIFICATIONS -> response = notificationHandler.getUserNotification(request);
+
         }
-        System.out.println("response that is sent to client: " + response);
-        out.println(response);
+        return response;
     }
 }

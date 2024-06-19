@@ -3,10 +3,13 @@ package org.cafeteria.server.repositories;
 import org.cafeteria.common.model.DailyMenu;
 import org.cafeteria.server.repositories.interfaces.IDailyMenuRepository;
 
+import java.util.List;
+
 public class DailyMenuRepository implements IDailyMenuRepository {
     @Override
-    public void add(DailyMenu item) {
+    public boolean add(DailyMenu item) {
 
+        return false;
     }
 
     @Override
@@ -15,12 +18,13 @@ public class DailyMenuRepository implements IDailyMenuRepository {
     }
 
     @Override
-    public void update(DailyMenu item) {
+    public boolean update(DailyMenu item) {
 
+        return false;
     }
 
     @Override
-    public DailyMenu GetAll() {
+    public List<DailyMenu> GetAll() {
         return null;
     }
 

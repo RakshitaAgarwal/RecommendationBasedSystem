@@ -1,7 +1,10 @@
 package org.cafeteria.server.services;
 
+import org.cafeteria.common.model.MenuItem;
 import org.cafeteria.common.model.Notification;
 import org.cafeteria.server.services.interfaces.INotificationService;
+
+import java.util.List;
 
 public class NotificationService implements INotificationService {
     @Override
@@ -10,8 +13,9 @@ public class NotificationService implements INotificationService {
     }
 
     @Override
-    public void add(Notification object) {
+    public boolean add(Notification object) {
 
+        return false;
     }
 
     @Override
@@ -25,8 +29,9 @@ public class NotificationService implements INotificationService {
     }
 
     @Override
-    public void getAll(Notification object) {
+    public List<Notification> getAll() {
 
+        return null;
     }
 
     @Override

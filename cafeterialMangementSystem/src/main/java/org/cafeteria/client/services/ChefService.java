@@ -25,7 +25,7 @@ public class ChefService extends UserManager {
 
             switch (choice) {
                 case 1:
-                    showFoodItemMenu();
+                    displayMenuFromServer();
                     break;
                 case 2:
                     seeMonthlyReport();
@@ -41,7 +41,7 @@ public class ChefService extends UserManager {
     }
 
     @Override
-    public void showFoodItemMenu() throws IOException {
+    public void displayMenuFromServer() throws IOException {
         String response = connection.sendData("SHOW_MENU");
         System.out.println(response);
     }

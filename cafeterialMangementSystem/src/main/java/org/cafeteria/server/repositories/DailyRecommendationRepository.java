@@ -3,10 +3,13 @@ package org.cafeteria.server.repositories;
 import org.cafeteria.common.model.DailyRecommendation;
 import org.cafeteria.server.repositories.interfaces.IDailyRecommendationRepository;
 
+import java.util.List;
+
 public class DailyRecommendationRepository implements IDailyRecommendationRepository {
     @Override
-    public void add(DailyRecommendation item) {
+    public boolean add(DailyRecommendation item) {
 
+        return false;
     }
 
     @Override
@@ -15,12 +18,13 @@ public class DailyRecommendationRepository implements IDailyRecommendationReposi
     }
 
     @Override
-    public void update(DailyRecommendation item) {
+    public boolean update(DailyRecommendation item) {
 
+        return false;
     }
 
     @Override
-    public DailyRecommendation GetAll() {
+    public List<DailyRecommendation> GetAll() {
         return null;
     }
 

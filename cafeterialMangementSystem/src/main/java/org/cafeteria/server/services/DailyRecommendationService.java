@@ -1,7 +1,10 @@
 package org.cafeteria.server.services;
 
 import org.cafeteria.common.model.DailyRecommendation;
+import org.cafeteria.common.model.MenuItem;
 import org.cafeteria.server.services.interfaces.IDailyRecommendationService;
+
+import java.util.List;
 
 public class DailyRecommendationService implements IDailyRecommendationService {
     @Override
@@ -10,8 +13,9 @@ public class DailyRecommendationService implements IDailyRecommendationService {
     }
 
     @Override
-    public void add(DailyRecommendation object) {
+    public boolean add(DailyRecommendation object) {
 
+        return false;
     }
 
     @Override
@@ -25,8 +29,9 @@ public class DailyRecommendationService implements IDailyRecommendationService {
     }
 
     @Override
-    public void getAll(DailyRecommendation object) {
+    public List<DailyRecommendation> getAll() {
 
+        return null;
     }
 
     @Override

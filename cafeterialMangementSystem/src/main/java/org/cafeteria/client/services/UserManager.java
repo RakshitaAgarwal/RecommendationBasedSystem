@@ -16,7 +16,7 @@ public abstract class UserManager {
         this.user = user;
         UserManager.sc = sc;
     }
-    public abstract void showFoodItemMenu() throws IOException;
+    public abstract void displayMenuFromServer() throws IOException;
 
     public abstract void showUserActionItems() throws IOException;
 }

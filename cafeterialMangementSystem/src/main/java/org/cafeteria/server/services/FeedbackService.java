@@ -2,6 +2,9 @@ package org.cafeteria.server.services;
 
 import org.cafeteria.common.model.Feedback;
 import org.cafeteria.server.services.interfaces.IFeedbackService;
+
+import java.util.List;
+
 public class FeedbackService implements IFeedbackService {
     @Override
     public boolean validate(Feedback item) {
@@ -9,8 +12,9 @@ public class FeedbackService implements IFeedbackService {
     }
 
     @Override
-    public void add(Feedback object) {
+    public boolean add(Feedback object) {
 
+        return false;
     }
 
     @Override
@@ -24,8 +28,9 @@ public class FeedbackService implements IFeedbackService {
     }
 
     @Override
-    public void getAll(Feedback object) {
+    public List<Feedback> getAll() {
 
+        return null;
     }
 
     @Override
