@@ -31,8 +31,13 @@ public class MenuRepository implements IMenuRepository {
     }
 
     @Override
-    public void delete(MenuItem item) {
-
+    public boolean delete(MenuItem item) throws SQLException {
+        String query = "DELETE FROM menu WHERE id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1,item.getId());
+            int rowsDeleted = statement.executeUpdate();
+            return rowsDeleted > 0;
+        }
     }
 
     @Override

@@ -13,8 +13,9 @@ public class NotificationTypeRepository implements INotificationTypeRepository {
     }
 
     @Override
-    public void delete(NotificationType item) {
+    public boolean delete(NotificationType item) {
 
+        return false;
     }
 
     @Override

@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface ICrudRepository<T> {
     boolean add(T item) throws SQLException;
-    void delete(T item);
+    boolean delete(T item) throws SQLException;
     boolean update(T item) throws SQLException;
     List<T> GetAll() throws SQLException;
     T getById(int id) throws SQLException;

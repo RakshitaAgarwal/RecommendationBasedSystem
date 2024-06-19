@@ -13,8 +13,9 @@ public class DailyRecommendationRepository implements IDailyRecommendationReposi
     }
 
     @Override
-    public void delete(DailyRecommendation item) {
+    public boolean delete(DailyRecommendation item) {
 
+        return false;
     }
 
     @Override

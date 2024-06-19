@@ -24,8 +24,9 @@ public class DailyRecommendationService implements IDailyRecommendationService {
     }
 
     @Override
-    public void delete(DailyRecommendation object) {
+    public boolean delete(DailyRecommendation object) {
 
+        return false;
     }
 
     @Override

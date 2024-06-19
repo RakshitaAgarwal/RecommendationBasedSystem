@@ -23,8 +23,9 @@ public class UserRepository implements IUserRepository {
     }
 
     @Override
-    public void delete(User item) {
+    public boolean delete(User item) {
 
+        return false;
     }
 
     @Override

@@ -13,8 +13,9 @@ public class FeedbackRepository implements IFeedbackRepository {
     }
 
     @Override
-    public void delete(Feedback item) {
+    public boolean delete(Feedback item) {
 
+        return false;
     }
 
     @Override

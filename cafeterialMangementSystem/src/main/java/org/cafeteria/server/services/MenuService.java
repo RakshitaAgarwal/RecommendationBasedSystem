@@ -30,8 +30,8 @@ public class MenuService implements IMenuService {
     }
 
     @Override
-    public void delete(MenuItem object) {
-
+    public boolean delete(MenuItem object) throws SQLException {
+        return _menuRepository.delete(object);
     }
 
     @Override

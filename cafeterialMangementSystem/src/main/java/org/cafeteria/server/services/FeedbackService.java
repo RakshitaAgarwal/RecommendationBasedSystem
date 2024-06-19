@@ -24,8 +24,9 @@ public class FeedbackService implements IFeedbackService {
     }
 
     @Override
-    public void delete(Feedback object) {
+    public boolean delete(Feedback object) {
 
+        return false;
     }
 
     @Override

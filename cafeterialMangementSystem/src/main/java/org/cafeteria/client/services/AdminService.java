@@ -2,11 +2,10 @@ package org.cafeteria.client.services;
 
 import com.google.gson.JsonSyntaxException;
 import com.sun.istack.NotNull;
+import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.common.customException.CustomExceptions;
 import org.cafeteria.common.model.*;
-
-import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -39,10 +38,12 @@ public class AdminService extends UserManager {
                 case 2 -> addMenuItem(fetchMenuItemFromUser());
                 case 3 -> {
                     System.out.println("Enter name of the food Item you want to delete from menu:");
-                    String name = sc.next();
+                    String name = sc.nextLine();
                     MenuItem menuItem = getFoodItemByName(name);
                     if (menuItem != null) {
                         deleteMenuItem(menuItem);
+                    } else {
+                        System.out.println("No such food item exists in the menu");
                     }
                 }
                 case 4 -> {
@@ -111,8 +112,8 @@ public class AdminService extends UserManager {
         String name = sc.nextLine();
         System.out.println("Enter price of the food item:");
         float price = sc.nextFloat();
-        System.out.println("Is this food item currently available to order. enter 1 for Yes/0 for No:");
-        boolean isAvailable = (sc.nextInt() == 1);
+        System.out.print("Enter availability of the food item (true/false): ");
+        boolean isAvailable = sc.nextBoolean();
         return new MenuItem(name, price, isAvailable);
     }
 
@@ -159,7 +160,6 @@ public class AdminService extends UserManager {
             System.out.println("3. Update Last Time Prepared");
             System.out.print("Choose an option to update (1/2/3): ");
             int option = sc.nextInt();
-            sc.nextLine();  // consume newline
 
             switch (option) {
                 case 1 -> {

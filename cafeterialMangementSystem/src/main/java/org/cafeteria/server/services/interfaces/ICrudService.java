@@ -6,7 +6,7 @@ import java.util.List;
 public interface ICrudService<T> {
     public boolean add(T object) throws SQLException;
     public boolean update(T object) throws SQLException;
-    public void delete(T object);
+    public boolean delete(T object) throws SQLException;
     public List<T> getAll() throws SQLException;
     public void getById(T object);
 }

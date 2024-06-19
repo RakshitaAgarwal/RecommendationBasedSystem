@@ -29,7 +29,15 @@ public class MenuHandler {
     }
 
     public String deleteMenuItem(@NotNull ParsedRequest request) throws SQLException {
-        return "";
+        MenuItem menuItem = deserializeData(request.getJsonData(), MenuItem.class);
+        boolean isItemUpdated = _menuService.delete(menuItem);
+        String response;
+        if(isItemUpdated) {
+            response = createResponse(ResponseCode.OK, null);
+        } else {
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, null);
+        }
+        return response;
     }
 
     public String updateMenuItem(@NotNull ParsedRequest request) throws SQLException {

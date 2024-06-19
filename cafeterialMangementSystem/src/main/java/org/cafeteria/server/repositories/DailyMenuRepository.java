@@ -13,8 +13,9 @@ public class DailyMenuRepository implements IDailyMenuRepository {
     }
 
     @Override
-    public void delete(DailyMenu item) {
+    public boolean delete(DailyMenu item) {
 
+        return false;
     }
 
     @Override

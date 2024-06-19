@@ -24,8 +24,9 @@ public class NotificationService implements INotificationService {
     }
 
     @Override
-    public void delete(Notification object) {
+    public boolean delete(Notification object) {
 
+        return false;
     }
 
     @Override

@@ -24,8 +24,9 @@ public class DailyMenuService implements IDailyMenuService {
     }
 
     @Override
-    public void delete(DailyMenu object) {
+    public boolean delete(DailyMenu object) {
 
+        return false;
     }
 
     @Override
