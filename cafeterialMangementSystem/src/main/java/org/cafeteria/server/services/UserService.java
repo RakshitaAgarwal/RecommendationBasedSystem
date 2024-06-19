@@ -16,7 +16,11 @@ public class UserService implements IUserService {
 
     @Override
     public User loginUser(User user) throws SQLException {
-        return _userRepository.getById(user.getId());
+        User existingUser = _userRepository.getById(user.getId());
+        if (existingUser.getName().equalsIgnoreCase(user.getName())) {
+            return existingUser;
+        }
+        return null;
     }
 
     @Override
