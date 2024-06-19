@@ -25,8 +25,8 @@ public class MenuService implements IMenuService {
     }
 
     @Override
-    public void update(MenuItem object) {
-
+    public boolean update(MenuItem object) throws SQLException {
+        return _menuRepository.update(object);
     }
 
     @Override

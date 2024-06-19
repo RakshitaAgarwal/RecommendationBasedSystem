@@ -4,13 +4,12 @@ import org.cafeteria.common.model.MenuItem;
 import org.cafeteria.server.network.JdbcConnection;
 import org.cafeteria.server.repositories.interfaces.IMenuRepository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+
+import static org.cafeteria.common.util.Utils.dateToTimestamp;
+import static org.cafeteria.common.util.Utils.timestampToDate;
 
 public class MenuRepository implements IMenuRepository {
     private Connection connection;
@@ -39,12 +38,13 @@ public class MenuRepository implements IMenuRepository {
     @Override
     public boolean update(MenuItem item) throws SQLException {
         String query = "UPDATE menu SET price = ?, isAvailable = ?, lastTimePrepared = ? WHERE id = ?";
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setFloat(1, item.getPrice());
-        statement.setBoolean(2, item.isAvailable());
-        statement.setTimestamp(3, new java.sql.Timestamp(item.getLastTimePrepared().getTime()));
-        statement.setInt(4, item.getId());
-        return statement.executeUpdate() > 0;
+        try(PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setFloat(1, item.getPrice());
+            statement.setBoolean(2, item.isAvailable());
+            statement.setTimestamp(3, dateToTimestamp(item.getLastTimePrepared()));
+            statement.setInt(4, item.getId());
+            return statement.executeUpdate() > 0;
+        }
     }
 
     @Override
@@ -60,14 +60,14 @@ public class MenuRepository implements IMenuRepository {
                 String name = resultSet.getString("name");
                 float price = resultSet.getFloat("price");
                 boolean isAvailable = resultSet.getBoolean("isAvailable");
-                Date lastTimePrepared = resultSet.getTimestamp("lastTimePrepared");
+                Timestamp lastTimePreparedTimestamp = resultSet.getTimestamp("lastTimePrepared");
 
                 MenuItem menuItem = new MenuItem();
                 menuItem.setId(id);
                 menuItem.setName(name);
                 menuItem.setPrice(price);
                 menuItem.setAvailable(isAvailable);
-                menuItem.setLastTimePrepared(lastTimePrepared);
+                menuItem.setLastTimePrepared(timestampToDate(lastTimePreparedTimestamp));
 
                 menuItems.add(menuItem);
             }
@@ -93,7 +93,8 @@ public class MenuRepository implements IMenuRepository {
                 menuItem.setName(resultSet.getString("name"));
                 menuItem.setPrice(resultSet.getFloat("price"));
                 menuItem.setAvailable(resultSet.getBoolean("isAvailable"));
-                menuItem.setLastTimePrepared(resultSet.getTimestamp("lastTimePrepared"));
+                Timestamp timestamp = resultSet.getTimestamp("lastTimePrepared");
+                menuItem.setLastTimePrepared(timestampToDate(timestamp));
                 return menuItem;
             }
         }

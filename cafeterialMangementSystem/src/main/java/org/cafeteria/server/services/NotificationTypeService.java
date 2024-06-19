@@ -1,6 +1,5 @@
 package org.cafeteria.server.services;
 
-import org.cafeteria.common.model.MenuItem;
 import org.cafeteria.common.model.NotificationType;
 import org.cafeteria.server.services.interfaces.INotificationTypeService;
 
@@ -19,8 +18,9 @@ public class NotificationTypeService implements INotificationTypeService {
     }
 
     @Override
-    public void update(NotificationType object) {
+    public boolean update(NotificationType object) {
 
+        return false;
     }
 
     @Override

@@ -18,8 +18,9 @@ public class FeedbackService implements IFeedbackService {
     }
 
     @Override
-    public void update(Feedback object) {
+    public boolean update(Feedback object) {
 
+        return false;
     }
 
     @Override

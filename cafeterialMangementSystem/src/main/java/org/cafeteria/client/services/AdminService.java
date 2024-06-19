@@ -1,6 +1,7 @@
 package org.cafeteria.client.services;
 
 import com.google.gson.JsonSyntaxException;
+import com.sun.istack.NotNull;
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.common.customException.CustomExceptions;
 import org.cafeteria.common.model.*;
@@ -87,7 +88,6 @@ public class AdminService extends UserManager {
             System.out.println(item.getName() + "  " + item.getPrice() + " Rs  Available Status: " + item.isAvailable());
         }
         System.out.println("------------------------------");
-        System.out.println();
     }
 
     private void addMenuItem(MenuItem menuItem) {
@@ -116,7 +116,7 @@ public class AdminService extends UserManager {
         return new MenuItem(name, price, isAvailable);
     }
 
-    private MenuItem getFoodItemByName(String name) {
+    private MenuItem getFoodItemByName(@NotNull String name) {
         String request = createRequest(UserAction.GET_MENU_ITEM_BY_NAME, serializeData(name));
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);

@@ -1,6 +1,5 @@
 package org.cafeteria.server.services;
 
-import org.cafeteria.common.model.MenuItem;
 import org.cafeteria.common.model.Notification;
 import org.cafeteria.server.services.interfaces.INotificationService;
 
@@ -19,8 +18,9 @@ public class NotificationService implements INotificationService {
     }
 
     @Override
-    public void update(Notification object) {
+    public boolean update(Notification object) {
 
+        return false;
     }
 
     @Override
