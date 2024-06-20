@@ -27,8 +27,9 @@ public class Client {
             setUpApplication();
             System.out.println("Welcome to Cafeteria Management System");
 
-            int choice = 0;
+            int choice;
             do {
+                choice = 0;
                 System.out.println("Please Login to proceed.");
                 User userToLogin = fetchUserCredentialsForLogin();
                 try {
@@ -42,35 +43,31 @@ public class Client {
             } while (choice == 1);
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("Server Got Disconnected");
         } finally {
             closeResources();
         }
     }
 
-    private static void showUserActionItems(User user) {
-        try {
-            UserRoleEnum userRole = getEnumFromOrdinal(UserRoleEnum.class, user.getUserRoleId());
-            switch (userRole) {
-                case ADMIN -> {
-                    AdminService adminService = new AdminService(connection, user, sc);
-                    adminService.showUserActionItems();
-                }
-                case CHEF -> {
-                    ChefService chef = new ChefService(connection, user, sc);
-                    chef.showUserActionItems();
-                }
-                case EMP -> {
-                    EmployeeService employee = new EmployeeService(connection, user, sc);
-                    employee.showUserActionItems();
-                }
-                default -> {
-                    System.out.println("Some Error Occurred");
-                    connection.close();
-                }
+    private static void showUserActionItems(User user) throws IOException {
+        UserRoleEnum userRole = getEnumFromOrdinal(UserRoleEnum.class, user.getUserRoleId());
+        switch (userRole) {
+            case ADMIN -> {
+                AdminService adminService = new AdminService(connection, user, sc);
+                adminService.showUserActionItems();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            case CHEF -> {
+                ChefService chef = new ChefService(connection, user, sc);
+                chef.showUserActionItems();
+            }
+            case EMP -> {
+                EmployeeService employee = new EmployeeService(connection, user, sc);
+                employee.showUserActionItems();
+            }
+            default -> {
+                System.out.println("Some Error Occurred");
+                connection.close();
+            }
         }
     }
 
@@ -86,7 +83,7 @@ public class Client {
         SERVER_ADDRESS = connectionProperties.getProperty("server.address");
     }
 
-    private static void createConnection() throws IOException {
+    private static void createConnection() {
         connection = ServerConnection.getInstance(SERVER_ADDRESS, SERVER_PORT);
     }
 

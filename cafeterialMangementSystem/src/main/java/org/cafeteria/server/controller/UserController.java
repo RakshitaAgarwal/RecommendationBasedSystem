@@ -1,4 +1,4 @@
-package org.cafeteria.server.handlers;
+package org.cafeteria.server.controller;
 
 import com.sun.istack.NotNull;
 import org.cafeteria.common.model.ParsedRequest;
@@ -11,9 +11,9 @@ import static org.cafeteria.common.communicationProtocol.CustomProtocol.createRe
 
 import java.sql.SQLException;
 
-public class UserHandler {
+public class UserController {
     private static IUserService _userService;
-    public UserHandler() {
+    public UserController() {
         _userService = new UserService();
     }
 

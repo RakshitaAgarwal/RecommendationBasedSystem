@@ -18,7 +18,7 @@ public class ServerConnection {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Some Error Occurred while creating the server connection.");
         }
     }
 
@@ -34,7 +34,8 @@ public class ServerConnection {
             out.println(message);
             return in.readLine();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("Server got disconnected. Please Try again.");
+            return null;
         }
     }
 

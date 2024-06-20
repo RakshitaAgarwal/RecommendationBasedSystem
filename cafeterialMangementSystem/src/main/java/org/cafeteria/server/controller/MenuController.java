@@ -1,4 +1,4 @@
-package org.cafeteria.server.handlers;
+package org.cafeteria.server.controller;
 
 import com.sun.istack.NotNull;
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
@@ -11,9 +11,9 @@ import org.cafeteria.server.services.interfaces.IMenuService;
 import java.sql.SQLException;
 import java.util.List;
 
-public class MenuHandler {
+public class MenuController {
     private static IMenuService _menuService;
-    public MenuHandler() {
+    public MenuController() {
         _menuService = new MenuService();
     }
     public String addMenuItem(@NotNull ParsedRequest request) throws SQLException {

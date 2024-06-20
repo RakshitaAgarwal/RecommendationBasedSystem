@@ -42,7 +42,7 @@ public class ClientHandler implements Runnable {
         } catch (SocketException e) {
             System.out.println("Client Got disconnected");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Some Error occurred while reading input from client");
         } finally {
             try {
                 clientSocket.close();
@@ -55,27 +55,27 @@ public class ClientHandler implements Runnable {
     private String handleRequest(ParsedRequest request) throws SQLException {
         String response = null;
         switch (request.getUserAction()) {
-            case LOGIN -> response = userHandler.handleUserLogin(request);
+            case LOGIN -> response = userController.handleUserLogin(request);
 
-            case ADD_MENU_ITEM -> response = menuHandler.addMenuItem(request);
+            case ADD_MENU_ITEM -> response = menuController.addMenuItem(request);
 
-            case DELETE_MENU_ITEM -> response = menuHandler.deleteMenuItem(request);
+            case DELETE_MENU_ITEM -> response = menuController.deleteMenuItem(request);
 
-            case UPDATE_MENU_ITEM -> response = menuHandler.updateMenuItem(request);
+            case UPDATE_MENU_ITEM -> response = menuController.updateMenuItem(request);
 
-            case SHOW_MENU -> response = menuHandler.ShowMenuItems();
+            case SHOW_MENU -> response = menuController.ShowMenuItems();
 
-            case GET_MENU_ITEM_BY_NAME -> response = menuHandler.getMenuItemByName(request);
+            case GET_MENU_ITEM_BY_NAME -> response = menuController.getMenuItemByName(request);
 
-            case SEE_MONTHLY_REPORT -> response = feedbackHandler.getFeedbackReport(request);
+            case SEE_MONTHLY_REPORT -> response = feedbackController.getFeedbackReport(request);
 
-            case PROVIDE_FEEDBACK -> response = feedbackHandler.addFeedback(request);
+            case PROVIDE_FEEDBACK -> response = feedbackController.addFeedback(request);
 
-            case PROVIDE_NEXT_DAY_MENU_OPTIONS -> response = dailyRecommendationHandler.getDailyRecommendation(request);
+            case PROVIDE_NEXT_DAY_MENU_OPTIONS -> response = dailyRecommendationController.getDailyRecommendation(request);
 
-            case VOTE_NEXT_DAY_MENU -> response = dailyRecommendationHandler.voteForNextDayMenu(request);
+            case VOTE_NEXT_DAY_MENU -> response = dailyRecommendationController.voteForNextDayMenu(request);
 
-            case SEE_NOTIFICATIONS -> response = notificationHandler.getUserNotification(request);
+            case SEE_NOTIFICATIONS -> response = notificationController.getUserNotification(request);
 
         }
         return response;

@@ -1,4 +1,4 @@
-package org.cafeteria.server.handlers;
+package org.cafeteria.server.controller;
 
 import com.sun.istack.NotNull;
 import org.cafeteria.common.model.ParsedRequest;
@@ -7,9 +7,9 @@ import org.cafeteria.server.services.interfaces.INotificationService;
 
 import java.sql.SQLException;
 
-public class NotificationHandler {
+public class NotificationController {
     private static INotificationService _notificationService;
-    public NotificationHandler() {
+    public NotificationController() {
         _notificationService = new NotificationService();
     }
     public String getUserNotification(@NotNull ParsedRequest request) throws SQLException {

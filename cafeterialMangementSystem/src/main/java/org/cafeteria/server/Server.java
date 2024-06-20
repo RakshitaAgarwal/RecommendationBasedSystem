@@ -1,7 +1,7 @@
 package org.cafeteria.server;
 
 import org.cafeteria.client.Client;
-import org.cafeteria.server.handlers.*;
+import org.cafeteria.server.controller.*;
 import org.cafeteria.server.network.ClientConnection;
 import org.cafeteria.server.network.JdbcConnection;
 
@@ -11,11 +11,11 @@ import java.util.Properties;
 import static org.cafeteria.common.constants.Constants.*;
 
 public class Server {
-    public static UserHandler userHandler;
-    public static MenuHandler menuHandler;
-    public static FeedbackHandler feedbackHandler;
-    public static DailyRecommendationHandler dailyRecommendationHandler;
-    public static NotificationHandler notificationHandler;
+    public static UserController userController;
+    public static MenuController menuController;
+    public static FeedbackController feedbackController;
+    public static DailyRecommendationController dailyRecommendationController;
+    public static NotificationController notificationController;
 
     public static void main(String[] args) {
         initDatabaseProperties();
@@ -27,11 +27,11 @@ public class Server {
     }
 
     private static void initServices() {
-        userHandler = new UserHandler();
-        menuHandler = new MenuHandler();
-        feedbackHandler = new FeedbackHandler();
-        dailyRecommendationHandler = new DailyRecommendationHandler();
-        notificationHandler = new NotificationHandler();
+        userController = new UserController();
+        menuController = new MenuController();
+        feedbackController = new FeedbackController();
+        dailyRecommendationController = new DailyRecommendationController();
+        notificationController = new NotificationController();
     }
 
 
@@ -40,7 +40,7 @@ public class Server {
         try {
             connectionProperties.load(Client.class.getClassLoader().getResourceAsStream("database.properties"));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("Some Error occurred while loading DB Properties.");
         } finally {
             DATABASE_URL = connectionProperties.getProperty("database.url");
             DATABASE_USER = connectionProperties.getProperty("database.username");
@@ -54,7 +54,7 @@ public class Server {
         try {
             connectionProperties.load(Client.class.getClassLoader().getResourceAsStream("server.properties"));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("Some Error occurred while loading Server Properties.");
         } finally {
             SERVER_PORT = Integer.parseInt(connectionProperties.getProperty("server.port"));
             SERVER_ADDRESS = connectionProperties.getProperty("server.address");

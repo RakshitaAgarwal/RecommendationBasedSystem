@@ -1,4 +1,4 @@
-package org.cafeteria.server.handlers;
+package org.cafeteria.server.controller;
 
 import com.sun.istack.NotNull;
 import org.cafeteria.common.model.ParsedRequest;
@@ -7,9 +7,9 @@ import org.cafeteria.server.services.interfaces.IDailyRecommendationService;
 
 import java.sql.SQLException;
 
-public class DailyRecommendationHandler {
+public class DailyRecommendationController {
     private static IDailyRecommendationService _dailyRecommendationService;
-    public DailyRecommendationHandler() {
+    public DailyRecommendationController() {
         _dailyRecommendationService = new DailyRecommendationService();
     }
     public String getDailyRecommendation(@NotNull ParsedRequest request) throws SQLException {

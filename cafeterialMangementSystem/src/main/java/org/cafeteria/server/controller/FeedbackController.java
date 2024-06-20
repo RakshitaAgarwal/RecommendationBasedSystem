@@ -1,4 +1,4 @@
-package org.cafeteria.server.handlers;
+package org.cafeteria.server.controller;
 
 import com.sun.istack.NotNull;
 import org.cafeteria.common.model.ParsedRequest;
@@ -7,9 +7,9 @@ import org.cafeteria.server.services.interfaces.IFeedbackService;
 
 import java.sql.SQLException;
 
-public class FeedbackHandler {
+public class FeedbackController {
     private static IFeedbackService _feedbackService;
-    public FeedbackHandler() {
+    public FeedbackController() {
         _feedbackService = new FeedbackService();
     }
 

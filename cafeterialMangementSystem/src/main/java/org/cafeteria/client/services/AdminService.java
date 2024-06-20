@@ -4,7 +4,7 @@ import com.google.gson.JsonSyntaxException;
 import com.sun.istack.NotNull;
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 import org.cafeteria.client.network.ServerConnection;
-import org.cafeteria.common.customException.CustomExceptions;
+import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
 
 import java.io.IOException;
@@ -61,24 +61,28 @@ public class AdminService extends UserManager {
     }
 
     @Override
-    public void displayMenuFromServer() {
+    public void displayMenuFromServer() throws IOException{
         String request = createRequest(UserAction.SHOW_MENU, null);
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
         System.out.println("response that is received from server: " + response);
-        try {
-            ParsedResponse parsedResponse = parseResponse(response);
-            ResponseCode responseCode = parsedResponse.getResponseCode();
-            if (responseCode == ResponseCode.OK) {
-                List<MenuItem> menu = deserializeList(parsedResponse.getJsonData(), MenuItem.class);
-                displayMenu(menu);
-            } else {
-                System.out.println("Unexpected Response Code: " + responseCode);
+        if( response != null) {
+            try {
+                ParsedResponse parsedResponse = parseResponse(response);
+                ResponseCode responseCode = parsedResponse.getResponseCode();
+                if (responseCode == ResponseCode.OK) {
+                    List<MenuItem> menu = deserializeList(parsedResponse.getJsonData(), MenuItem.class);
+                    displayMenu(menu);
+                } else {
+                    System.out.println("Unexpected Response Code: " + responseCode);
+                }
+            } catch (InvalidResponseException e) {
+                System.out.println("Invalid Response Received from Server");
+            } catch (JsonSyntaxException e) {
+                System.out.println("Error deserializing JSON data: " + e.getMessage());
             }
-        } catch (CustomExceptions.InvalidResponseException e) {
-            throw new RuntimeException(e);
-        } catch (JsonSyntaxException e) {
-            System.out.println("Error deserializing JSON data: " + e.getMessage());
+        } else {
+            throw new IOException("Server Got Disconnected. Please Try again.");
         }
     }
 
@@ -102,8 +106,8 @@ public class AdminService extends UserManager {
             if (responseCode == ResponseCode.OK)
                 System.out.println("Food Item Added Successfully in the Menu.");
             else System.out.println("Some Error Occurred!!");
-        } catch (CustomExceptions.InvalidResponseException e) {
-            throw new RuntimeException(e);
+        } catch (InvalidResponseException e) {
+            System.out.println("Invalid Response Received from Server");
         }
     }
 
@@ -127,8 +131,8 @@ public class AdminService extends UserManager {
             ResponseCode responseCode = parsedResponse.getResponseCode();
             if (responseCode == ResponseCode.OK)
                 return deserializeData(parsedResponse.getJsonData(), MenuItem.class);
-        } catch (CustomExceptions.InvalidResponseException e) {
-            throw new RuntimeException(e);
+        } catch (InvalidResponseException e) {
+            System.out.println("Invalid Response Received from Server");
         }
         return null;
     }
@@ -144,8 +148,8 @@ public class AdminService extends UserManager {
             if (responseCode == ResponseCode.OK)
                 System.out.println("Food Item Deleted Successfully from the Menu.");
             else System.out.println("Some Error Occurred!!");
-        } catch (CustomExceptions.InvalidResponseException e) {
-            throw new RuntimeException(e);
+        } catch (InvalidResponseException e) {
+            System.out.println("Invalid Response Received from Server");
         }
     }
 
@@ -204,8 +208,8 @@ public class AdminService extends UserManager {
             if (responseCode == ResponseCode.OK)
                 System.out.println("Food Item Updated Successfully in the Menu.");
             else System.out.println("Some Error Occurred!!");
-        } catch (CustomExceptions.InvalidResponseException e) {
-            throw new RuntimeException(e);
+        } catch (InvalidResponseException e) {
+            System.out.println("Invalid Response Received from Server");
         }
     }
 }

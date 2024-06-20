@@ -31,7 +31,8 @@ public class AuthenticationService {
                 return deserializeData(parsedResponse.getJsonData(), User.class);
             } else throw new LoginFailedException("Login Unsuccessful");
         } catch (InvalidResponseException e) {
-            throw new RuntimeException(e);
+            System.out.println("Invalid Response Received from Server");
+            throw new IOException("Server might got disconnected");
         }
     }
 }
