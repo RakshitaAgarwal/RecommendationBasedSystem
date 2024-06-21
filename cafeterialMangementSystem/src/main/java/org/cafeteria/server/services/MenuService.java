@@ -40,7 +40,8 @@ public class MenuService implements IMenuService {
     }
 
     @Override
-    public void getById(MenuItem object) {
+    public MenuItem getById(int id) {
+        return null;
     }
 
     @Override

@@ -36,7 +36,7 @@ public class NotificationTypeService implements INotificationTypeService {
     }
 
     @Override
-    public void getById(NotificationType object) {
-
+    public NotificationType getById(int id) {
+        return null;
     }
 }

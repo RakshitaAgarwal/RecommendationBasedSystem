@@ -1,6 +1,7 @@
 package org.cafeteria.server.controller;
 
 import com.sun.istack.NotNull;
+import org.cafeteria.common.model.Notification;
 import org.cafeteria.common.model.ParsedRequest;
 import org.cafeteria.server.services.NotificationService;
 import org.cafeteria.server.services.interfaces.INotificationService;
@@ -15,4 +16,6 @@ public class NotificationController {
     public String getUserNotification(@NotNull ParsedRequest request) throws SQLException {
         return "";
     }
+
+
 }

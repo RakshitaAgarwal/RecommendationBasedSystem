@@ -2,8 +2,10 @@ package org.cafeteria.server;
 
 import org.cafeteria.client.Client;
 import org.cafeteria.server.controller.*;
+import org.cafeteria.server.model.SentimentResult;
 import org.cafeteria.server.network.ClientConnection;
 import org.cafeteria.server.network.JdbcConnection;
+import org.cafeteria.server.services.SentimentAnalysis;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -16,6 +18,7 @@ public class Server {
     public static FeedbackController feedbackController;
     public static DailyRecommendationController dailyRecommendationController;
     public static NotificationController notificationController;
+    public static DailyMenuController dailyMenuController;
 
     public static void main(String[] args) {
         initDatabaseProperties();
@@ -32,6 +35,7 @@ public class Server {
         feedbackController = new FeedbackController();
         dailyRecommendationController = new DailyRecommendationController();
         notificationController = new NotificationController();
+        dailyMenuController = new DailyMenuController();
     }
 
 

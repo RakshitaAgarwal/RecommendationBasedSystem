@@ -2,24 +2,29 @@ package org.cafeteria.server.controller;
 
 import com.sun.istack.NotNull;
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
-import org.cafeteria.common.model.MenuItem;
-import org.cafeteria.common.model.ParsedRequest;
-import org.cafeteria.common.model.ResponseCode;
+
+import org.cafeteria.common.model.*;
 import org.cafeteria.server.services.MenuService;
+import org.cafeteria.server.services.NotificationService;
 import org.cafeteria.server.services.interfaces.IMenuService;
+import org.cafeteria.server.services.interfaces.INotificationService;
 
 import java.sql.SQLException;
 import java.util.List;
 
 public class MenuController {
     private static IMenuService _menuService;
+    private static INotificationService _notificationService;
     public MenuController() {
         _menuService = new MenuService();
+        _notificationService = new NotificationService();
     }
     public String addMenuItem(@NotNull ParsedRequest request) throws SQLException {
         MenuItem menuItem = deserializeData(request.getJsonData(), MenuItem.class);
         String response;
         if (_menuService.add(menuItem)) {
+            Notification notification = new Notification(1, menuItem.getName() + " added to the menu.");
+            _notificationService.sendNotificationToAllEmployees(notification);
             response = createResponse(ResponseCode.OK, null);
         } else {
             response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, null);
@@ -33,6 +38,8 @@ public class MenuController {
         String response;
         if(isItemUpdated) {
             response = createResponse(ResponseCode.OK, null);
+            Notification notification = new Notification(2, menuItem.getName() + " deleted from the menu.");
+            _notificationService.sendNotificationToAllEmployees(notification);
         } else {
             response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, null);
         }
@@ -45,6 +52,8 @@ public class MenuController {
         String response;
         if(isItemUpdated) {
             response = createResponse(ResponseCode.OK, null);
+            Notification notification = new Notification(3, menuItem.getName() + " updated in the menu.");
+            _notificationService.sendNotificationToAllEmployees(notification);
         } else {
             response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, null);
         }

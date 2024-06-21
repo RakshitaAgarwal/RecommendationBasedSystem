@@ -10,6 +10,7 @@ import org.cafeteria.common.model.UserAction;
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
 import java.util.List;
+import java.util.Map;
 
 public class CustomProtocol {
     private static final String DELIMITER = "|";
@@ -53,6 +54,14 @@ public class CustomProtocol {
         } else {
             throw new InvalidResponseException("Invalid Response Message");
         }
+    }
+    public static <K, V> String serializeMap(Map<K, V> map) {
+        Type mapType = new TypeToken<Map<K, V>>() {}.getType();
+        return gson.toJson(map, mapType);
+    }
+
+    public static <K, V> Map<K, V> deserializeMap(String json, Type typeOfMap) {
+        return gson.fromJson(json, typeOfMap);
     }
 
     public static <T> T deserializeData(String jsonData, Class<T> clazz) throws JsonSyntaxException {

@@ -1,13 +1,14 @@
 package org.cafeteria.client.services;
 
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.common.customException.CustomExceptions;
 import org.cafeteria.common.model.*;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Scanner;
+import java.lang.reflect.Type;
+import java.util.*;
 
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 
@@ -22,8 +23,9 @@ public class ChefService extends UserManager {
         while (true) {
             System.out.println("1. Show Menu");
             System.out.println("2. See Monthly Report");
-            System.out.println("3. Provide Next Day Menu Options");
-            System.out.println("4. Exit");
+            System.out.println("3. Roll Out Items for Next Day Menu");
+            System.out.println("4. Update Next Day final Menu Items");
+            System.out.println("5. Exit");
             System.out.println("Enter your Choice: ");
             int choice = sc.nextInt();
             sc.nextLine();
@@ -31,13 +33,17 @@ public class ChefService extends UserManager {
             switch (choice) {
                 case 1 -> displayMenuFromServer();
                 case 2 -> seeMonthlyReport();
-                case 3 -> provideNextDayMenuOptions("", " ", "");
-                case 4 -> {
+                case 3 -> provideNextDayMenuOptions();
+                case 4 -> updateNextDayMenuItems();
+                case 5 -> {
                     connection.close();
                     return;
                 }
             }
         }
+    }
+
+    private void updateNextDayMenuItems() {
     }
 
     @Override
@@ -46,7 +52,7 @@ public class ChefService extends UserManager {
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
         System.out.println("response that is received from server: " + response);
-        if( response != null) {
+        if (response != null) {
             try {
                 ParsedResponse parsedResponse = parseResponse(response);
                 ResponseCode responseCode = parsedResponse.getResponseCode();
@@ -80,8 +86,84 @@ public class ChefService extends UserManager {
         System.out.println(response);
     }
 
-    public void provideNextDayMenuOptions(String breakfast, String lunch, String dinner) throws IOException {
-        String response = connection.sendData("NEXT_DAY_MENU " + breakfast + " " + lunch + " " + dinner);
-        System.out.println(response);
+    public void provideNextDayMenuOptions() throws IOException {
+        Map<MealTypeEnum, List<MenuItem>> recommendedItems = getRecommendationsForNextDayMenu();
+        Map<MealTypeEnum, List<MenuItem>> rolledOutItems = getRolledOutItems(recommendedItems, 2);
+
+        String request = createRequest(UserAction.PROVIDE_NEXT_DAY_MENU_OPTIONS, serializeMap(rolledOutItems));
+        System.out.println("request that is sent to server: " + request);
+        String response = connection.sendData(request);
+        System.out.println("response that is received from server: " + response);
+        try {
+            ParsedResponse parsedResponse = parseResponse(response);
+            ResponseCode responseCode = parsedResponse.getResponseCode();
+            if (responseCode == ResponseCode.OK) {
+                System.out.println("Items rolled out successfully for voting");
+            } else System.out.println("Some Error Occurred!!");
+        } catch (CustomExceptions.InvalidResponseException e) {
+            System.out.println("Invalid Response Received from Server");
+        }
+    }
+
+    public static Map<MealTypeEnum, List<MenuItem>> getRolledOutItems(Map<MealTypeEnum, List<MenuItem>> recommendedItems, int noOfItemsToRollOut) {
+        Map<MealTypeEnum, List<MenuItem>> rolledOutItems = new HashMap<>();
+        Random random = new Random();
+
+        for (Map.Entry<MealTypeEnum, List<MenuItem>> entry : recommendedItems.entrySet()) {
+            List<MenuItem> recommendedList = entry.getValue();
+            List<MenuItem> selectedItems = new ArrayList<>();
+
+            if (recommendedList.size() >= noOfItemsToRollOut) {
+                Set<Integer> selectedIndices = new HashSet<>();
+                while (selectedIndices.size() < noOfItemsToRollOut) {
+                    int randomIndex = random.nextInt(recommendedList.size());
+                    selectedIndices.add(randomIndex);
+                }
+                for (int index : selectedIndices) {
+                    selectedItems.add(recommendedList.get(index));
+                }
+            } else {
+                selectedItems.addAll(recommendedList);
+            }
+
+            rolledOutItems.put(entry.getKey(), selectedItems);
+        }
+
+        return rolledOutItems;
+    }
+
+    private Map<MealTypeEnum, List<MenuItem>> getRecommendationsForNextDayMenu() {
+        String request = createRequest(UserAction.GET_RECCOMENDATION_FOR_NEXT_DAY_MENU, null);
+        System.out.println("request that is sent to server: " + request);
+        String response = connection.sendData(request);
+        System.out.println("response that is received from server: " + response);
+        try {
+            ParsedResponse parsedResponse = parseResponse(response);
+            ResponseCode responseCode = parsedResponse.getResponseCode();
+            if (responseCode == ResponseCode.OK) {
+                Type mapType = new TypeToken<Map<MealTypeEnum, List<MenuItem>>>() {
+                }.getType();
+                Map<MealTypeEnum, List<MenuItem>> recommendedItems = deserializeMap(parsedResponse.getJsonData(), mapType);
+                displayRecommendations(recommendedItems);
+                return recommendedItems;
+            } else System.out.println("Some Error Occurred while getting recommendations!!");
+        } catch (CustomExceptions.InvalidResponseException e) {
+            System.out.println("Invalid Response Received from Server");
+        }
+        return null;
+    }
+
+    public static void displayRecommendations(Map<MealTypeEnum, List<MenuItem>> menuItemsByMealType) {
+        for (Map.Entry<MealTypeEnum, List<MenuItem>> entry : menuItemsByMealType.entrySet()) {
+            MealTypeEnum mealType = entry.getKey();
+            List<MenuItem> menuItems = entry.getValue();
+
+            System.out.println("Meal Type: " + mealType);
+            System.out.println("Menu Items:");
+            for (MenuItem menuItem : menuItems) {
+                System.out.println("  " + menuItem);
+            }
+            System.out.println();
+        }
     }
 }

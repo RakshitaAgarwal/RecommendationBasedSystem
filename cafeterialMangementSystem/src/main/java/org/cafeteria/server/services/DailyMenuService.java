@@ -36,8 +36,8 @@ public class DailyMenuService implements IDailyMenuService {
     }
 
     @Override
-    public void getById(DailyMenu object) {
-
+    public DailyMenu getById(int id) {
+        return null;
     }
 
     @Override

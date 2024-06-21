@@ -4,6 +4,19 @@ import java.util.Date;
 
 public class Notification {
     private int id;
+    private int userId;
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public Notification() {
+
+    }
     private int notificationTypeId;
     private String notificationMessage;
     private Date dateTime;
@@ -15,6 +28,11 @@ public class Notification {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public Notification(int notificationTypeId, String notificationMessage) {
+        this.notificationTypeId = notificationTypeId;
+        this.notificationMessage = notificationMessage;
     }
 
     public int getNotificationTypeId() {

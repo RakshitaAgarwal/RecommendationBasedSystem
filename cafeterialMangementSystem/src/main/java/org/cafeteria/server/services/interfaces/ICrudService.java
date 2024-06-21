@@ -8,5 +8,5 @@ public interface ICrudService<T> {
     public boolean update(T object) throws SQLException;
     public boolean delete(T object) throws SQLException;
     public List<T> getAll() throws SQLException;
-    public void getById(T object);
+    public T getById(int id);
 }
