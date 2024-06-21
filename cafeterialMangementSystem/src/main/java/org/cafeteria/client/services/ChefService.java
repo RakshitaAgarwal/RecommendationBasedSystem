@@ -33,7 +33,7 @@ public class ChefService extends UserManager {
             switch (choice) {
                 case 1 -> displayMenuFromServer();
                 case 2 -> seeMonthlyReport();
-                case 3 -> provideNextDayMenuOptions();
+                case 3 -> rollOutNextDayMenuOptions();
                 case 4 -> updateNextDayMenuItems();
                 case 5 -> {
                     connection.close();
@@ -86,11 +86,12 @@ public class ChefService extends UserManager {
         System.out.println(response);
     }
 
-    public void provideNextDayMenuOptions() throws IOException {
+    public void rollOutNextDayMenuOptions() throws IOException {
         Map<MealTypeEnum, List<MenuItem>> recommendedItems = getRecommendationsForNextDayMenu();
-        Map<MealTypeEnum, List<MenuItem>> rolledOutItems = getRolledOutItems(recommendedItems, 2);
+        displayRecommendations(recommendedItems);
+        Map<MealTypeEnum, List<MenuItem>> rolledOutItems = getRolledOutItems(recommendedItems, 5);
 
-        String request = createRequest(UserAction.PROVIDE_NEXT_DAY_MENU_OPTIONS, serializeMap(rolledOutItems));
+        String request = createRequest(UserAction.ROLL_OUT_NEXT_DAY_MENU_OPTIONS, serializeMap(rolledOutItems));
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
         System.out.println("response that is received from server: " + response);
@@ -144,7 +145,6 @@ public class ChefService extends UserManager {
                 Type mapType = new TypeToken<Map<MealTypeEnum, List<MenuItem>>>() {
                 }.getType();
                 Map<MealTypeEnum, List<MenuItem>> recommendedItems = deserializeMap(parsedResponse.getJsonData(), mapType);
-                displayRecommendations(recommendedItems);
                 return recommendedItems;
             } else System.out.println("Some Error Occurred while getting recommendations!!");
         } catch (CustomExceptions.InvalidResponseException e) {
@@ -161,7 +161,7 @@ public class ChefService extends UserManager {
             System.out.println("Meal Type: " + mealType);
             System.out.println("Menu Items:");
             for (MenuItem menuItem : menuItems) {
-                System.out.println("  " + menuItem);
+                System.out.println("  " + menuItem.getName());
             }
             System.out.println();
         }

@@ -40,8 +40,8 @@ public class MenuService implements IMenuService {
     }
 
     @Override
-    public MenuItem getById(int id) {
-        return null;
+    public MenuItem getById(int id) throws SQLException {
+        return _menuRepository.getById(id);
     }
 
     @Override

@@ -3,6 +3,7 @@ package org.cafeteria.server.repositories;
 import org.cafeteria.common.model.MenuItem;
 import org.cafeteria.server.network.JdbcConnection;
 import org.cafeteria.server.repositories.interfaces.IMenuRepository;
+
 import static org.cafeteria.common.util.Utils.dateToTimestamp;
 import static org.cafeteria.common.util.Utils.timestampToDate;
 
@@ -33,7 +34,7 @@ public class MenuRepository implements IMenuRepository {
     public boolean delete(MenuItem item) throws SQLException {
         String query = "DELETE FROM menu WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1,item.getId());
+            statement.setInt(1, item.getId());
             int rowsDeleted = statement.executeUpdate();
             return rowsDeleted > 0;
         }
@@ -42,7 +43,7 @@ public class MenuRepository implements IMenuRepository {
     @Override
     public boolean update(MenuItem item) throws SQLException {
         String query = "UPDATE menu SET price = ?, isAvailable = ?, lastTimePrepared = ? WHERE id = ?";
-        try(PreparedStatement statement = connection.prepareStatement(query)) {
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setFloat(1, item.getPrice());
             statement.setBoolean(2, item.isAvailable());
             statement.setTimestamp(3, dateToTimestamp(item.getLastTimePrepared()));
@@ -81,8 +82,32 @@ public class MenuRepository implements IMenuRepository {
     }
 
     @Override
-    public MenuItem getById(int id) {
-        return null;
+    public MenuItem getById(int id) throws SQLException {
+        String query = "SELECT * FROM menu WHERE id = ?";
+        MenuItem menuItem = null;
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, id);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    String name = resultSet.getString("name");
+                    float price = resultSet.getFloat("price");
+                    boolean isAvailable = resultSet.getBoolean("isAvailable");
+                    Timestamp lastTimePreparedTimestamp = resultSet.getTimestamp("lastTimePrepared");
+
+                    menuItem = new MenuItem();
+                    menuItem.setId(id);
+                    menuItem.setName(name);
+                    menuItem.setPrice(price);
+                    menuItem.setAvailable(isAvailable);
+                    menuItem.setLastTimePrepared(timestampToDate(lastTimePreparedTimestamp));
+                }
+            }
+        }
+
+        return menuItem;
+
     }
 
     @Override

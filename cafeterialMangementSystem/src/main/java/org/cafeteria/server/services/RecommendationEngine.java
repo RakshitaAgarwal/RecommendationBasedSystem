@@ -6,10 +6,7 @@ import org.cafeteria.server.model.MenuItemScore;
 import org.cafeteria.server.services.interfaces.IFeedbackService;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class RecommendationEngine {
@@ -22,10 +19,31 @@ public class RecommendationEngine {
     }
     public List<MenuItemScore> getTopRecommendedItems(List<MenuItem> menuItems, int topX) throws SQLException {
         updateRecommendedItems(menuItems);
-        return recommendedItems.stream()
-                .sorted(Comparator.comparingDouble(MenuItemScore::getRecommendationScore).reversed())
-                .limit(topX)
-                .collect(Collectors.toList());
+        for(MenuItemScore item:recommendedItems){
+            System.out.println(item.getMenuItemId() + " " + item.getRecommendationScore());
+        }
+        Collections.sort(recommendedItems, Comparator.comparingDouble(MenuItemScore::getRecommendationScore).reversed());
+        System.out.println("\n after sorting");
+        for(MenuItemScore item:recommendedItems){
+            System.out.println(item.getMenuItemId() + " " + item.getRecommendationScore());
+        }
+
+        List<MenuItemScore> topElements = getTopElements(recommendedItems, 3);
+
+        for (MenuItemScore menuItemScore : topElements) {
+            System.out.println(menuItemScore);
+        }
+        return topElements;
+    }
+
+    public static List<MenuItemScore> getTopElements(List<MenuItemScore> list, int x) {
+        // Handle cases where x is larger than the list size
+        if (x > list.size()) {
+            x = list.size();
+        }
+
+        // Return the sublist of the first x elements
+        return new ArrayList<>(list.subList(0, x));
     }
 
     private void updateRecommendedItems(List<MenuItem> menuItems) throws SQLException {

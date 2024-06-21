@@ -26,7 +26,7 @@ public class RoleActionMapping {
                 UserAction.CREATE_USER,
                 UserAction.SHOW_MENU,
                 UserAction.SEE_MONTHLY_REPORT,
-                UserAction.PROVIDE_NEXT_DAY_MENU_OPTIONS
+                UserAction.ROLL_OUT_NEXT_DAY_MENU_OPTIONS
         ));
 
         roleActionMap.put(UserRoleEnum.EMP, EnumSet.of(

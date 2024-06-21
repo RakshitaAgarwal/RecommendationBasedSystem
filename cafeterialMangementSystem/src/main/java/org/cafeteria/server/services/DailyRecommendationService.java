@@ -4,21 +4,22 @@ import org.cafeteria.common.model.DailyRecommendation;
 import org.cafeteria.common.model.MealTypeEnum;
 import org.cafeteria.common.model.MenuItem;
 import org.cafeteria.server.model.MenuItemScore;
+import org.cafeteria.server.repositories.DailyRecommendationRepository;
+import org.cafeteria.server.repositories.interfaces.IDailyRecommendationRepository;
 import org.cafeteria.server.services.interfaces.IDailyRecommendationService;
 import org.cafeteria.server.services.interfaces.IFeedbackService;
 import org.cafeteria.server.services.interfaces.IMenuService;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DailyRecommendationService implements IDailyRecommendationService {
+    private static IDailyRecommendationRepository _dailyRecommendationRepository;
     private static IFeedbackService _feedbackService;
     private static IMenuService _menuService;
 
     public DailyRecommendationService() {
+        _dailyRecommendationRepository = new DailyRecommendationRepository();
         _feedbackService = new FeedbackService();
         _menuService = new MenuService();
     }
@@ -70,6 +71,7 @@ public class DailyRecommendationService implements IDailyRecommendationService {
         List<MenuItemScore> lunchRecommendations = lunchEngine.getTopRecommendedItems(menuItems, 5);
         List<MenuItemScore> dinnerRecommendations = dinnerEngine.getTopRecommendedItems(menuItems, 5);
 
+        System.out.println("RecommendationEngine" + breakfastRecommendations.size());
         List<MenuItem> breakfastRecommendationList = new ArrayList<>();
         List<MenuItem> lunchRecommendationList = new ArrayList<>();
         List<MenuItem> dinnerRecommendationList = new ArrayList<>();
@@ -104,5 +106,24 @@ public class DailyRecommendationService implements IDailyRecommendationService {
     @Override
     public void voteForNextDayMenu() {
 
+    }
+
+    @Override
+    public boolean rollOutItemsForNextDayMenu(Map<MealTypeEnum, List<MenuItem>> nextDayMenuOptions) throws SQLException {
+        for (Map.Entry<MealTypeEnum, List<MenuItem>> entry : nextDayMenuOptions.entrySet()) {
+            MealTypeEnum mealType = entry.getKey();
+            List<MenuItem> menuItems = entry.getValue();
+
+            for (MenuItem menuItem : menuItems) {
+                DailyRecommendation dailyRecommendation = new DailyRecommendation();
+                dailyRecommendation.setMenuItemId(menuItem.getId());
+                dailyRecommendation.setMealTypeId(mealType.ordinal()+1);
+                dailyRecommendation.setVotes(0);
+                dailyRecommendation.setDateTime(new Date());
+
+                _dailyRecommendationRepository.add(dailyRecommendation);
+            }
+        }
+        return true;
     }
 }

@@ -12,4 +12,5 @@ public interface IDailyRecommendationService extends IValidationService<DailyRec
     public Map<MealTypeEnum, List<MenuItem>> getDailyRecommendation() throws SQLException;
     public void performSentimentAnalysis();
     public void voteForNextDayMenu();
+    public boolean rollOutItemsForNextDayMenu(Map<MealTypeEnum, List<MenuItem>> nextDayMenuOptions) throws SQLException;
 }
