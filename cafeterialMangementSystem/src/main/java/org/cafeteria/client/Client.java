@@ -1,5 +1,6 @@
 package org.cafeteria.client;
 
+import org.cafeteria.client.global.GlobalData;
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.client.services.AdminService;
 import org.cafeteria.client.services.AuthenticationService;
@@ -34,6 +35,7 @@ public class Client {
                 User userToLogin = fetchUserCredentialsForLogin();
                 try {
                     User user = new AuthenticationService(connection).login(userToLogin);
+                    updateGlobalData(user);
                     showUserActionItems(user);
                 } catch (CustomExceptions.LoginFailedException e) {
                     System.out.println("Login Failed");
@@ -47,6 +49,10 @@ public class Client {
         } finally {
             closeResources();
         }
+    }
+
+    private static void updateGlobalData(User user) {
+        GlobalData.loggedInUser = user;
     }
 
     private static void showUserActionItems(User user) throws IOException {

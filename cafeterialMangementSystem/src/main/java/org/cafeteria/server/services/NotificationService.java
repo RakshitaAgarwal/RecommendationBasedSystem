@@ -34,6 +34,11 @@ public class NotificationService implements INotificationService {
     }
 
     @Override
+    public List<Notification> getUserNotification(int userId) throws SQLException {
+        return _notificationRepository.getNotificationByUserId(userId);
+    }
+
+    @Override
     public boolean validate(Notification item) {
         return false;
     }
@@ -78,12 +83,6 @@ public class NotificationService implements INotificationService {
     }
 
     @Override
-    public void cleanUpExpiredNotification() {
+    public void cleanUpExpiredNotification() {}
 
-    }
-
-    @Override
-    public void getUserNotification() {
-
-    }
 }

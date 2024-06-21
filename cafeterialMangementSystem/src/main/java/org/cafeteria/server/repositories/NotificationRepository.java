@@ -91,4 +91,24 @@ public class NotificationRepository implements INotificationRepository {
             }
         }
     }
+
+    @Override
+    public List<Notification> getNotificationByUserId(int userId) throws SQLException {
+        String query = "SELECT * FROM notification WHERE userId = ?;";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, userId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                List<Notification> notifications = new ArrayList<>();
+                while (resultSet.next()) {
+                    Notification notification = new Notification(resultSet.getInt("notificationTypeId"), resultSet.getString("notificationMessage"));
+                    notification.setId(resultSet.getInt("id"));
+                    notification.setUserId(resultSet.getInt("userId"));
+                    notification.setDateTime(resultSet.getTimestamp("dateTime"));
+                    notification.setNotificationRead(resultSet.getBoolean("isNotificationRead"));
+                    notifications.add(notification);
+                }
+                return notifications;
+            }
+        }
+    }
 }

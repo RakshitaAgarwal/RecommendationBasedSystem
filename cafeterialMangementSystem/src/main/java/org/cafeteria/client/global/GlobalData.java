@@ -1,7 +1,7 @@
 package org.cafeteria.client.global;
 
+import org.cafeteria.common.model.User;
+
 public class GlobalData {
-    public String userId;
-    public String username;
-    public String userRole;
+    public static User loggedInUser;
 }

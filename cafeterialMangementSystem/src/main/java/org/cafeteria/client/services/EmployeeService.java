@@ -1,6 +1,7 @@
 package org.cafeteria.client.services;
 
 import com.google.gson.JsonSyntaxException;
+import org.cafeteria.client.global.GlobalData;
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.common.customException.CustomExceptions;
 import org.cafeteria.common.model.*;
@@ -85,8 +86,37 @@ public class EmployeeService extends UserManager {
     }
 
     public void seeNotifications() throws IOException {
-        String response = connection.sendData("SEE_NOTIFICATIONS");
-        System.out.println(response);
+        String request = createRequest(UserAction.SEE_NOTIFICATIONS, serializeData(GlobalData.loggedInUser));
+        System.out.println("request that is sent to server: " + request);
+        String response = connection.sendData(request);
+        System.out.println("response that is received from server: " + response);
+        try {
+            ParsedResponse parsedResponse = parseResponse(response);
+            ResponseCode responseCode = parsedResponse.getResponseCode();
+            if (responseCode == ResponseCode.OK)
+            {
+                displayUserNotifications(deserializeList(parsedResponse.getJsonData(), Notification.class));
+            } else System.out.println("Some Error Occurred!!");
+        } catch (CustomExceptions.InvalidResponseException e) {
+            System.out.println("Invalid Response Received from Server");
+        }
+    }
+
+    public void displayUserNotifications(List<Notification> notifications) {
+        if (notifications == null || notifications.isEmpty()) {
+            System.out.println("No notifications to display.");
+            return;
+        }
+
+        for (Notification notification : notifications) {
+            System.out.println("Notification ID: " + notification.getId());
+            System.out.println("User ID: " + notification.getUserId());
+            System.out.println("Notification Type ID: " + notification.getNotificationTypeId());
+            System.out.println("Notification Message: " + notification.getNotificationMessage());
+            System.out.println("Date and Time: " + notification.getDateTime());
+            System.out.println("Is Notification Read: " + (notification.getNotificationRead() ? "Yes" : "No"));
+            System.out.println("-----------------------------------");
+        }
     }
 
     public void voteForNextDayMenu(String vote) throws IOException {
