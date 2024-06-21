@@ -77,7 +77,7 @@ public class ClientHandler implements Runnable {
 
             case UPDATE_NEXT_DAY_FINAL_MENU -> response = dailyMenuController.updateDailyFoodMenu(request);
 
-            case VOTE_NEXT_DAY_MENU -> response = dailyRecommendationController.voteForNextDayMenu(request);
+            case VOTE_NEXT_DAY_MENU -> response = dailyRecommendationController.voteForNextDayMenu();
 
             case SEE_NOTIFICATIONS -> response = notificationController.getUserNotification(request);
 

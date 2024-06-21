@@ -2,10 +2,8 @@ package org.cafeteria.server;
 
 import org.cafeteria.client.Client;
 import org.cafeteria.server.controller.*;
-import org.cafeteria.server.model.SentimentResult;
 import org.cafeteria.server.network.ClientConnection;
 import org.cafeteria.server.network.JdbcConnection;
-import org.cafeteria.server.services.SentimentAnalysis;
 
 import java.io.IOException;
 import java.util.Properties;

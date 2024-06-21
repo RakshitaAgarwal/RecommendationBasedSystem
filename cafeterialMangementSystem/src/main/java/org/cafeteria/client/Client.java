@@ -91,6 +91,7 @@ public class Client {
 
     private static void createConnection() {
         connection = ServerConnection.getInstance(SERVER_ADDRESS, SERVER_PORT);
+        System.out.println("Server Got Connected");
     }
 
     private static User fetchUserCredentialsForLogin() {

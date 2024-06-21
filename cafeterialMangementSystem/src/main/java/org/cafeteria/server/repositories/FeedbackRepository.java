@@ -8,6 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.cafeteria.common.util.Utils.dateToTimestamp;
 import static org.cafeteria.common.util.Utils.timestampToDate;
 
 public class FeedbackRepository implements IFeedbackRepository {
@@ -17,8 +18,19 @@ public class FeedbackRepository implements IFeedbackRepository {
         connection = JdbcConnection.getConnection();
     }
     @Override
-    public boolean add(Feedback item) {
+    public boolean add(Feedback feedback) throws SQLException {
+        String query = "INSERT INTO feedback (user_id, menu_item_id, rating, comment, date_time) VALUES (?, ?, ?, ?, ?)";
 
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setInt(1, feedback.getUserId());
+            statement.setInt(2, feedback.getMenuItemId());
+            statement.setFloat(3, feedback.getRating());
+            statement.setString(4, feedback.getComment());
+            statement.setTimestamp(5, dateToTimestamp(feedback.getDateTime()));
+
+            statement.executeUpdate();
+        }
         return false;
     }
 
@@ -40,8 +52,25 @@ public class FeedbackRepository implements IFeedbackRepository {
     }
 
     @Override
-    public Feedback getById(int id) {
-        return null;
+    public Feedback getById(int id) throws SQLException {
+        String query = "SELECT * FROM feedback WHERE feedback_id = ?";
+        Feedback feedback = null;
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                feedback = new Feedback();
+                feedback.setFeedbackId(resultSet.getInt("id"));
+                feedback.setUserId(resultSet.getInt("userId"));
+                feedback.setMenuItemId(resultSet.getInt("menuItemId"));
+                feedback.setRating(resultSet.getFloat("rating"));
+                feedback.setComment(resultSet.getString("comment"));
+                feedback.setDateTime(resultSet.getDate("dateTime"));
+            }
+        }
+        return feedback;
     }
 
     @Override

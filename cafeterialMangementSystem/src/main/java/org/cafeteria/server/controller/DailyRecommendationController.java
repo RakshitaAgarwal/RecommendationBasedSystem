@@ -50,7 +50,7 @@ public class DailyRecommendationController {
         return response;
     }
 
-    public String voteForNextDayMenu(@NotNull ParsedRequest request) throws SQLException {
+    public String voteForNextDayMenu() throws SQLException {
         return "";
     }
 }

@@ -38,7 +38,7 @@ public class EmployeeService extends UserManager {
                     seeNotifications();
                     break;
                 case 3:
-                    voteForNextDayMenu("");
+                    voteForNextDayMenu();
                     break;
                 case 4:
                     provideFeedback("Feedback String");
@@ -119,9 +119,7 @@ public class EmployeeService extends UserManager {
         }
     }
 
-    public void voteForNextDayMenu(String vote) throws IOException {
-        String response = connection.sendData("VOTE_NEXT_DAY_MENU " + vote);
-        System.out.println(response);
+    public void voteForNextDayMenu() throws IOException {
     }
 
     public void provideFeedback(String feedback) throws IOException {
