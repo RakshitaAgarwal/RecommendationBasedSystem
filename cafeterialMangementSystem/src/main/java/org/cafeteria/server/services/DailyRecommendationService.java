@@ -3,7 +3,7 @@ package org.cafeteria.server.services;
 import org.cafeteria.common.model.DailyRecommendation;
 import org.cafeteria.common.model.MealTypeEnum;
 import org.cafeteria.common.model.MenuItem;
-import org.cafeteria.server.model.MenuItemScore;
+import org.cafeteria.common.model.MenuItemScore;
 import org.cafeteria.server.repositories.DailyRecommendationRepository;
 import org.cafeteria.server.repositories.interfaces.IDailyRecommendationRepository;
 import org.cafeteria.server.services.interfaces.IDailyRecommendationService;
@@ -12,6 +12,8 @@ import org.cafeteria.server.services.interfaces.IMenuService;
 
 import java.sql.SQLException;
 import java.util.*;
+
+import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 public class DailyRecommendationService implements IDailyRecommendationService {
     private static IDailyRecommendationRepository _dailyRecommendationRepository;
@@ -60,43 +62,28 @@ public class DailyRecommendationService implements IDailyRecommendationService {
 
 
     @Override
-    public Map<MealTypeEnum, List<MenuItem>> getDailyRecommendation() throws SQLException {
-        RecommendationEngine breakfastEngine = new RecommendationEngine(_feedbackService);
-        RecommendationEngine lunchEngine = new RecommendationEngine(_feedbackService);
-        RecommendationEngine dinnerEngine = new RecommendationEngine(_feedbackService);
-
-        List<MenuItem> menuItems = _menuService.getAll();
-
-        List<MenuItemScore> breakfastRecommendations = breakfastEngine.getTopRecommendedItems(menuItems, 5);
-        List<MenuItemScore> lunchRecommendations = lunchEngine.getTopRecommendedItems(menuItems, 5);
-        List<MenuItemScore> dinnerRecommendations = dinnerEngine.getTopRecommendedItems(menuItems, 5);
-
-        System.out.println("RecommendationEngine" + breakfastRecommendations.size());
-        List<MenuItem> breakfastRecommendationList = new ArrayList<>();
-        List<MenuItem> lunchRecommendationList = new ArrayList<>();
-        List<MenuItem> dinnerRecommendationList = new ArrayList<>();
-
-        for (MenuItemScore breakfastRecommendation : breakfastRecommendations) {
-            MenuItem menuItem = _menuService.getById(breakfastRecommendation.getMenuItemId());
-            breakfastRecommendationList.add(menuItem);
+    public Map<MealTypeEnum, List<MenuItemScore>> getDailyRecommendation() throws SQLException {
+        Map<MealTypeEnum, List<MenuItemScore>> recommendedItemsByMeal = new HashMap<>();
+        RecommendationEngine recommendationEngine = new RecommendationEngine(_feedbackService);
+        for (int i = 1; i <= MealTypeEnum.values().length; i++) {
+            List<MenuItem> mealTypeItems = _menuService.getByMealTypeId(i);
+            System.out.println("RecommendationEngine" + mealTypeItems.size());
+            List<MenuItemScore> mealRecommendations = recommendationEngine.getTopRecommendedItems(mealTypeItems, 5);
+            recommendedItemsByMeal.put(getEnumFromOrdinal(MealTypeEnum.class, i), mealRecommendations);
         }
-        for (MenuItemScore lunchRecommendation : lunchRecommendations) {
-            MenuItem menuItem = _menuService.getById(lunchRecommendation.getMenuItemId());
-            lunchRecommendationList.add(menuItem);
-        }
-        for (MenuItemScore dinnerRecommendation : dinnerRecommendations) {
-            MenuItem menuItem = _menuService.getById(dinnerRecommendation.getMenuItemId());
-            dinnerRecommendationList.add(menuItem);
-        }
-
-        Map<MealTypeEnum, List<MenuItem>> recommendedItemsByMeal = new HashMap<>();
-        recommendedItemsByMeal.put(MealTypeEnum.BREAKFAST ,breakfastRecommendationList);
-        recommendedItemsByMeal.put(MealTypeEnum.LUNCH, lunchRecommendationList);
-        recommendedItemsByMeal.put(MealTypeEnum.DINNER, dinnerRecommendationList);
-
         return recommendedItemsByMeal;
-
     }
+
+//    private List<MenuItem> getMealTypeRecommendations(RecommendationEngine recommendationEngine, List<MenuItem> mealTypeItems, int noOfRecommendation) throws SQLException {
+//        List<MenuItemScore> mealTypeRecommendations = recommendationEngine.getTopRecommendedItems(mealTypeItems, noOfRecommendation);
+//        System.out.println("RecommendationEngine" + mealTypeRecommendations.size());
+//        List<MenuItem> breakfastRecommendationList = new ArrayList<>();
+//        for (MenuItemScore breakfastRecommendation : mealTypeRecommendations) {
+//            MenuItem menuItem = _menuService.getById(breakfastRecommendation.getMenuItemId());
+//            breakfastRecommendationList.add(menuItem);
+//        }
+//        return breakfastRecommendationList;
+//    }
 
     @Override
     public void performSentimentAnalysis() {
@@ -109,20 +96,14 @@ public class DailyRecommendationService implements IDailyRecommendationService {
     }
 
     @Override
-    public boolean rollOutItemsForNextDayMenu(Map<MealTypeEnum, List<MenuItem>> nextDayMenuOptions) throws SQLException {
-        for (Map.Entry<MealTypeEnum, List<MenuItem>> entry : nextDayMenuOptions.entrySet()) {
-            MealTypeEnum mealType = entry.getKey();
-            List<MenuItem> menuItems = entry.getValue();
+    public boolean rollOutItemsForNextDayMenu(List<Integer> rolledOutMenuItemIds) throws SQLException {
+        for (int menuItemId : rolledOutMenuItemIds) {
+            DailyRecommendation dailyRecommendation = new DailyRecommendation();
+            dailyRecommendation.setMenuItemId(menuItemId);
+            dailyRecommendation.setVotes(0);
+            dailyRecommendation.setDateTime(new Date());
 
-            for (MenuItem menuItem : menuItems) {
-                DailyRecommendation dailyRecommendation = new DailyRecommendation();
-                dailyRecommendation.setMenuItemId(menuItem.getId());
-                dailyRecommendation.setMealTypeId(mealType.ordinal()+1);
-                dailyRecommendation.setVotes(0);
-                dailyRecommendation.setDateTime(new Date());
-
-                _dailyRecommendationRepository.add(dailyRecommendation);
-            }
+            _dailyRecommendationRepository.add(dailyRecommendation);
         }
         return true;
     }

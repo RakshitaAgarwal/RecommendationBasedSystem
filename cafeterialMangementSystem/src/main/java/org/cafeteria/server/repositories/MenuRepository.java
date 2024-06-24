@@ -136,4 +136,34 @@ public class MenuRepository implements IMenuRepository {
         }
         return null;
     }
+
+    @Override
+    public List<MenuItem> getByMealTypeId(int mealTypeId) throws SQLException {
+        String query = "SELECT * FROM menu WHERE mealTypeId = ?";
+        List<MenuItem> menuItems = new ArrayList<>();
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1,mealTypeId);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                float price = resultSet.getFloat("price");
+                boolean isAvailable = resultSet.getBoolean("isAvailable");
+                Timestamp lastTimePreparedTimestamp = resultSet.getTimestamp("lastTimePrepared");
+
+                MenuItem menuItem = new MenuItem();
+                menuItem.setId(id);
+                menuItem.setName(name);
+                menuItem.setPrice(price);
+                menuItem.setAvailable(isAvailable);
+                menuItem.setLastTimePrepared(timestampToDate(lastTimePreparedTimestamp));
+                menuItem.setMealTypeId(mealTypeId);
+
+                menuItems.add(menuItem);
+            }
+        }
+
+        return menuItems;
+    }
 }

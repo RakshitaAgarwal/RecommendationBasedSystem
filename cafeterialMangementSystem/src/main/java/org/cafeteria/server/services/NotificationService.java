@@ -2,6 +2,7 @@ package org.cafeteria.server.services;
 
 import org.cafeteria.common.model.Notification;
 import org.cafeteria.common.model.User;
+import org.cafeteria.common.model.UserRoleEnum;
 import org.cafeteria.server.repositories.NotificationRepository;
 import org.cafeteria.server.repositories.UserRepository;
 import org.cafeteria.server.repositories.interfaces.INotificationRepository;
@@ -9,7 +10,7 @@ import org.cafeteria.server.repositories.interfaces.IUserRepository;
 import org.cafeteria.server.services.interfaces.INotificationService;
 
 import java.sql.SQLException;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class NotificationService implements INotificationService {
@@ -23,10 +24,11 @@ public class NotificationService implements INotificationService {
 
     @Override
     public boolean sendNotificationToAllEmployees(Notification notification) throws SQLException {
-        List<User> users = _userRepository.GetAll();
-        for(User user:users) {
-            notification.setUserId(user.getId());
-            notification.setDateTime(Calendar.getInstance().getTime());
+        List<User> employees = _userRepository.getByUserRoleId(UserRoleEnum.EMP.ordinal()+1);
+        System.out.println("Employees Count: " + employees.get(0).getName());
+        for(User employee:employees) {
+            notification.setUserId(employee.getId());
+            notification.setDateTime(new Date());
             notification.setNotificationRead(false);
             _notificationRepository.add(notification);
         }

@@ -12,6 +12,14 @@ public class Utils {
         throw new IllegalArgumentException("Invalid ordinal for enum " + enumClass.getSimpleName() + ": " + ordinal);
     }
 
+    public static <E extends Enum<E>> int getOrdinalFromEnum(E enumValue) {
+        if (enumValue == null) {
+            throw new IllegalArgumentException("Enum value cannot be null");
+        }
+        return enumValue.ordinal();
+    }
+
+
     public static Timestamp dateToTimestamp(Date date) {
         if (date == null) {
             return null;

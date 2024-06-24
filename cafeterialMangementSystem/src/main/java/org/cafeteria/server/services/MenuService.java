@@ -48,4 +48,9 @@ public class MenuService implements IMenuService {
     public MenuItem getByName(String menuItemName) throws SQLException {
         return _menuRepository.getByName(menuItemName);
     }
+
+    @Override
+    public List<MenuItem> getByMealTypeId(int mealTypeId) throws SQLException {
+        return _menuRepository.getByMealTypeId(mealTypeId);
+    }
 }

@@ -59,6 +59,29 @@ public class UserRepository implements IUserRepository {
     }
 
     @Override
+    public List<User> getByUserRoleId(int userRoleId) throws SQLException {
+        String query = "SELECT * FROM user where userRoleId=?";
+        List<User> employees = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, userRoleId);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int userId = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                String password = resultSet.getString("password");
+
+                User user = new User();
+                user.setId(userId);
+                user.setName(name);
+                user.setUserRoleId(userRoleId);
+                user.setPassword(password);
+                employees.add(user);
+            }
+        }
+        return employees;
+    }
+
+    @Override
     public User getById(int id) throws SQLException {
         String query = "SELECT * FROM user WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -81,10 +104,6 @@ public class UserRepository implements IUserRepository {
                 }
             }
         }
-        return null;
-    }
-
-    public List<User> getByRole(UserRoleEnum userRole) throws SQLException {
         return null;
     }
 }

@@ -1,6 +1,5 @@
 package org.cafeteria.server.controller;
 
-import com.google.gson.reflect.TypeToken;
 import com.sun.istack.NotNull;
 import org.cafeteria.common.model.*;
 import org.cafeteria.server.services.DailyRecommendationService;
@@ -8,7 +7,6 @@ import org.cafeteria.server.services.NotificationService;
 import org.cafeteria.server.services.interfaces.IDailyRecommendationService;
 import org.cafeteria.server.services.interfaces.INotificationService;
 
-import java.lang.reflect.Type;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +22,8 @@ public class DailyRecommendationController {
         _notificationService = new NotificationService();
     }
 
-    public String getDailyRecommendation() throws SQLException {
-        Map<MealTypeEnum, List<MenuItem>> menuItemByMeals = _dailyRecommendationService.getDailyRecommendation();
+    public String getRecommendationsForNextDayMenu() throws SQLException {
+        Map<MealTypeEnum, List<MenuItemScore>> menuItemByMeals = _dailyRecommendationService.getDailyRecommendation();
         String response;
         if(menuItemByMeals != null) {
             response = createResponse(ResponseCode.OK, serializeMap(menuItemByMeals));
@@ -36,13 +34,11 @@ public class DailyRecommendationController {
     }
 
     public String rollOutNextDayMenuOptions(@NotNull ParsedRequest request) throws SQLException {
-        Type mapType = new TypeToken<Map<MealTypeEnum, List<MenuItem>>>() {
-        }.getType();
-        Map<MealTypeEnum, List<MenuItem>> nextDayMenuOptions = deserializeMap(request.getJsonData(), mapType);
+        List<Integer> nextDayMenuOptions = deserializeList(request.getJsonData(), Integer.class);
         String response;
         if(_dailyRecommendationService.rollOutItemsForNextDayMenu(nextDayMenuOptions)) {
-            response = createResponse(ResponseCode.OK, serializeMap(nextDayMenuOptions));
-            Notification notification = new Notification(4, "Next Day Menu options are updated. Please Cast your vote for the day");
+            response = createResponse(ResponseCode.OK, null);
+            Notification notification = new Notification(NotificationTypeEnum.NEXT_DAY_OPTIONS.ordinal(), "Next Day Menu options are updated. Please Cast your vote for the day");
             _notificationService.sendNotificationToAllEmployees(notification);
         } else {
             response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, null);
