@@ -21,9 +21,8 @@ public class FeedbackService implements IFeedbackService {
     }
 
     @Override
-    public boolean add(Feedback object) {
-
-        return false;
+    public boolean add(Feedback object) throws SQLException {
+        return _feedbackRepository.add(object);
     }
 
     @Override

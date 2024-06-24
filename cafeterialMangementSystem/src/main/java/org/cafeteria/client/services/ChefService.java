@@ -86,7 +86,7 @@ public class ChefService extends UserManager {
         System.out.println(response);
     }
 
-    public void rollOutNextDayMenuOptions() throws IOException {
+    public void rollOutNextDayMenuOptions() {
         Map<MealTypeEnum, List<MenuItem>> recommendedItems = getRecommendationsForNextDayMenu();
         displayRecommendations(recommendedItems);
         Map<MealTypeEnum, List<MenuItem>> rolledOutItems = getRolledOutItems(recommendedItems, 5);

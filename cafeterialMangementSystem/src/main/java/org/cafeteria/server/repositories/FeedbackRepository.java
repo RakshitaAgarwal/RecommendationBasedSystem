@@ -19,19 +19,17 @@ public class FeedbackRepository implements IFeedbackRepository {
     }
     @Override
     public boolean add(Feedback feedback) throws SQLException {
-        String query = "INSERT INTO feedback (user_id, menu_item_id, rating, comment, date_time) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO feedback (userId, menuItemId, rating, comment, dateTime) VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-
             statement.setInt(1, feedback.getUserId());
             statement.setInt(2, feedback.getMenuItemId());
             statement.setFloat(3, feedback.getRating());
             statement.setString(4, feedback.getComment());
             statement.setTimestamp(5, dateToTimestamp(feedback.getDateTime()));
 
-            statement.executeUpdate();
+            return statement.executeUpdate()>0;
         }
-        return false;
     }
 
     @Override

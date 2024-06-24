@@ -1,12 +1,14 @@
 package org.cafeteria.client.services;
 
 import com.google.gson.JsonSyntaxException;
+import com.sun.istack.NotNull;
 import org.cafeteria.client.global.GlobalData;
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.common.customException.CustomExceptions;
 import org.cafeteria.common.model.*;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -31,21 +33,14 @@ public class EmployeeService extends UserManager {
             sc.nextLine();
 
             switch (choice) {
-                case 1:
-                    displayMenuFromServer();
-                    break;
-                case 2:
-                    seeNotifications();
-                    break;
-                case 3:
-                    voteForNextDayMenu();
-                    break;
-                case 4:
-                    provideFeedback("Feedback String");
-                    break;
-                case 5:
+                case 1 -> displayMenuFromServer();
+                case 2 -> seeNotifications();
+                case 3 -> voteForNextDayMenu();
+                case 4 -> provideFeedback();
+                case 5 -> {
                     connection.close();
                     return;
+                }
             }
         }
     }
@@ -85,7 +80,7 @@ public class EmployeeService extends UserManager {
         System.out.println("------------------------------");
     }
 
-    public void seeNotifications() throws IOException {
+    public void seeNotifications() {
         String request = createRequest(UserAction.SEE_NOTIFICATIONS, serializeData(GlobalData.loggedInUser));
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
@@ -109,6 +104,7 @@ public class EmployeeService extends UserManager {
         }
 
         for (Notification notification : notifications) {
+            System.out.println("-----------------------------------");
             System.out.println("Notification ID: " + notification.getId());
             System.out.println("User ID: " + notification.getUserId());
             System.out.println("Notification Type ID: " + notification.getNotificationTypeId());
@@ -119,11 +115,63 @@ public class EmployeeService extends UserManager {
         }
     }
 
-    public void voteForNextDayMenu() throws IOException {
+    public void voteForNextDayMenu() {
     }
 
-    public void provideFeedback(String feedback) throws IOException {
-        String response = connection.sendData("EMPLOYEE_FEEDBACK " + feedback);
-        System.out.println(response);
+    public void provideFeedback() {
+        Feedback feedback = takeUserFeedback();
+        if( feedback != null) {
+            String request = createRequest(UserAction.PROVIDE_FEEDBACK, serializeData(feedback));
+            System.out.println("request that is sent to server: " + request);
+            String response = connection.sendData(request);
+            System.out.println("response that is received from server: " + response);
+            try {
+                ParsedResponse parsedResponse = parseResponse(response);
+                ResponseCode responseCode = parsedResponse.getResponseCode();
+                if (responseCode == ResponseCode.OK)
+                    System.out.println("Feedback updated Successfully.");
+                else System.out.println("Some Error Occurred!!");
+            } catch (CustomExceptions.InvalidResponseException e) {
+                System.out.println("Invalid Response Received from Server");
+            }
+        }
+    }
+
+    private Feedback takeUserFeedback() {
+        Feedback feedback = new Feedback();
+        System.out.println("Enter the food item you want to provide feedback for:");
+        String foodItemName = sc.nextLine();
+        MenuItem menuItem = getFoodItemByName(foodItemName);
+        if(menuItem != null) {
+            System.out.println("Enter Feedback/Comment for " + foodItemName);
+            String comment = sc.nextLine();
+            System.out.println("Enter Rating for the " + foodItemName + " out of 5");
+            float rating = sc.nextFloat();
+            feedback.setMenuItemId(menuItem.getId());
+            feedback.setComment(comment);
+            feedback.setRating(rating);
+            feedback.setUserId(GlobalData.loggedInUser.getId());
+            feedback.setDateTime(new Date());
+            return feedback;
+        } else {
+            System.out.println("No Such food item exists in the menu");
+        }
+        return null;
+    }
+
+    private MenuItem getFoodItemByName(@NotNull String name) {
+        String request = createRequest(UserAction.GET_MENU_ITEM_BY_NAME, serializeData(name));
+        System.out.println("request that is sent to server: " + request);
+        String response = connection.sendData(request);
+        System.out.println("response that is received from server: " + response);
+        try {
+            ParsedResponse parsedResponse = parseResponse(response);
+            ResponseCode responseCode = parsedResponse.getResponseCode();
+            if (responseCode == ResponseCode.OK)
+                return deserializeData(parsedResponse.getJsonData(), MenuItem.class);
+        } catch (CustomExceptions.InvalidResponseException e) {
+            System.out.println("Invalid Response Received from Server");
+        }
+        return null;
     }
 }
