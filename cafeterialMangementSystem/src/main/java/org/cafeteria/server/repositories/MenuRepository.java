@@ -20,12 +20,12 @@ public class MenuRepository implements IMenuRepository {
 
     @Override
     public boolean add(MenuItem item) throws SQLException {
-        String query = "INSERT INTO menu (name, price, isAvailable) VALUES (?, ?, ?);";
+        String query = "INSERT INTO menu (name, price, isAvailable, mealTypeId) VALUES (?, ?, ?, ?);";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, item.getName());
             statement.setFloat(2, item.getPrice());
             statement.setBoolean(3, item.isAvailable());
-
+            statement.setInt(4, item.getMealTypeId());
             return statement.executeUpdate() > 0;
         }
     }
@@ -42,12 +42,13 @@ public class MenuRepository implements IMenuRepository {
 
     @Override
     public boolean update(MenuItem item) throws SQLException {
-        String query = "UPDATE menu SET price = ?, isAvailable = ?, lastTimePrepared = ? WHERE id = ?";
+        String query = "UPDATE menu SET price = ?, isAvailable = ?, lastTimePrepared = ?, mealTypeId = ? WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setFloat(1, item.getPrice());
             statement.setBoolean(2, item.isAvailable());
             statement.setTimestamp(3, dateToTimestamp(item.getLastTimePrepared()));
-            statement.setInt(4, item.getId());
+            statement.setInt(4, item.getMealTypeId());
+            statement.setInt(5, item.getId());
             return statement.executeUpdate() > 0;
         }
     }
@@ -66,6 +67,7 @@ public class MenuRepository implements IMenuRepository {
                 float price = resultSet.getFloat("price");
                 boolean isAvailable = resultSet.getBoolean("isAvailable");
                 Timestamp lastTimePreparedTimestamp = resultSet.getTimestamp("lastTimePrepared");
+                int mealTypeId = resultSet.getInt("mealTypeId");
 
                 MenuItem menuItem = new MenuItem();
                 menuItem.setId(id);
@@ -73,6 +75,7 @@ public class MenuRepository implements IMenuRepository {
                 menuItem.setPrice(price);
                 menuItem.setAvailable(isAvailable);
                 menuItem.setLastTimePrepared(timestampToDate(lastTimePreparedTimestamp));
+                menuItem.setMealTypeId(mealTypeId);
 
                 menuItems.add(menuItem);
             }
@@ -95,6 +98,7 @@ public class MenuRepository implements IMenuRepository {
                     float price = resultSet.getFloat("price");
                     boolean isAvailable = resultSet.getBoolean("isAvailable");
                     Timestamp lastTimePreparedTimestamp = resultSet.getTimestamp("lastTimePrepared");
+                    int mealTypeId = resultSet.getInt("mealTypeId");
 
                     menuItem = new MenuItem();
                     menuItem.setId(id);
@@ -102,6 +106,7 @@ public class MenuRepository implements IMenuRepository {
                     menuItem.setPrice(price);
                     menuItem.setAvailable(isAvailable);
                     menuItem.setLastTimePrepared(timestampToDate(lastTimePreparedTimestamp));
+                    menuItem.setMealTypeId(mealTypeId);
                 }
             }
         }
@@ -122,8 +127,10 @@ public class MenuRepository implements IMenuRepository {
                 menuItem.setName(resultSet.getString("name"));
                 menuItem.setPrice(resultSet.getFloat("price"));
                 menuItem.setAvailable(resultSet.getBoolean("isAvailable"));
+                menuItem.setMealTypeId(resultSet.getInt("mealTypeId"));
                 Timestamp timestamp = resultSet.getTimestamp("lastTimePrepared");
                 menuItem.setLastTimePrepared(timestampToDate(timestamp));
+
                 return menuItem;
             }
         }

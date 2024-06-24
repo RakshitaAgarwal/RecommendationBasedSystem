@@ -7,15 +7,26 @@ public class MenuItem {
     private String name;
     private float price;
     private boolean isAvailable;
+    private int mealTypeId;
+
+    public int getMealTypeId() {
+        return mealTypeId;
+    }
+
+    public void setMealTypeId(int mealTypeId) {
+        this.mealTypeId = mealTypeId;
+    }
+
     private Date lastTimePrepared = null;
 
     public MenuItem() {}
 
-    public MenuItem(String name, float price, boolean isAvailable) {
+    public MenuItem(String name, float price, boolean isAvailable, int mealTypeId) {
         this.id = -1;
         this.name = name;
         this.price = price;
         this.isAvailable = isAvailable;
+        this.mealTypeId = mealTypeId;
     }
 
     public int getId() {

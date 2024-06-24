@@ -2,7 +2,10 @@ package org.cafeteria.client.services;
 
 import com.google.gson.JsonSyntaxException;
 import com.sun.istack.NotNull;
+
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
+import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
+
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
@@ -61,12 +64,12 @@ public class AdminService extends UserManager {
     }
 
     @Override
-    public void displayMenuFromServer() throws IOException{
+    public void displayMenuFromServer() throws IOException {
         String request = createRequest(UserAction.SHOW_MENU, null);
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
         System.out.println("response that is received from server: " + response);
-        if( response != null) {
+        if (response != null) {
             try {
                 ParsedResponse parsedResponse = parseResponse(response);
                 ResponseCode responseCode = parsedResponse.getResponseCode();
@@ -90,7 +93,7 @@ public class AdminService extends UserManager {
         System.out.println();
         System.out.println("--------Food Item Menu--------");
         for (MenuItem item : menu) {
-            System.out.println(item.getName() + "  " + item.getPrice() + " Rs  Available Status: " + item.isAvailable());
+            System.out.println(item.getName() + "  " + item.getPrice() + " Rs  Available Status: " + item.isAvailable() + " Meal Type: " + getEnumFromOrdinal(MealTypeEnum.class, item.getMealTypeId()));
         }
         System.out.println("------------------------------");
     }
@@ -116,9 +119,11 @@ public class AdminService extends UserManager {
         String name = sc.nextLine();
         System.out.println("Enter price of the food item:");
         float price = sc.nextFloat();
-        System.out.print("Enter availability of the food item (true/false): ");
+        System.out.println("Enter availability of the food item (true/false):");
         boolean isAvailable = sc.nextBoolean();
-        return new MenuItem(name, price, isAvailable);
+        System.out.println("Enter the Meal type of the food item: 1. Lunch, 2. Breakfast, 3. Dinner");
+        int mealTypeId = sc.nextInt();
+        return new MenuItem(name, price, isAvailable, mealTypeId);
     }
 
     private MenuItem getFoodItemByName(@NotNull String name) {
@@ -162,7 +167,8 @@ public class AdminService extends UserManager {
             System.out.println("1. Update Price");
             System.out.println("2. Update Availability");
             System.out.println("3. Update Last Time Prepared");
-            System.out.print("Choose an option to update (1/2/3): ");
+            System.out.println("4. Update Meal Type");
+            System.out.print("Choose an option to update (1/2/3/4): ");
             int option = sc.nextInt();
 
             switch (option) {
@@ -186,6 +192,11 @@ public class AdminService extends UserManager {
                     } catch (ParseException e) {
                         System.out.println("Invalid date format.");
                     }
+                }
+                case 4 -> {
+                    System.out.println("Enter the new Meal Type of the food Item (1. Lunch, 2. Breakfast, 3. Dinner):");
+                    int mealTypeId = sc.nextInt();
+                    menuItem.setMealTypeId(mealTypeId);
                 }
                 default -> System.out.println("Invalid choice.");
             }
