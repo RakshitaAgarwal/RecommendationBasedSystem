@@ -8,6 +8,7 @@ import org.cafeteria.server.services.interfaces.IDailyRecommendationService;
 import org.cafeteria.server.services.interfaces.INotificationService;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +39,7 @@ public class DailyRecommendationController {
         String response;
         if(_dailyRecommendationService.rollOutItemsForNextDayMenu(nextDayMenuOptions)) {
             response = createResponse(ResponseCode.OK, null);
-            Notification notification = new Notification(NotificationTypeEnum.NEXT_DAY_OPTIONS.ordinal(), "Next Day Menu options are updated. Please Cast your vote for the day");
+            Notification notification = new Notification(NotificationTypeEnum.NEXT_DAY_OPTIONS.ordinal(), "Next Day Menu options are updated. Please Cast your vote for the day", new Date());
             _notificationService.sendNotificationToAllEmployees(notification);
         } else {
             response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, null);

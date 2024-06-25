@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.cafeteria.common.util.Utils.dateToTimestamp;
+import static org.cafeteria.common.util.Utils.timestampToDate;
 
 public class NotificationRepository implements INotificationRepository {
     private Connection connection;
@@ -60,10 +61,12 @@ public class NotificationRepository implements INotificationRepository {
              ResultSet resultSet = statement.executeQuery()) {
             List<Notification> notifications = new ArrayList<>();
             while (resultSet.next()) {
-                Notification notification = new Notification(resultSet.getInt("notificationTypeId"), resultSet.getString("notificationMessage"));
+                Notification notification = new Notification();
+                notification.setNotificationTypeId(resultSet.getInt("notificationTypeId"));
+                notification.setNotificationMessage(resultSet.getString("notificationMessage"));
                 notification.setId(resultSet.getInt("id"));
                 notification.setUserId(resultSet.getInt("userId"));
-                notification.setDateTime(resultSet.getTimestamp("dateTime"));
+                notification.setDateTime(timestampToDate(resultSet.getTimestamp("dateTime")));
                 notification.setNotificationRead(resultSet.getBoolean("isNotificationRead"));
                 notifications.add(notification);
             }
@@ -83,7 +86,7 @@ public class NotificationRepository implements INotificationRepository {
                     notification.setNotificationTypeId(resultSet.getInt("notificationTypeId"));
                     notification.setId(resultSet.getInt("id"));
                     notification.setUserId(resultSet.getInt("userId"));
-                    notification.setDateTime(resultSet.getTimestamp("dateTime"));
+                    notification.setDateTime(timestampToDate(resultSet.getTimestamp("dateTime")));
                     notification.setNotificationRead(resultSet.getBoolean("isNotificationRead"));
                     return notification;
                 }
@@ -100,7 +103,9 @@ public class NotificationRepository implements INotificationRepository {
             try (ResultSet resultSet = statement.executeQuery()) {
                 List<Notification> notifications = new ArrayList<>();
                 while (resultSet.next()) {
-                    Notification notification = new Notification(resultSet.getInt("notificationTypeId"), resultSet.getString("notificationMessage"));
+                    Notification notification = new Notification();
+                    notification.setNotificationTypeId(resultSet.getInt("notificationTypeId"));
+                    notification.setNotificationMessage(resultSet.getString("notificationMessage"));
                     notification.setId(resultSet.getInt("id"));
                     notification.setUserId(resultSet.getInt("userId"));
                     notification.setDateTime(resultSet.getTimestamp("dateTime"));

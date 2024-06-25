@@ -5,22 +5,19 @@ import java.util.Date;
 public class Notification {
     private int id;
     private int userId;
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    public Notification() {
-
-    }
     private int notificationTypeId;
     private String notificationMessage;
     private Date dateTime;
     private Boolean isNotificationRead;
+
+    public Notification() {}
+
+    public Notification(int notificationTypeId, String notificationMessage, Date dateTime) {
+        this.notificationTypeId = notificationTypeId;
+        this.notificationMessage = notificationMessage;
+        this.isNotificationRead = false;
+        this.dateTime = dateTime;
+    }
 
     public int getId() {
         return id;
@@ -30,9 +27,12 @@ public class Notification {
         this.id = id;
     }
 
-    public Notification(int notificationTypeId, String notificationMessage) {
-        this.notificationTypeId = notificationTypeId;
-        this.notificationMessage = notificationMessage;
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public int getNotificationTypeId() {

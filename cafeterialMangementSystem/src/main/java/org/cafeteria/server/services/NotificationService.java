@@ -28,8 +28,6 @@ public class NotificationService implements INotificationService {
         System.out.println("Employees Count: " + employees.get(0).getName());
         for(User employee:employees) {
             notification.setUserId(employee.getId());
-            notification.setDateTime(new Date());
-            notification.setNotificationRead(false);
             _notificationRepository.add(notification);
         }
         return true;
