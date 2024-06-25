@@ -46,6 +46,10 @@ public class DailyRecommendationController {
         return response;
     }
 
+    public String getNextDayMenuOptions(@NotNull ParsedRequest request) throws SQLException {
+        String response = "";
+        return response;
+    }
     public String voteForNextDayMenu() throws SQLException {
         return "";
     }

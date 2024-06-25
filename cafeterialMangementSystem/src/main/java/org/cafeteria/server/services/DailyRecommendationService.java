@@ -74,22 +74,6 @@ public class DailyRecommendationService implements IDailyRecommendationService {
         return recommendedItemsByMeal;
     }
 
-//    private List<MenuItem> getMealTypeRecommendations(RecommendationEngine recommendationEngine, List<MenuItem> mealTypeItems, int noOfRecommendation) throws SQLException {
-//        List<MenuItemScore> mealTypeRecommendations = recommendationEngine.getTopRecommendedItems(mealTypeItems, noOfRecommendation);
-//        System.out.println("RecommendationEngine" + mealTypeRecommendations.size());
-//        List<MenuItem> breakfastRecommendationList = new ArrayList<>();
-//        for (MenuItemScore breakfastRecommendation : mealTypeRecommendations) {
-//            MenuItem menuItem = _menuService.getById(breakfastRecommendation.getMenuItemId());
-//            breakfastRecommendationList.add(menuItem);
-//        }
-//        return breakfastRecommendationList;
-//    }
-
-    @Override
-    public void performSentimentAnalysis() {
-
-    }
-
     @Override
     public void voteForNextDayMenu() {
 
@@ -101,7 +85,7 @@ public class DailyRecommendationService implements IDailyRecommendationService {
             DailyRecommendation dailyRecommendation = new DailyRecommendation();
             dailyRecommendation.setMenuItemId(menuItemId);
             dailyRecommendation.setVotes(0);
-            dailyRecommendation.setDateTime(new Date());
+            dailyRecommendation.setRollOutDate(new Date());
 
             _dailyRecommendationRepository.add(dailyRecommendation);
         }

@@ -116,6 +116,23 @@ public class EmployeeService extends UserManager {
     }
 
     public void voteForNextDayMenu() {
+        getRolledOutMenuItems();
+        displayRolledOutMenuItems();
+        chooseItemToVote();
+        voteForMenuItem();
+    }
+
+    private void getRolledOutMenuItems() {
+//        String request = createRequest(UserAction.GET_NEXT_DAY_MENU_OPTIONS, )
+    }
+
+    private void displayRolledOutMenuItems() {
+    }
+
+    private void chooseItemToVote() {
+    }
+
+    private void voteForMenuItem() {
     }
 
     public void provideFeedback() {

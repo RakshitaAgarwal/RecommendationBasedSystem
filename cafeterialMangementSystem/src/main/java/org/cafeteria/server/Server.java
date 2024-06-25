@@ -16,7 +16,7 @@ public class Server {
     public static FeedbackController feedbackController;
     public static DailyRecommendationController dailyRecommendationController;
     public static NotificationController notificationController;
-    public static DailyMenuController dailyMenuController;
+    public static PreparedMenuController preparedMenuController;
 
     public static void main(String[] args) {
         initDatabaseProperties();
@@ -33,7 +33,7 @@ public class Server {
         feedbackController = new FeedbackController();
         dailyRecommendationController = new DailyRecommendationController();
         notificationController = new NotificationController();
-        dailyMenuController = new DailyMenuController();
+        preparedMenuController = new PreparedMenuController();
     }
 
 

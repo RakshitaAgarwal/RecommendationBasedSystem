@@ -2,11 +2,10 @@ package org.cafeteria.common.model;
 
 import java.util.Date;
 
-public class DailyMenu {
+public class PreparedMenu {
     private int id;
     private int menuItemId;
-    private int mealTypeId;
-    private Date dateTime;
+    private Date date;
 
     public int getId() {
         return id;
@@ -24,19 +23,11 @@ public class DailyMenu {
         this.menuItemId = menuItemId;
     }
 
-    public int getMealTypeId() {
-        return mealTypeId;
+    public Date getDate() {
+        return date;
     }
 
-    public void setMealTypeId(int mealTypeId) {
-        this.mealTypeId = mealTypeId;
-    }
-
-    public Date getDateTime() {
-        return dateTime;
-    }
-
-    public void setDateTime(Date dateTime) {
-        this.dateTime = dateTime;
+    public void setDate(Date date) {
+        this.date = date;
     }
 }

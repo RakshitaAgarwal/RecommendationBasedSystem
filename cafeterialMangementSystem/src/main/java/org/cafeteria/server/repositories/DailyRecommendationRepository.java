@@ -18,11 +18,11 @@ public class DailyRecommendationRepository implements IDailyRecommendationReposi
     }
     @Override
     public boolean add(DailyRecommendation dailyRecommendation) throws SQLException {
-        String query = "INSERT INTO DailyRecommendation (menuItemId, votes, dateTime) VALUES (?, ?, ?);";
+        String query = "INSERT INTO DailyRecommendation (menuItemId, votes, rollOutDate) VALUES (?, ?, ?);";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, dailyRecommendation.getMenuItemId());
             statement.setInt(2, dailyRecommendation.getVotes());
-            statement.setTimestamp(3, dateToTimestamp(dailyRecommendation.getDateTime()));
+            statement.setTimestamp(3, dateToTimestamp(dailyRecommendation.getRollOutDate()));
             return statement.executeUpdate() > 0;
         }
     }
