@@ -85,7 +85,7 @@ public class DailyRecommendationService implements IDailyRecommendationService {
             DailyRecommendation dailyRecommendation = new DailyRecommendation();
             dailyRecommendation.setMenuItemId(menuItemId);
             dailyRecommendation.setVotes(0);
-            dailyRecommendation.setRollOutDate(new Date());
+            dailyRecommendation.setRolledOutDate(new Date());
 
             _dailyRecommendationRepository.add(dailyRecommendation);
         }

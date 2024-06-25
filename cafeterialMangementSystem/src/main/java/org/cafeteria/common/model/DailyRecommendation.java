@@ -7,7 +7,7 @@ public class DailyRecommendation {
     private int menuItemId;
     private int mealTypeId;
     private int votes;
-    private Date rollOutDate;
+    private Date rolledOutDate;
 
     public int getId() {
         return id;
@@ -41,11 +41,11 @@ public class DailyRecommendation {
         this.votes = votes;
     }
 
-    public Date getRollOutDate() {
-        return rollOutDate;
+    public Date getRolledOutDate() {
+        return rolledOutDate;
     }
 
-    public void setRollOutDate(Date rollOutDate) {
-        this.rollOutDate = rollOutDate;
+    public void setRolledOutDate(Date rolledOutDate) {
+        this.rolledOutDate = rolledOutDate;
     }
 }

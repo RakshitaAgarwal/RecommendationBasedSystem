@@ -1,0 +1,1 @@
+ALTER TABLE DailyRecommendation CHANGE dateTime rolledOutDate DATE;
