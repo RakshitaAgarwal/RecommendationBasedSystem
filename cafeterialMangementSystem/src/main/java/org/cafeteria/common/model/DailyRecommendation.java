@@ -5,7 +5,6 @@ import java.util.Date;
 public class DailyRecommendation {
     private int id;
     private int menuItemId;
-    private int mealTypeId;
     private int votes;
     private Date rolledOutDate;
 
@@ -23,14 +22,6 @@ public class DailyRecommendation {
 
     public void setMenuItemId(int menuItemId) {
         this.menuItemId = menuItemId;
-    }
-
-    public int getMealTypeId() {
-        return mealTypeId;
-    }
-
-    public void setMealTypeId(int mealTypeId) {
-        this.mealTypeId = mealTypeId;
     }
 
     public int getVotes() {

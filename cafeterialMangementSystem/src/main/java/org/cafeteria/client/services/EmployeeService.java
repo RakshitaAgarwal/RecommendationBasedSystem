@@ -1,6 +1,7 @@
 package org.cafeteria.client.services;
 
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 import com.sun.istack.NotNull;
 import org.cafeteria.client.global.GlobalData;
 import org.cafeteria.client.network.ServerConnection;
@@ -8,10 +9,13 @@ import org.cafeteria.common.customException.CustomExceptions;
 import org.cafeteria.common.model.*;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
+import static org.cafeteria.client.services.ChefService.displayMenuItemsRecommendationByMealType;
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 
 public class EmployeeService extends UserManager {
@@ -116,14 +120,29 @@ public class EmployeeService extends UserManager {
     }
 
     public void voteForNextDayMenu() {
-        getRolledOutMenuItems();
-        displayRolledOutMenuItems();
+        Map<MealTypeEnum, List<MenuItemRecommendation>> rolledOutItems = getRolledOutMenuItems();
+        displayMenuItemsRecommendationByMealType(rolledOutItems);
         chooseItemToVote();
         voteForMenuItem();
     }
 
-    private void getRolledOutMenuItems() {
-//        String request = createRequest(UserAction.GET_NEXT_DAY_MENU_OPTIONS, )
+    private Map<MealTypeEnum, List<MenuItemRecommendation>> getRolledOutMenuItems() {
+        String request = createRequest(UserAction.GET_NEXT_DAY_MENU_OPTIONS, null);
+        System.out.println("request that is sent to server: " + request);
+        String response = connection.sendData(request);
+        System.out.println("response that is received from server: " + response);
+        try {
+            ParsedResponse parsedResponse = parseResponse(response);
+            ResponseCode responseCode = parsedResponse.getResponseCode();
+            if (responseCode == ResponseCode.OK) {
+                Type mapType = new TypeToken<Map<MealTypeEnum, List<MenuItemRecommendation>>>() {
+                }.getType();
+                return deserializeMap(parsedResponse.getJsonData(), mapType);
+            } else System.out.println("Some Error Occurred while getting Rolled Out Items!!");
+        } catch (CustomExceptions.InvalidResponseException e) {
+            System.out.println("Invalid Response Received from Server");
+        }
+        return null;
     }
 
     private void displayRolledOutMenuItems() {

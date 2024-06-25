@@ -6,7 +6,9 @@ import org.cafeteria.server.repositories.interfaces.IMenuRepository;
 import org.cafeteria.server.services.interfaces.IMenuService;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MenuService implements IMenuService {
     private static IMenuRepository _menuRepository;
@@ -14,6 +16,21 @@ public class MenuService implements IMenuService {
     public MenuService() {
         _menuRepository = new MenuRepository();
     }
+
+    public static List<MenuItem> filterMenuItemsByLastPrepared(List<MenuItem> menuItems) {
+        Date dateOfOneWeekAgo = new Date(System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000L);
+
+        return menuItems.stream()
+                .filter(item -> item.getLastTimePrepared() == null || item.getLastTimePrepared().before(dateOfOneWeekAgo))
+                .collect(Collectors.toList());
+    }
+
+    public static List<MenuItem> filterMenuItemBasedOnAvailability(List<MenuItem> menuItems) {
+        return menuItems.stream()
+                .filter(MenuItem::isAvailable)
+                .collect(Collectors.toList());
+    }
+
     @Override
     public boolean validate(MenuItem item) {
         return false;

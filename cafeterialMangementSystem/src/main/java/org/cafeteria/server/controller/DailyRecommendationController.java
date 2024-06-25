@@ -24,7 +24,7 @@ public class DailyRecommendationController {
     }
 
     public String getRecommendationsForNextDayMenu() throws SQLException {
-        Map<MealTypeEnum, List<MenuItemScore>> menuItemByMeals = _dailyRecommendationService.getDailyRecommendation();
+        Map<MealTypeEnum, List<MenuItemRecommendation>> menuItemByMeals = _dailyRecommendationService.getDailyRecommendation();
         String response;
         if(menuItemByMeals != null) {
             response = createResponse(ResponseCode.OK, serializeMap(menuItemByMeals));
@@ -48,9 +48,16 @@ public class DailyRecommendationController {
     }
 
     public String getNextDayMenuOptions(@NotNull ParsedRequest request) throws SQLException {
-        String response = "";
+        Map<MealTypeEnum, List<MenuItemRecommendation>> recommendations = _dailyRecommendationService.getNextDayMenuOptions();
+        String response;
+        if(recommendations != null) {
+            response = createResponse(ResponseCode.OK, serializeMap(recommendations));
+        } else {
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, null);
+        }
         return response;
     }
+
     public String voteForNextDayMenu() throws SQLException {
         return "";
     }

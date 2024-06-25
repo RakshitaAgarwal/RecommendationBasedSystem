@@ -9,7 +9,6 @@ import org.cafeteria.common.model.*;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 
@@ -88,43 +87,49 @@ public class ChefService extends UserManager {
     }
 
     public void rollOutNextDayMenuOptions() {
-        Map<MealTypeEnum, List<MenuItemScore>> recommendedItems = getRecommendationsForNextDayMenu();
-        displayRecommendations(recommendedItems);
-        List<Integer> rolledOutItems = getTopRolledOutMenuItemIds(recommendedItems, 5);
-
-        String request = createRequest(UserAction.ROLL_OUT_NEXT_DAY_MENU_OPTIONS, serializeData(rolledOutItems));
-        System.out.println("request that is sent to server: " + request);
-        String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
-        try {
-            ParsedResponse parsedResponse = parseResponse(response);
-            ResponseCode responseCode = parsedResponse.getResponseCode();
-            if (responseCode == ResponseCode.OK) {
-                System.out.println("Items rolled out successfully for voting");
-            } else System.out.println("Some Error Occurred!!");
-        } catch (CustomExceptions.InvalidResponseException e) {
-            System.out.println("Invalid Response Received from Server");
+        Map<MealTypeEnum, List<MenuItemRecommendation>> recommendedItems = getRecommendationsForNextDayMenu();
+        List<Integer> rolledOutItems = new ArrayList<>();
+        if(recommendedItems==null || recommendedItems.isEmpty()) {
+            // init random rolledoutitems
+        } else {
+            displayMenuItemsRecommendationByMealType(recommendedItems);
+            rolledOutItems = getTopRolledOutMenuItemIds(recommendedItems, 5);
+        }
+        if(!rolledOutItems.isEmpty()) {
+            String request = createRequest(UserAction.ROLL_OUT_NEXT_DAY_MENU_OPTIONS, serializeData(rolledOutItems));
+            System.out.println("request that is sent to server: " + request);
+            String response = connection.sendData(request);
+            System.out.println("response that is received from server: " + response);
+            try {
+                ParsedResponse parsedResponse = parseResponse(response);
+                ResponseCode responseCode = parsedResponse.getResponseCode();
+                if (responseCode == ResponseCode.OK) {
+                    System.out.println("Items rolled out successfully for voting");
+                } else System.out.println("Some Error Occurred!!");
+            } catch (CustomExceptions.InvalidResponseException e) {
+                System.out.println("Invalid Response Received from Server");
+            }
         }
     }
 
-    public static List<Integer> getTopRolledOutMenuItemIds(Map<MealTypeEnum, List<MenuItemScore>> menuItemScoresMap, int topCount) {
+    public static List<Integer> getTopRolledOutMenuItemIds(Map<MealTypeEnum, List<MenuItemRecommendation>> menuItemScoresMap, int topCount) {
         List<Integer> menuItemIds = new ArrayList<>();
 
-        for (Map.Entry<MealTypeEnum, List<MenuItemScore>> entry : menuItemScoresMap.entrySet()) {
-            List<MenuItemScore> menuItemScores = entry.getValue();
+        for (Map.Entry<MealTypeEnum, List<MenuItemRecommendation>> entry : menuItemScoresMap.entrySet()) {
+            List<MenuItemRecommendation> menuItemRecommendations = entry.getValue();
 
-            List<MenuItemScore> topMenuItemScores = menuItemScores.stream()
+            List<MenuItemRecommendation> topMenuItemRecommendations = menuItemRecommendations.stream()
                     .limit(topCount)
-                    .collect(Collectors.toList());
-            for (MenuItemScore menuItemScore : topMenuItemScores) {
-                menuItemIds.add(menuItemScore.getMenuItemId());
+                    .toList();
+            for (MenuItemRecommendation menuItemRecommendation : topMenuItemRecommendations) {
+                menuItemIds.add(menuItemRecommendation.getMenuItemId());
             }
         }
 
         return menuItemIds;
     }
 
-    private Map<MealTypeEnum, List<MenuItemScore>> getRecommendationsForNextDayMenu() {
+    private Map<MealTypeEnum, List<MenuItemRecommendation>> getRecommendationsForNextDayMenu() {
         String request = createRequest(UserAction.GET_RECCOMENDATION_FOR_NEXT_DAY_MENU, null);
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
@@ -133,10 +138,9 @@ public class ChefService extends UserManager {
             ParsedResponse parsedResponse = parseResponse(response);
             ResponseCode responseCode = parsedResponse.getResponseCode();
             if (responseCode == ResponseCode.OK) {
-                Type mapType = new TypeToken<Map<MealTypeEnum, List<MenuItemScore>>>() {
+                Type mapType = new TypeToken<Map<MealTypeEnum, List<MenuItemRecommendation>>>() {
                 }.getType();
-                Map<MealTypeEnum, List<MenuItemScore>> recommendedItems = deserializeMap(parsedResponse.getJsonData(), mapType);
-                return recommendedItems;
+                return deserializeMap(parsedResponse.getJsonData(), mapType);
             } else System.out.println("Some Error Occurred while getting recommendations!!");
         } catch (CustomExceptions.InvalidResponseException e) {
             System.out.println("Invalid Response Received from Server");
@@ -144,15 +148,14 @@ public class ChefService extends UserManager {
         return null;
     }
 
-    public static void displayRecommendations(Map<MealTypeEnum, List<MenuItemScore>> menuItemsByMealType) {
-        for (Map.Entry<MealTypeEnum, List<MenuItemScore>> entry : menuItemsByMealType.entrySet()) {
+    public static void displayMenuItemsRecommendationByMealType(Map<MealTypeEnum, List<MenuItemRecommendation>> menuItemsByMealType) {
+        for (Map.Entry<MealTypeEnum, List<MenuItemRecommendation>> entry : menuItemsByMealType.entrySet()) {
             MealTypeEnum mealType = entry.getKey();
-            List<MenuItemScore> menuItems = entry.getValue();
-
+            List<MenuItemRecommendation> menuItems = entry.getValue();
             System.out.println("Meal Type: " + mealType);
             System.out.println("Menu Items:");
-            for (MenuItemScore menuItemScore : menuItems) {
-                System.out.println("  " + menuItemScore.getMenuItemName() + " " + menuItemScore.getRecommendationScore() + " " + menuItemScore.getSentimentOfItem());
+            for (MenuItemRecommendation menuItemRecommendation : menuItems) {
+                System.out.println("  " + menuItemRecommendation.getMenuItemId() + " " + menuItemRecommendation.getRecommendationScore() + " " + menuItemRecommendation.getSentimentOfItem());
             }
             System.out.println();
         }

@@ -1,24 +1,14 @@
 package org.cafeteria.common.model;
 
-public class MenuItemScore {
+public class MenuItemRecommendation {
     private int menuItemId;
-    private String menuItemName;
     private double recommendationScore;
     private String sentimentOfItem;
 
-    public MenuItemScore(int menuItemId, String menuItemName, double recommendationScore, String sentimentOfItem) {
+    public MenuItemRecommendation(int menuItemId, double recommendationScore, String sentimentOfItem) {
         this.menuItemId = menuItemId;
-        this.menuItemName = menuItemName;
         this.recommendationScore = recommendationScore;
         this.sentimentOfItem = sentimentOfItem;
-    }
-
-    public String getMenuItemName() {
-        return menuItemName;
-    }
-
-    public void setMenuItemName(String menuItemName) {
-        this.menuItemName = menuItemName;
     }
 
     public String getSentimentOfItem() {
