@@ -1,6 +1,7 @@
 package org.cafeteria.server.controller;
 
 import com.sun.istack.NotNull;
+import org.cafeteria.common.customException.CustomExceptions.DuplicateEntryFoundException;
 import org.cafeteria.common.model.Feedback;
 import org.cafeteria.common.model.ParsedRequest;
 import org.cafeteria.common.model.ResponseCode;
@@ -18,7 +19,7 @@ public class FeedbackController {
         _feedbackService = new FeedbackService();
     }
 
-    public String addFeedback(@NotNull ParsedRequest request) throws SQLException {
+    public String addFeedback(@NotNull ParsedRequest request) throws SQLException, DuplicateEntryFoundException {
         Feedback feedback = deserializeData(request.getJsonData(), Feedback.class);
         String response;
         if(_feedbackService.add(feedback)) {

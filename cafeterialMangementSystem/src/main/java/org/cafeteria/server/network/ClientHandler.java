@@ -1,7 +1,9 @@
 package org.cafeteria.server.network;
 
-import org.cafeteria.common.customException.CustomExceptions;
+import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.ParsedRequest;
+import org.cafeteria.server.controller.RecommendationController;
+
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.parseRequest;
 import static org.cafeteria.server.Server.*;
 
@@ -37,22 +39,24 @@ public class ClientHandler implements Runnable {
                 System.out.println("response that is sent to client: " + response);
                 out.println(response);
             }
-        } catch (SQLException | CustomExceptions.InvalidRequestException ex) {
+        } catch (SQLException | InvalidRequestException ex) {
             throw new RuntimeException(ex);
         } catch (SocketException e) {
             System.out.println("Client Got disconnected");
         } catch (IOException e) {
             System.out.println("Some Error occurred while reading input from client");
+        } catch (DuplicateEntryFoundException e) {
+            System.out.println(e.getMessage());
         } finally {
             try {
                 clientSocket.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("Some error occurred while closing the connection.");
             }
         }
     }
 
-    private String handleRequest(ParsedRequest request) throws SQLException {
+    private String handleRequest(ParsedRequest request) throws SQLException, DuplicateEntryFoundException {
         String response = null;
         switch (request.getUserAction()) {
             case LOGIN -> response = userController.handleUserLogin(request);
@@ -67,22 +71,25 @@ public class ClientHandler implements Runnable {
 
             case GET_MENU_ITEM_BY_NAME -> response = menuController.getMenuItemByName(request);
 
+            case GET_MENU_ITEM_BY_ID -> response = menuController.getMenuItemById(request);
+
             case SEE_MONTHLY_REPORT -> response = feedbackController.getFeedbackReport(request);
 
             case PROVIDE_FEEDBACK -> response = feedbackController.addFeedback(request);
 
-            case GET_RECCOMENDATION_FOR_NEXT_DAY_MENU -> response = dailyRecommendationController.getRecommendationsForNextDayMenu();
-
-            case ROLL_OUT_NEXT_DAY_MENU_OPTIONS -> response = dailyRecommendationController.rollOutNextDayMenuOptions(request);
-
-            case GET_NEXT_DAY_MENU_OPTIONS -> response = dailyRecommendationController.getNextDayMenuOptions(request);
-
             case UPDATE_NEXT_DAY_FINAL_MENU -> response = preparedMenuController.updateDailyFoodMenu(request);
-
-            case VOTE_NEXT_DAY_MENU -> response = dailyRecommendationController.voteForNextDayMenu();
 
             case SEE_NOTIFICATIONS -> response = notificationController.getUserNotification(request);
 
+            case VOTE_NEXT_DAY_MENU -> response = votingController.voteForNextDayMenu(request);
+
+            case GET_RECOMMENDATION_FOR_NEXT_DAY_MENU -> response = rolledOutMenuItemController.getRecommendationsForNextDayMenu();
+
+            case GET_MENU_ITEM_RECOMMENDATION_SCORE -> response = recommendationController.getRecommendationScoreForMenuItem(request);
+
+            case ROLL_OUT_NEXT_DAY_MENU_OPTIONS -> response = rolledOutMenuItemController.rollOutNextDayMenuOptions(request);
+
+            case GET_NEXT_DAY_MENU_OPTIONS -> response = rolledOutMenuItemController.getNextDayMenuOptions(request);
         }
         return response;
     }

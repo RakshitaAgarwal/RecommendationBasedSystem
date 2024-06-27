@@ -2,10 +2,9 @@ package org.cafeteria.common.model;
 
 import java.util.Date;
 
-public class DailyRecommendation {
+public class RolledOutMenuItem {
     private int id;
     private int menuItemId;
-    private int votes;
     private Date rolledOutDate;
 
     public int getId() {
@@ -22,14 +21,6 @@ public class DailyRecommendation {
 
     public void setMenuItemId(int menuItemId) {
         this.menuItemId = menuItemId;
-    }
-
-    public int getVotes() {
-        return votes;
-    }
-
-    public void setVotes(int votes) {
-        this.votes = votes;
     }
 
     public Date getRolledOutDate() {

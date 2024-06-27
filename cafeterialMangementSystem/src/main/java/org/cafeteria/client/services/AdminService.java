@@ -63,8 +63,7 @@ public class AdminService extends UserManager {
         }
     }
 
-    @Override
-    public void displayMenuFromServer() throws IOException {
+    public static void displayMenuFromServer() throws IOException {
         String request = createRequest(UserAction.SHOW_MENU, null);
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
@@ -89,7 +88,7 @@ public class AdminService extends UserManager {
         }
     }
 
-    private void displayMenu(List<MenuItem> menu) {
+    private static void displayMenu(List<MenuItem> menu) {
         System.out.println();
         System.out.println("--------Food Item Menu--------");
         for (MenuItem item : menu) {
@@ -126,7 +125,7 @@ public class AdminService extends UserManager {
         return new MenuItem(name, price, isAvailable, mealTypeId);
     }
 
-    private MenuItem getFoodItemByName(@NotNull String name) {
+    public static MenuItem getFoodItemByName(@NotNull String name) {
         String request = createRequest(UserAction.GET_MENU_ITEM_BY_NAME, serializeData(name));
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
@@ -141,6 +140,23 @@ public class AdminService extends UserManager {
         }
         return null;
     }
+
+    public static MenuItem getMenuItemById(@NotNull int id) {
+        String request = createRequest(UserAction.GET_MENU_ITEM_BY_ID, serializeData(id));
+        System.out.println("request that is sent to server: " + request);
+        String response = connection.sendData(request);
+        System.out.println("response that is received from server: " + response);
+        try {
+            ParsedResponse parsedResponse = parseResponse(response);
+            ResponseCode responseCode = parsedResponse.getResponseCode();
+            if (responseCode == ResponseCode.OK)
+                return deserializeData(parsedResponse.getJsonData(), MenuItem.class);
+        } catch (InvalidResponseException e) {
+            System.out.println("Invalid Response Received from Server");
+        }
+        return null;
+    }
+
 
     private void deleteMenuItem(MenuItem menuItem) {
         String request = createRequest(UserAction.DELETE_MENU_ITEM, serializeData(menuItem));

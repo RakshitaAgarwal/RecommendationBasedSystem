@@ -1,34 +1,31 @@
 package org.cafeteria.server.services;
 
-import org.cafeteria.common.model.DailyRecommendation;
+import org.cafeteria.common.model.RolledOutMenuItem;
 import org.cafeteria.common.model.MealTypeEnum;
 import org.cafeteria.common.model.MenuItem;
 import org.cafeteria.common.model.MenuItemRecommendation;
-import org.cafeteria.server.repositories.DailyRecommendationRepository;
-import org.cafeteria.server.repositories.interfaces.IDailyRecommendationRepository;
-import org.cafeteria.server.services.interfaces.IDailyRecommendationService;
+import org.cafeteria.server.repositories.RolledOutMenuItemRepository;
+import org.cafeteria.server.repositories.interfaces.IRolledOutMenuItemRepository;
+import org.cafeteria.server.services.interfaces.IRolledOutMenuItemService;
 import org.cafeteria.server.services.interfaces.IFeedbackService;
 import org.cafeteria.server.services.interfaces.IMenuService;
-
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
 import static org.cafeteria.common.constants.Constants.DATE_FORMAT;
 import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 import static org.cafeteria.server.services.MenuService.filterMenuItemBasedOnAvailability;
 import static org.cafeteria.server.services.MenuService.filterMenuItemsByLastPrepared;
 
-public class DailyRecommendationService implements IDailyRecommendationService {
-    private static IDailyRecommendationRepository _dailyRecommendationRepository;
-    private static IFeedbackService _feedbackService;
-    private static IMenuService _menuService;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
+public class RolledOutMenuItemService implements IRolledOutMenuItemService {
+    private static IRolledOutMenuItemRepository _dailyRecommendationRepository;
+    private static IMenuService _menuService;
     private static RecommendationEngine recommendationEngine;
 
-    public DailyRecommendationService() {
-        _dailyRecommendationRepository = new DailyRecommendationRepository();
-        _feedbackService = new FeedbackService();
+    public RolledOutMenuItemService() {
+        _dailyRecommendationRepository = new RolledOutMenuItemRepository();
+        IFeedbackService _feedbackService = new FeedbackService();
         _menuService = new MenuService();
         recommendationEngine = new RecommendationEngine(_feedbackService);
     }
@@ -61,9 +58,8 @@ public class DailyRecommendationService implements IDailyRecommendationService {
     @Override
     public boolean rollOutItemsForNextDayMenu(List<Integer> rolledOutMenuItemIds) throws SQLException {
         for (int menuItemId : rolledOutMenuItemIds) {
-            DailyRecommendation dailyRecommendation = new DailyRecommendation();
+            RolledOutMenuItem dailyRecommendation = new RolledOutMenuItem();
             dailyRecommendation.setMenuItemId(menuItemId);
-            dailyRecommendation.setVotes(0);
             dailyRecommendation.setRolledOutDate(new Date());
 
             _dailyRecommendationRepository.add(dailyRecommendation);
@@ -72,14 +68,19 @@ public class DailyRecommendationService implements IDailyRecommendationService {
     }
 
     @Override
-    public Map<MealTypeEnum, List<MenuItemRecommendation>> getNextDayMenuOptions() throws SQLException {
+    public List<RolledOutMenuItem> getNextDayMenuOptions() throws SQLException {
         SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
         String currentDate = dateFormat.format(new Date());
         System.out.println(currentDate);
-        List<DailyRecommendation> nextDayMenuOptions = _dailyRecommendationRepository.getByDate(currentDate);
+        List<RolledOutMenuItem> nextDayMenuOptions = _dailyRecommendationRepository.getByDate(currentDate);
+        return nextDayMenuOptions;
+
+    }
+
+    private Map<MealTypeEnum, List<MenuItemRecommendation>> getRecommendationForNextDayMenuOptions(List<RolledOutMenuItem> nextDayMenuOptions) throws SQLException {
         Map<MealTypeEnum, List<MenuItemRecommendation>> result = new HashMap<>();
 
-        for (DailyRecommendation nextDayMenuOption : nextDayMenuOptions) {
+        for (RolledOutMenuItem nextDayMenuOption : nextDayMenuOptions) {
             int menuItemId = nextDayMenuOption.getMenuItemId();
             MenuItem menuItem = _menuService.getById(menuItemId);
             MealTypeEnum mealType = getEnumFromOrdinal(MealTypeEnum.class, menuItem.getMealTypeId());
@@ -90,41 +91,36 @@ public class DailyRecommendationService implements IDailyRecommendationService {
     }
 
     @Override
-    public boolean validate(DailyRecommendation item) {
+    public boolean validate(RolledOutMenuItem item) {
         return false;
     }
 
     @Override
-    public boolean add(DailyRecommendation object) {
-
-        return false;
-    }
-
-    @Override
-    public boolean update(DailyRecommendation object) {
+    public boolean add(RolledOutMenuItem object) {
 
         return false;
     }
 
     @Override
-    public boolean delete(DailyRecommendation object) {
+    public boolean update(RolledOutMenuItem object) {
 
         return false;
     }
 
     @Override
-    public List<DailyRecommendation> getAll() {
+    public boolean delete(RolledOutMenuItem object) {
+
+        return false;
+    }
+
+    @Override
+    public List<RolledOutMenuItem> getAll() {
 
         return null;
     }
 
     @Override
-    public DailyRecommendation getById(int id) {
+    public RolledOutMenuItem getById(int id) {
         return null;
-    }
-
-    @Override
-    public void voteForNextDayMenu() {
-
     }
 }

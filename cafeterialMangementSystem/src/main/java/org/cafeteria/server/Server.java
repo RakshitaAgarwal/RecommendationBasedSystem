@@ -14,9 +14,12 @@ public class Server {
     public static UserController userController;
     public static MenuController menuController;
     public static FeedbackController feedbackController;
-    public static DailyRecommendationController dailyRecommendationController;
+    public static RolledOutMenuItemController rolledOutMenuItemController;
     public static NotificationController notificationController;
     public static PreparedMenuController preparedMenuController;
+
+    public static VotingController votingController;
+    public static RecommendationController recommendationController;
 
     public static void main(String[] args) {
         initDatabaseProperties();
@@ -31,9 +34,11 @@ public class Server {
         userController = new UserController();
         menuController = new MenuController();
         feedbackController = new FeedbackController();
-        dailyRecommendationController = new DailyRecommendationController();
+        rolledOutMenuItemController = new RolledOutMenuItemController();
         notificationController = new NotificationController();
         preparedMenuController = new PreparedMenuController();
+        votingController = new VotingController();
+        recommendationController = new RecommendationController();
     }
 
 

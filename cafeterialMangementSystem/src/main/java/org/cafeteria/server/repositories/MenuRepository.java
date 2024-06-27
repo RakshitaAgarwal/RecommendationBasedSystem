@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MenuRepository implements IMenuRepository {
-    private Connection connection;
+    private final Connection connection;
 
     public MenuRepository() {
         connection = JdbcConnection.getConnection();

@@ -18,4 +18,10 @@ public class CustomExceptions extends Exception {
             super(message);
         }
     }
+
+    public static class DuplicateEntryFoundException extends Exception {
+        public DuplicateEntryFoundException(String message) {
+            super(message);
+        }
+    }
 }
