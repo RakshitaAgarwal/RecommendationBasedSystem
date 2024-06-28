@@ -1,6 +1,7 @@
 package org.cafeteria.server.services;
 
-import org.cafeteria.common.model.PreparedMenu;
+import org.cafeteria.common.customException.CustomExceptions;
+import org.cafeteria.common.model.PreparedMenuItem;
 import org.cafeteria.server.repositories.PreparedMenuItemItemRepository;
 import org.cafeteria.server.repositories.interfaces.IPreparedMenuItemRepository;
 import org.cafeteria.server.services.interfaces.IPreparedMenuItemService;
@@ -10,59 +11,61 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class PreparedMenuItemService implements IPreparedMenuItemService {
+import static org.cafeteria.common.util.Utils.extractDate;
 
+public class PreparedMenuItemService implements IPreparedMenuItemService {
     private static IPreparedMenuItemRepository _preparedMenuItemRepository;
     public PreparedMenuItemService() {
         _preparedMenuItemRepository = new PreparedMenuItemItemRepository();
     }
     @Override
-    public boolean validate(PreparedMenu item) {
+    public boolean validate(PreparedMenuItem item) {
         return false;
     }
 
     @Override
-    public boolean addAll(List<Integer> preparedMenuItemIds) throws SQLException {
-        List<PreparedMenu> preparedMenuItems = new ArrayList<>();
+    public boolean addPreparedMenuItems(List<Integer> preparedMenuItemIds) throws SQLException, CustomExceptions.DuplicateEntryFoundException {
+        List<PreparedMenuItem> preparedMenuItems = new ArrayList<>();
         Date date = new Date();
+        if(_preparedMenuItemRepository.getByDate(extractDate(date)).isEmpty())
+            throw new CustomExceptions.DuplicateEntryFoundException("Prepared Menu Items have already been Updated for " + extractDate(date));
+
         for(Integer menuItemId :preparedMenuItemIds) {
-            preparedMenuItems.add(new PreparedMenu(menuItemId, date));
+            preparedMenuItems.add(new PreparedMenuItem(menuItemId, date));
         }
         return _preparedMenuItemRepository.addBatch(preparedMenuItems);
     }
 
     @Override
-    public boolean add(PreparedMenu object) {
+    public boolean add(PreparedMenuItem object) {
         return false;
     }
 
     @Override
-    public boolean update(PreparedMenu object) {
+    public boolean update(PreparedMenuItem object) {
         return false;
     }
 
     @Override
-    public boolean delete(PreparedMenu object) {
+    public boolean delete(PreparedMenuItem object) {
         return false;
     }
 
     @Override
-    public List<PreparedMenu> getAll() {
+    public List<PreparedMenuItem> getAll() {
         return null;
     }
 
     @Override
-    public PreparedMenu getById(int id) {
+    public PreparedMenuItem getById(int id) {
         return null;
     }
 
     @Override
     public void updateDailyMenu() {
-
     }
 
     @Override
     public void weeklyMenuCleanUp() {
-
     }
 }

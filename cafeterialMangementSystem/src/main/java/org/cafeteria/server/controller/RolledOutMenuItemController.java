@@ -1,6 +1,7 @@
 package org.cafeteria.server.controller;
 
 import com.sun.istack.NotNull;
+import org.cafeteria.common.customException.CustomExceptions;
 import org.cafeteria.common.model.*;
 import org.cafeteria.server.services.RolledOutMenuItemService;
 import org.cafeteria.server.services.NotificationService;
@@ -24,12 +25,16 @@ public class RolledOutMenuItemController {
     public String rollOutNextDayMenuOptions(@NotNull ParsedRequest request) throws SQLException {
         List<Integer> nextDayMenuOptions = deserializeList(request.getJsonData(), Integer.class);
         String response;
-        if(_rolledOutMenuItemService.rollOutNextDayMenuOptions(nextDayMenuOptions)) {
-            response = createResponse(ResponseCode.OK, null);
-            Notification notification = new Notification(NotificationTypeEnum.NEXT_DAY_OPTIONS.ordinal(), "Next Day Menu options are updated. Please Cast your vote for the day", new Date());
-            _notificationService.sendNotificationToAllEmployees(notification);
-        } else {
-            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, null);
+        try {
+            if(_rolledOutMenuItemService.rollOutNextDayMenuOptions(nextDayMenuOptions)) {
+                response = createResponse(ResponseCode.OK, null);
+                Notification notification = new Notification(NotificationTypeEnum.NEXT_DAY_OPTIONS.ordinal(), "Next Day Menu options are updated. Please Cast your vote for the day", new Date());
+                _notificationService.sendNotificationToAllEmployees(notification);
+            } else {
+                response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
+            }
+        } catch (CustomExceptions.DuplicateEntryFoundException e) {
+            response = createResponse(ResponseCode.BAD_REQUEST, serializeData(e.getMessage()));
         }
         return response;
     }
@@ -40,7 +45,7 @@ public class RolledOutMenuItemController {
         if(recommendations != null) {
             response = createResponse(ResponseCode.OK, serializeData(recommendations));
         } else {
-            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, null);
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
         }
         return response;
     }

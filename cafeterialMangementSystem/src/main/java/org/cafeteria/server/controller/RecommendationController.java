@@ -38,7 +38,7 @@ public class RecommendationController {
         if(menuItemByMeals != null) {
             response = createResponse(ResponseCode.OK, serializeMap(menuItemByMeals));
         } else {
-            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, null);
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
         }
         return response;
     }

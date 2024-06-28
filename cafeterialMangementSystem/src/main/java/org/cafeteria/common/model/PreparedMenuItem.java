@@ -2,14 +2,15 @@ package org.cafeteria.common.model;
 
 import java.util.Date;
 
-public class PreparedMenu {
+public class PreparedMenuItem {
     private int id;
     private int menuItemId;
-    private Date date;
+    private Date dateTime;
 
-    public PreparedMenu(int menuItemId, Date date) {
+    public PreparedMenuItem() {}
+    public PreparedMenuItem(int menuItemId, Date dateTime) {
         this.menuItemId = menuItemId;
-        this.date = date;
+        this.dateTime = dateTime;
     }
 
     public int getId() {
@@ -28,11 +29,11 @@ public class PreparedMenu {
         this.menuItemId = menuItemId;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getDateTime() {
+        return dateTime;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDateTime(Date dateTime) {
+        this.dateTime = dateTime;
     }
 }

@@ -1,6 +1,10 @@
 package org.cafeteria.server.repositories.interfaces;
 
-import org.cafeteria.common.model.PreparedMenu;
+import org.cafeteria.common.model.PreparedMenuItem;
 
-public interface IPreparedMenuItemRepository extends ICrudRepository<PreparedMenu> {
+import java.sql.SQLException;
+import java.util.List;
+
+public interface IPreparedMenuItemRepository extends ICrudRepository<PreparedMenuItem> {
+    public List<PreparedMenuItem> getByDate(String rolledOutDate) throws SQLException;
 }

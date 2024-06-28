@@ -1,6 +1,7 @@
 package org.cafeteria.server.controller;
 
 import com.sun.istack.NotNull;
+import org.cafeteria.common.customException.CustomExceptions;
 import org.cafeteria.common.model.ParsedRequest;
 import org.cafeteria.common.model.ResponseCode;
 import org.cafeteria.server.services.PreparedMenuItemService;
@@ -21,10 +22,14 @@ public class PreparedMenuItemController {
     public String updateDailyFoodMenu(@NotNull ParsedRequest request) throws SQLException {
         List<Integer> menuItemIds = deserializeList(request.getJsonData(), Integer.class);
         String response;
-        if(_preparedMenuItemService.addAll(menuItemIds)) {
-            response = createResponse(ResponseCode.OK, serializeData("Final Menu Updated for " + extractDate(new Date())));
-        } else {
-            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some Error Occurred."));
+        try {
+            if(_preparedMenuItemService.addPreparedMenuItems(menuItemIds)) {
+                response = createResponse(ResponseCode.OK, serializeData("Final Menu Updated for " + extractDate(new Date())));
+            } else {
+                response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
+            }
+        } catch (CustomExceptions.DuplicateEntryFoundException e) {
+            response = createResponse(ResponseCode.BAD_REQUEST, serializeData(e.getMessage()));
         }
         return response;
     }

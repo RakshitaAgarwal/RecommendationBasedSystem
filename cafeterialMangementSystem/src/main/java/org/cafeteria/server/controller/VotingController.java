@@ -7,12 +7,11 @@ import org.cafeteria.common.model.ParsedRequest;
 import org.cafeteria.common.model.ResponseCode;
 import org.cafeteria.server.services.VotingService;
 import org.cafeteria.server.services.interfaces.IVotingService;
+import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.Map;
-
-import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 
 public class VotingController {
     private static IVotingService _votingService;
@@ -28,7 +27,7 @@ public class VotingController {
             if (_votingService.add(userVote)) {
                 response = createResponse(ResponseCode.OK, null);
             } else {
-                response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, null);
+                response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
             }
         } catch (DuplicateEntryFoundException e) {
             response = createResponse(ResponseCode.BAD_REQUEST, serializeData("Vote Already Casted for this Category. Please come back tomorrow."));
@@ -47,7 +46,7 @@ public class VotingController {
                 response = createResponse(ResponseCode.OK, serializeMap(nextDayMenuOptionsVotes));
             }
         } else {
-            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR ,null);
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
         }
         return response;
     }

@@ -10,8 +10,7 @@ import org.cafeteria.server.services.interfaces.IFeedbackService;
 
 import java.sql.SQLException;
 
-import static org.cafeteria.common.communicationProtocol.CustomProtocol.createResponse;
-import static org.cafeteria.common.communicationProtocol.CustomProtocol.deserializeData;
+import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 
 public class FeedbackController {
     private static IFeedbackService _feedbackService;
@@ -25,7 +24,7 @@ public class FeedbackController {
         if(_feedbackService.add(feedback)) {
             response = createResponse(ResponseCode.OK, null);
         } else {
-            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, null);
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
         }
         return response;
     }

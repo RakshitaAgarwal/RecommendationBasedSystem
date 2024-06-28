@@ -1,8 +1,6 @@
 package org.cafeteria.server.repositories.interfaces;
 
-
 import org.cafeteria.common.model.RolledOutMenuItem;
-
 import java.sql.SQLException;
 import java.util.List;
 

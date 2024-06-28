@@ -7,6 +7,15 @@ public class RolledOutMenuItem {
     private int menuItemId;
     private Date rolledOutDate;
 
+    public RolledOutMenuItem() {
+    }
+
+    public RolledOutMenuItem(int id, int menuItemId, Date rolledOutDate) {
+        this.id = id;
+        this.menuItemId = menuItemId;
+        this.rolledOutDate = rolledOutDate;
+    }
+
     public int getId() {
         return id;
     }

@@ -2,7 +2,6 @@ package org.cafeteria.server.controller;
 
 import com.sun.istack.NotNull;
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
-
 import org.cafeteria.common.customException.CustomExceptions.DuplicateEntryFoundException;
 import org.cafeteria.common.model.*;
 import org.cafeteria.server.services.MenuService;
@@ -29,7 +28,7 @@ public class MenuController {
             _notificationService.sendNotificationToAllEmployees(notification);
             response = createResponse(ResponseCode.OK, null);
         } else {
-            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, null);
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
         }
         return response;
     }
@@ -43,7 +42,7 @@ public class MenuController {
             Notification notification = new Notification(2, menuItem.getName() + " deleted from the menu.", new Date());
             _notificationService.sendNotificationToAllEmployees(notification);
         } else {
-            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, null);
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
         }
         return response;
     }
@@ -57,7 +56,7 @@ public class MenuController {
             Notification notification = new Notification(3, menuItem.getName() + " updated in the menu.", new Date());
             _notificationService.sendNotificationToAllEmployees(notification);
         } else {
-            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, null);
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
         }
         return response;
     }
@@ -68,7 +67,7 @@ public class MenuController {
         if (!menu.isEmpty()) {
             response = createResponse(ResponseCode.OK, serializeData(menu));
         } else {
-            response = createResponse(ResponseCode.EMPTY_RESPONSE, null);
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
         }
         return response;
     }
@@ -80,7 +79,7 @@ public class MenuController {
         if(menuItem != null) {
             response = createResponse(ResponseCode.OK, serializeData(menuItem));
         } else {
-            response = createResponse(ResponseCode.BAD_REQUEST, null);
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
         }
         return response;
     }
@@ -92,7 +91,7 @@ public class MenuController {
         if(menuItem != null) {
             response = createResponse(ResponseCode.OK, serializeData(menuItem));
         } else {
-            response = createResponse(ResponseCode.BAD_REQUEST, null);
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
         }
         return response;
     }

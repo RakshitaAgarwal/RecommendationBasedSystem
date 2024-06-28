@@ -30,8 +30,18 @@ public class RolledOutMenuItemRepository implements IRolledOutMenuItemRepository
     }
 
     @Override
-    public boolean addBatch(List<RolledOutMenuItem> items) throws SQLException {
-        return false;
+    public boolean addBatch(List<RolledOutMenuItem> rolledOutMenuItems) throws SQLException {
+        String query = "INSERT INTO RolledOutMenuItem (menuItemId, rolledOutDate) VALUES (?, ?)";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            for (RolledOutMenuItem rolledOutItem : rolledOutMenuItems) {
+                statement.setInt(1, rolledOutItem.getMenuItemId());
+                statement.setTimestamp(2, dateToTimestamp(rolledOutItem.getRolledOutDate()));
+                statement.addBatch();
+            }
+            int[] results = statement.executeBatch();
+            return results.length == rolledOutMenuItems.size();
+        }
     }
 
     @Override
