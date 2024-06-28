@@ -1,10 +1,11 @@
 package org.cafeteria.server.repositories;
 
 import org.cafeteria.server.model.SentimentResult;
+
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 public class SentimentAnalysis {
     private static final Set<String> STOP_WORDS = new HashSet<>();
@@ -14,21 +15,19 @@ public class SentimentAnalysis {
     private static final Set<String> NEGATION_WORDS = new HashSet<>();
 
     static {
-        STOP_WORDS.addAll(Set.of("a", "an", "and", "the", "is", "in", "at", "of", "on", "for", "with", "by", "to", "from"));
-        POSITIVE_WORDS.addAll(Set.of("delicious", "tasty", "excellent", "great", "good", "nice", "yummy", "fantastic"));
-        NEGATIVE_WORDS.addAll(Set.of("bad", "awful", "terrible", "disgusting", "horrible", "poor", "unpleasant"));
+        STOP_WORDS.addAll(Set.of("a", "an", "and", "the", "is", "in", "at", "of", "on", "for", "with", "by", "to", "from", "are", "if", "but", "did", "as", "be", "it", "or"));
+        POSITIVE_WORDS.addAll(Set.of("delicious", "tasty", "excellent", "great", "good", "nice", "yummy", "fantastic", "happy", "joy", "positive", "fortunate", "correct", "superior"));
+        NEGATIVE_WORDS.addAll(Set.of("bad", "awful", "terrible", "disgusting", "horrible", "poor", "unpleasant", "sad", "negative", "unfortunate", "wrong", "inferior"));
         NEUTRAL_WORDS.addAll(Set.of("okay", "average", "mediocre", "passable", "fair"));
         NEGATION_WORDS.addAll(Set.of("not", "no", "never", "don't", "doesn't", "didn't", "wasn't", "weren't", "isn't", "aren't", "neither", "nor"));
     }
 
-    private static final Pattern WORD_PATTERN = Pattern.compile("\\b\\w+\\b");
-
     public SentimentResult calculateAverageSentimentAnalysis(List<String> comments) {
-        String combinedComment = "";
-        for(String comment: comments) {
-            combinedComment = combinedComment + comment;
+        StringBuilder combinedComment = new StringBuilder();
+        for (String comment : comments) {
+            combinedComment.append(comment);
         }
-        return analyzeSentiment(combinedComment);
+        return analyzeSentiment(combinedComment.toString());
     }
 
     public SentimentResult analyzeSentiment(String comment) {
@@ -36,69 +35,71 @@ public class SentimentAnalysis {
             return new SentimentResult("Neutral", 0, 0, 0);
         }
 
-        int positiveCount = 0, negativeCount = 0, neutralCount = 0, totalWords = 0;
+        double positiveCount = 0, negativeCount = 0, neutralCount = 0;
         boolean negation = false;
+        List<String> filteredTokens = tokenizeAndFilter(comment);
 
-        var matcher = WORD_PATTERN.matcher(comment.toLowerCase());
-        String prevWord = "";
-
-        while (matcher.find()) {
-            String word = matcher.group();
-
-            if (STOP_WORDS.contains(word)) {
-                continue;
-            }
-
-            totalWords++;
-
-            if (NEGATION_WORDS.contains(word)) {
+        for (String token : filteredTokens) {
+            if (NEGATION_WORDS.contains(token)) {
                 negation = true;
-                prevWord = word;
-                continue;
-            }
-
-            if (POSITIVE_WORDS.contains(word)) {
-                if (negation) {
-                    negativeCount++;
-                } else {
-                    positiveCount++;
-                }
-                negation = false;
-            } else if (NEGATIVE_WORDS.contains(word)) {
-                if (negation) {
-                    positiveCount++;
-                } else {
-                    negativeCount++;
-                }
-                negation = false;
-            } else if (NEUTRAL_WORDS.contains(word)) {
-                neutralCount++;
-                negation = false;
             } else {
+                if (POSITIVE_WORDS.contains(token)) {
+                    if (negation) {
+                        negativeCount++;
+                    } else {
+                        positiveCount++;
+                    }
+                } else if (NEGATIVE_WORDS.contains(token)) {
+                    if (negation) {
+                        positiveCount++;
+                    } else {
+                        negativeCount++;
+                    }
+                } else if (NEUTRAL_WORDS.contains(token)) {
+                    if (negation) {
+                        negativeCount += 0.5;
+                    }
+                    neutralCount++;
+                } else {
+                    neutralCount++;
+                }
                 negation = false;
             }
-
-            prevWord = word;
         }
 
-        int totalSentimentWords = positiveCount + negativeCount + neutralCount;
+        double totalSentimentWords = positiveCount + negativeCount + neutralCount;
         if (totalSentimentWords == 0) {
             return new SentimentResult("Neutral", 0, 0, 0);
         }
 
-        double positiveScore = (double) positiveCount / totalSentimentWords*100;
-        double negativeScore = (double) negativeCount / totalSentimentWords*100;
-        double neutralScore = (double) neutralCount / totalSentimentWords*100;
+        double positiveScore = (positiveCount / totalSentimentWords) * 100;
+        double negativeScore = (negativeCount / totalSentimentWords) * 100;
+        double neutralScore = (neutralCount / totalSentimentWords) * 100;
 
-        String sentiment;
-        if (positiveScore > negativeScore && positiveScore > neutralScore) {
-            sentiment = "Positive";
-        } else if (negativeScore > positiveScore && negativeScore > neutralScore) {
-            sentiment = "Negative";
-        } else {
-            sentiment = "Neutral";
-        }
+        String sentiment = determineSentiment(positiveScore, negativeScore, neutralScore);
 
         return new SentimentResult(sentiment, positiveScore, negativeScore, neutralScore);
+    }
+
+    private List<String> tokenizeAndFilter(String comment) {
+        String[] tokens = comment.toLowerCase().split("[\\s\\p{Punct}]+");
+        List<String> filteredTokens = new ArrayList<>();
+
+        for (String token : tokens) {
+            if (!STOP_WORDS.contains(token)) {
+                filteredTokens.add(token);
+            }
+        }
+        return filteredTokens;
+    }
+
+    private String determineSentiment(double positiveScore, double negativeScore, double neutralScore) {
+        if (positiveScore > negativeScore && positiveScore > neutralScore) {
+            return "Positive";
+        } else if (negativeScore > positiveScore && negativeScore > neutralScore) {
+            return "Negative";
+        } else {
+            return "Neutral";
+        }
     }
 }
