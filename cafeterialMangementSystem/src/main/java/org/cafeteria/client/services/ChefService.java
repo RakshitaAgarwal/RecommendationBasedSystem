@@ -10,10 +10,7 @@ import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class ChefService extends UserManager {
 
@@ -54,7 +51,7 @@ public class ChefService extends UserManager {
     }
 
     private Map<Integer, Integer> getVotingForMenuItem() throws IOException {
-        String request = createRequest(UserAction.GET_VOTING_FOR_NEXT_DAY_MENU, null);
+        String request = createRequest(UserAction.GET_VOTING_FOR_NEXT_DAY_MENU, serializeData(new Date()));
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
         System.out.println("response that is received from server: " + response);
@@ -86,9 +83,9 @@ public class ChefService extends UserManager {
             int menuItemId = entry.getKey();
             int votes = entry.getValue();
 
-            System.out.println(menuItemId + " No of votes : " + votes);
+            System.out.println("Menu Item Id: " + menuItemId + ",  No of votes : " + votes);
         }
-        System.out.println("------------------------------");
+        System.out.println("---------------------------------------");
     }
 
     public void seeMonthlyReport() {

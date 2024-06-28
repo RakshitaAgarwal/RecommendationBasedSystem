@@ -105,7 +105,7 @@ public class VotingRepository implements IVotingRepository {
 
     @Override
     public Map<Integer, Integer> getNextDayMenuOptionsVotes(String date) throws SQLException {
-        String query = "SELECT menuItemId, Count(*) As voteCount FROM Vote WHERE DATE(date) = ? GROUP BY menuItemId";
+        String query = "SELECT menuItemId, Count(*) As voteCount FROM Vote WHERE DATE(dateTime) = ? GROUP BY menuItemId";
         Map<Integer, Integer> menuItemVotesByDate = new HashMap<>();
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
