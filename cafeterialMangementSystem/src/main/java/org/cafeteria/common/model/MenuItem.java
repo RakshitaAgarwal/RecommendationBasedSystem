@@ -9,14 +9,6 @@ public class MenuItem {
     private boolean isAvailable;
     private int mealTypeId;
 
-    public int getMealTypeId() {
-        return mealTypeId;
-    }
-
-    public void setMealTypeId(int mealTypeId) {
-        this.mealTypeId = mealTypeId;
-    }
-
     private Date lastTimePrepared = null;
 
     public MenuItem() {}
@@ -59,6 +51,14 @@ public class MenuItem {
 
     public void setAvailable(boolean available) {
         isAvailable = available;
+    }
+
+    public int getMealTypeId() {
+        return mealTypeId;
+    }
+
+    public void setMealTypeId(int mealTypeId) {
+        this.mealTypeId = mealTypeId;
     }
 
     public Date getLastTimePrepared() {

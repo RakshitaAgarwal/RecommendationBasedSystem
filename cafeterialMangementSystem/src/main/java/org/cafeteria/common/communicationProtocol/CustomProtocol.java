@@ -52,13 +52,14 @@ public class CustomProtocol {
             throw new InvalidResponseException("Invalid Response Message");
         }
     }
+
+    public static String serializeData(Object dataObject) {
+        return gson.toJson(dataObject);
+    }
+
     public static <K, V> String serializeMap(Map<K, V> map) {
         Type mapType = new TypeToken<Map<K, V>>() {}.getType();
         return gson.toJson(map, mapType);
-    }
-
-    public static <K, V> Map<K, V> deserializeMap(String json, Type typeOfMap) {
-        return gson.fromJson(json, typeOfMap);
     }
 
     public static <T> T deserializeData(String jsonData, Class<T> clazz) throws JsonSyntaxException {
@@ -70,7 +71,7 @@ public class CustomProtocol {
         return gson.fromJson(jsonData, type);
     }
 
-    public static String serializeData(Object dataObject) {
-        return gson.toJson(dataObject);
+    public static <K, V> Map<K, V> deserializeMap(String json, Type typeOfMap) {
+        return gson.fromJson(json, typeOfMap);
     }
 }
