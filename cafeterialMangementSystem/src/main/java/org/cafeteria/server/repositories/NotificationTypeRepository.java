@@ -3,12 +3,18 @@ package org.cafeteria.server.repositories;
 import org.cafeteria.common.model.NotificationType;
 import org.cafeteria.server.repositories.interfaces.INotificationTypeRepository;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class NotificationTypeRepository implements INotificationTypeRepository {
     @Override
     public boolean add(NotificationType item) {
 
+        return false;
+    }
+
+    @Override
+    public boolean addBatch(List<NotificationType> items) throws SQLException {
         return false;
     }
 

@@ -33,6 +33,11 @@ public class FeedbackRepository implements IFeedbackRepository {
     }
 
     @Override
+    public boolean addBatch(List<Feedback> items) throws SQLException {
+        return false;
+    }
+
+    @Override
     public boolean delete(Feedback item) {
 
         return false;

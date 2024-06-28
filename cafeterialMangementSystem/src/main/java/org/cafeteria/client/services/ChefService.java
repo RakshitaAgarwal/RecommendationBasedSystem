@@ -5,8 +5,11 @@ import com.google.gson.reflect.TypeToken;
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.common.customException.CustomExceptions;
 import org.cafeteria.common.model.*;
-import static org.cafeteria.client.services.AdminService.displayMenu;
+
+import static org.cafeteria.client.services.AdminService.getMenuItemById;
+import static org.cafeteria.client.services.AdminService.handleDisplayMenu;
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
+import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -32,11 +35,11 @@ public class ChefService extends UserManager {
             sc.nextLine();
 
             switch (choice) {
-                case 1 -> displayMenu();
+                case 1 -> handleDisplayMenu();
                 case 2 -> seeMonthlyReport();
                 case 3 -> handleRollOutNextDayMenuOptions();
                 case 4 -> seeVotingForRolledOutItems();
-                case 5 -> updateNextDayMenuItems();
+                case 5 -> handleUpdateNextDayFinalMenu();
                 case 6 -> {
                     connection.close();
                     return;
@@ -60,7 +63,8 @@ public class ChefService extends UserManager {
                 ParsedResponse parsedResponse = parseResponse(response);
                 ResponseCode responseCode = parsedResponse.getResponseCode();
                 if (responseCode == ResponseCode.OK) {
-                    Type mapType = new TypeToken<Map<Integer, Integer>>() {}.getType();
+                    Type mapType = new TypeToken<Map<Integer, Integer>>() {
+                    }.getType();
                     return deserializeMap(parsedResponse.getJsonData(), mapType);
                 } else {
                     System.out.println("Unexpected Response Code: " + responseCode);
@@ -96,13 +100,13 @@ public class ChefService extends UserManager {
     public void handleRollOutNextDayMenuOptions() {
         Map<MealTypeEnum, List<MenuItemRecommendation>> recommendedItems = getRecommendationsForNextDayMenu();
         List<Integer> rolledOutItems = new ArrayList<>();
-        if(recommendedItems==null || recommendedItems.isEmpty()) {
+        if (recommendedItems == null || recommendedItems.isEmpty()) {
             rollOutRandomItems();
         } else {
             displayMenuItemsRecommendationByMealType(recommendedItems);
             rolledOutItems = getTopRolledOutMenuItemIds(recommendedItems, 5);
         }
-        if(!rolledOutItems.isEmpty()) {
+        if (!rolledOutItems.isEmpty()) {
             processRollOutMenuOptions(rolledOutItems);
         }
     }
@@ -175,6 +179,51 @@ public class ChefService extends UserManager {
         }
     }
 
-    private void updateNextDayMenuItems() {
+    private void handleUpdateNextDayFinalMenu() throws IOException {
+        List<Integer> preparedMenuItemIds = new ArrayList<>();
+        for (MealTypeEnum mealType : MealTypeEnum.values()) {
+            int isContinue = 0;
+            boolean isSuccess = false;
+            do {
+                System.out.println("Enter Menu Item Id prepared for " + mealType.name());
+                int menuItemId = sc.nextInt();
+                MenuItem menuItem = getMenuItemById(menuItemId);
+                if (menuItem != null && getEnumFromOrdinal(MealTypeEnum.class, menuItem.getMealTypeId()) == mealType) {
+                    preparedMenuItemIds.add(menuItemId);
+                    isSuccess = true;
+                } else {
+                    System.out.println("Invalid Menu Item Id Entered. Do you want to try again (1. Yes / 0. No");
+                    isContinue = sc.nextInt();
+                }
+            } while (isContinue == 1);
+            if (!isSuccess) {
+                System.out.println("No Item selected for " + mealType.name());
+                break;
+            }
+        }
+        if (preparedMenuItemIds.size() == MealTypeEnum.values().length) {
+            processUpdatingFinalMenu(preparedMenuItemIds);
+        } else {
+            System.out.println("Invalid Input!!. Please Try again later.");
+        }
+    }
+
+    private void processUpdatingFinalMenu(List<Integer> preparedMenuItemIds) throws IOException {
+        String request = createRequest(UserAction.UPDATE_NEXT_DAY_FINAL_MENU, serializeData(preparedMenuItemIds));
+        System.out.println("request that is sent to server: " + request);
+        String response = connection.sendData(request);
+        System.out.println("response that is received from server: " + response);
+        if (response != null) {
+            try {
+                ParsedResponse parsedResponse = parseResponse(response);
+                System.out.println(deserializeData(parsedResponse.getJsonData(), String.class));
+            } catch (CustomExceptions.InvalidResponseException e) {
+                System.out.println("Invalid Response Received from Server");
+            } catch (JsonSyntaxException e) {
+                System.out.println("Error deserializing JSON data: " + e.getMessage());
+            }
+        } else {
+            throw new IOException("Server Got Disconnected. Please Try again.");
+        }
     }
 }

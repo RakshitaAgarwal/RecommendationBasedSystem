@@ -13,9 +13,8 @@ import org.cafeteria.common.model.*;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class AdminService extends UserManager {
 
@@ -37,24 +36,10 @@ public class AdminService extends UserManager {
             sc.nextLine();
 
             switch (choice) {
-                case 1 -> displayMenu();
+                case 1 -> handleDisplayMenu();
                 case 2 -> addMenuItem(fetchMenuItemFromUser());
-                case 3 -> {
-                    System.out.println("Enter name of the food Item you want to delete from menu:");
-                    String name = sc.nextLine();
-                    MenuItem menuItem = getFoodItemByName(name);
-                    if (menuItem != null) {
-                        deleteMenuItem(menuItem);
-                    } else {
-                        System.out.println("No such food item exists in the menu");
-                    }
-                }
-                case 4 -> {
-                    MenuItem menuItem = getUpdatedMenuItem();
-                    if (menuItem != null) {
-                        updateMenuItem(menuItem);
-                    }
-                }
+                case 3 -> handleDeleteMenuItem();
+                case 4 -> handleUpdateMenuItem();
                 case 5 -> {
                     connection.close();
                     return;
@@ -63,38 +48,59 @@ public class AdminService extends UserManager {
         }
     }
 
-    public static void displayMenu() throws IOException {
-        String request = createRequest(UserAction.SHOW_MENU, null);
-        System.out.println("request that is sent to server: " + request);
-        String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
-        if (response != null) {
-            try {
-                ParsedResponse parsedResponse = parseResponse(response);
-                ResponseCode responseCode = parsedResponse.getResponseCode();
-                if (responseCode == ResponseCode.OK) {
-                    List<MenuItem> menu = deserializeList(parsedResponse.getJsonData(), MenuItem.class);
-                    displayMenu(menu);
-                } else {
-                    System.out.println("Unexpected Response Code: " + responseCode);
-                }
-            } catch (InvalidResponseException e) {
-                System.out.println("Invalid Response Received from Server");
-            } catch (JsonSyntaxException e) {
-                System.out.println("Error deserializing JSON data: " + e.getMessage());
-            }
-        } else {
-            throw new IOException("Server Got Disconnected. Please Try again.");
-        }
+    public static void handleDisplayMenu() throws IOException {
+        List<MenuItem> menuItems = getMenuItems();
+        displayMenuItems(menuItems);
     }
 
-    private static void displayMenu(List<MenuItem> menu) {
-        System.out.println();
-        System.out.println("--------Food Item Menu--------");
-        for (MenuItem item : menu) {
-            System.out.println(item.getName() + "  " + item.getPrice() + " Rs  Available Status: " + item.isAvailable() + " Meal Type: " + getEnumFromOrdinal(MealTypeEnum.class, item.getMealTypeId()));
+    private static List<MenuItem> getMenuItems() throws IOException {
+        String request = createRequest(UserAction.SHOW_MENU, null);
+        System.out.println("request that is sent to server: " + request);
+
+        String response = connection.sendData(request);
+        System.out.println("response that is received from server: " + response);
+
+        if (response == null) {
+            throw new IOException("Server got disconnected. Please try again.");
         }
-        System.out.println("------------------------------");
+
+        try {
+            ParsedResponse parsedResponse = parseResponse(response);
+            ResponseCode responseCode = parsedResponse.getResponseCode();
+            if (responseCode == ResponseCode.OK) {
+                return deserializeList(parsedResponse.getJsonData(), MenuItem.class);
+            } else {
+                System.out.println("Some Error Occurred");
+            }
+        } catch (InvalidResponseException e) {
+            System.err.println("Invalid Response Received from Server" + e.getMessage());
+        } catch (JsonSyntaxException e) {
+            System.err.println("Error deserializing JSON data: " + e.getMessage());
+        }
+
+        return Collections.emptyList();
+    }
+
+    private static void displayMenuItems(List<MenuItem> menuItems) {
+        System.out.println();
+        System.out.println("------------------------Food Item Menu------------------------");
+        Map<Integer, List<MenuItem>> groupedItems = menuItems.stream()
+                .collect(Collectors.groupingBy(MenuItem::getMealTypeId));
+
+        for (Map.Entry<Integer, List<MenuItem>> entry : groupedItems.entrySet()) {
+            MealTypeEnum mealType = getEnumFromOrdinal(MealTypeEnum.class, entry.getKey());
+            System.out.println("\nMeal Type: " + (mealType != null ? mealType : "Unknown"));
+
+            for (MenuItem item : entry.getValue()) {
+                System.out.println("  ID: " + item.getId() +
+                        "  Name: " + item.getName() +
+                        "  Price: " + item.getPrice() +
+                        "Rs.  Available: " + (item.isAvailable() ? "Yes" : "No") +
+                        "  Last Prepared: " + (item.getLastTimePrepared() != null ? item.getLastTimePrepared() : "N/A")
+                );
+            }
+        }
+        System.out.println("--------------------------------------------------------------");
     }
 
     private void addMenuItem(MenuItem menuItem) {
@@ -123,6 +129,24 @@ public class AdminService extends UserManager {
         System.out.println("Enter the Meal type of the food item: 1. Lunch, 2. Breakfast, 3. Dinner");
         int mealTypeId = sc.nextInt();
         return new MenuItem(name, price, isAvailable, mealTypeId);
+    }
+
+    private void handleUpdateMenuItem() {
+        MenuItem menuItem = getUpdatedMenuItem();
+        if (menuItem != null) {
+            updateMenuItem(menuItem);
+        }
+    }
+
+    private void handleDeleteMenuItem() {
+        System.out.println("Enter name of the food Item you want to delete from menu:");
+        String name = sc.nextLine();
+        MenuItem menuItem = getFoodItemByName(name);
+        if (menuItem != null) {
+            deleteMenuItem(menuItem);
+        } else {
+            System.out.println("No such food item exists in the menu");
+        }
     }
 
     public static MenuItem getFoodItemByName(@NotNull String name) {

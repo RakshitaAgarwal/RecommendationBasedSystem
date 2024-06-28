@@ -16,7 +16,7 @@ public class Server {
     public static FeedbackController feedbackController;
     public static RolledOutMenuItemController rolledOutMenuItemController;
     public static NotificationController notificationController;
-    public static PreparedMenuController preparedMenuController;
+    public static PreparedMenuItemController preparedMenuItemController;
 
     public static VotingController votingController;
     public static RecommendationController recommendationController;
@@ -36,7 +36,7 @@ public class Server {
         feedbackController = new FeedbackController();
         rolledOutMenuItemController = new RolledOutMenuItemController();
         notificationController = new NotificationController();
-        preparedMenuController = new PreparedMenuController();
+        preparedMenuItemController = new PreparedMenuItemController();
         votingController = new VotingController();
         recommendationController = new RecommendationController();
     }

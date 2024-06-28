@@ -7,6 +7,11 @@ public class PreparedMenu {
     private int menuItemId;
     private Date date;
 
+    public PreparedMenu(int menuItemId, Date date) {
+        this.menuItemId = menuItemId;
+        this.date = date;
+    }
+
     public int getId() {
         return id;
     }

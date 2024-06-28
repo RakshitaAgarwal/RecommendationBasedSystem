@@ -25,6 +25,11 @@ public class UserRepository implements IUserRepository {
     }
 
     @Override
+    public boolean addBatch(List<User> items) throws SQLException {
+        return false;
+    }
+
+    @Override
     public boolean delete(User item) {
 
         return false;

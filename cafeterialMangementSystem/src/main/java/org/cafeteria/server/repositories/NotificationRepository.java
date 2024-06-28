@@ -35,6 +35,11 @@ public class NotificationRepository implements INotificationRepository {
     }
 
     @Override
+    public boolean addBatch(List<Notification> items) throws SQLException {
+        return false;
+    }
+
+    @Override
     public boolean delete(Notification item) {
 
         return false;

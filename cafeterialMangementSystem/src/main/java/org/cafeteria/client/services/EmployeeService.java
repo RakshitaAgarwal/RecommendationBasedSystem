@@ -31,7 +31,7 @@ public class EmployeeService extends UserManager {
             sc.nextLine();
 
             switch (choice) {
-                case 1 -> displayMenu();
+                case 1 -> handleDisplayMenu();
                 case 2 -> seeNotifications();
                 case 3 -> handleNextDayMealVoting();
                 case 4 -> provideFeedback();

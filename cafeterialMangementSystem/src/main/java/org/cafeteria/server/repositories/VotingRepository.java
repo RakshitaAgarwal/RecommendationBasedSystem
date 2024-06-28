@@ -30,6 +30,11 @@ public class VotingRepository implements IVotingRepository {
     }
 
     @Override
+    public boolean addBatch(List<Vote> items) throws SQLException {
+        return false;
+    }
+
+    @Override
     public boolean delete(Vote item) throws SQLException {
         return false;
     }

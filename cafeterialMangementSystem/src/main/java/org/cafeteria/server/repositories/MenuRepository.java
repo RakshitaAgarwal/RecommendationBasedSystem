@@ -31,6 +31,11 @@ public class MenuRepository implements IMenuRepository {
     }
 
     @Override
+    public boolean addBatch(List<MenuItem> items) throws SQLException {
+        return false;
+    }
+
+    @Override
     public boolean delete(MenuItem item) throws SQLException {
         String query = "DELETE FROM menu WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {

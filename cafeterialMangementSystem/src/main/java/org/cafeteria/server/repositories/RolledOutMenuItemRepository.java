@@ -30,6 +30,11 @@ public class RolledOutMenuItemRepository implements IRolledOutMenuItemRepository
     }
 
     @Override
+    public boolean addBatch(List<RolledOutMenuItem> items) throws SQLException {
+        return false;
+    }
+
+    @Override
     public boolean delete(RolledOutMenuItem item) {
 
         return false;

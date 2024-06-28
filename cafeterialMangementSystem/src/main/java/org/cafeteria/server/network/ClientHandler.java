@@ -75,8 +75,6 @@ public class ClientHandler implements Runnable {
 
             case PROVIDE_FEEDBACK -> response = feedbackController.addFeedback(request);
 
-            case UPDATE_NEXT_DAY_FINAL_MENU -> response = preparedMenuController.updateDailyFoodMenu(request);
-
             case SEE_NOTIFICATIONS -> response = notificationController.getUserNotification(request);
 
             case VOTE_NEXT_DAY_MENU -> response = votingController.voteForNextDayMenu(request);
@@ -90,6 +88,8 @@ public class ClientHandler implements Runnable {
             case ROLL_OUT_NEXT_DAY_MENU_OPTIONS -> response = rolledOutMenuItemController.rollOutNextDayMenuOptions(request);
 
             case GET_NEXT_DAY_MENU_OPTIONS -> response = rolledOutMenuItemController.getNextDayMenuOptions();
+
+            case UPDATE_NEXT_DAY_FINAL_MENU -> response = preparedMenuItemController.updateDailyFoodMenu(request);
         }
         return response;
     }
