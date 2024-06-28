@@ -11,10 +11,7 @@ import static org.cafeteria.client.services.AdminService.handleDisplayMenu;
 import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class ChefService extends UserManager {
     private static ChefRepository chefRepository;
@@ -51,17 +48,41 @@ public class ChefService extends UserManager {
 
     private void seeVotingForRolledOutItems() throws IOException {
         Map<Integer, Integer> nextDayVoting = chefRepository.getVotingForMenuItem();
-        displayVoting(nextDayVoting);
+        Map<MealTypeEnum, List<String>> categorizedVoting = categorizeVotesByMealType(nextDayVoting);
+        displayVoting(categorizedVoting);
     }
 
-    private void displayVoting(Map<Integer, Integer> nextDayVoting) {
-        System.out.println();
-        System.out.println("--------Votes For Next Day menu--------");
+    private Map<MealTypeEnum, List<String>> categorizeVotesByMealType(Map<Integer, Integer> nextDayVoting) {
+        Map<MealTypeEnum, List<String>> categorizedVotes = new HashMap<>();
+
         for (Map.Entry<Integer, Integer> entry : nextDayVoting.entrySet()) {
             int menuItemId = entry.getKey();
+            MenuItem menuItem = getMenuItemById(menuItemId);
+            MealTypeEnum mealType = getEnumFromOrdinal(MealTypeEnum.class, menuItem.getMealTypeId());
+
             int votes = entry.getValue();
 
-            System.out.println("Menu Item Id: " + menuItemId + ",  No of votes : " + votes);
+            String menuItemWithVotes = "MenuItemId: " + menuItemId + ", Votes: " + votes;
+            categorizedVotes.computeIfAbsent(mealType, k -> new ArrayList<>());
+            categorizedVotes.get(mealType).add(menuItemWithVotes);
+        }
+
+        return categorizedVotes;
+    }
+
+    private void displayVoting(Map<MealTypeEnum, List<String>> categorizedVotes) {
+        System.out.println();
+        System.out.println("--------Votes For Next Day menu--------");
+        for (Map.Entry<MealTypeEnum, List<String>> entry : categorizedVotes.entrySet()) {
+            MealTypeEnum mealType = entry.getKey();
+            List<String> menuItemsWithVotes = entry.getValue();
+
+            System.out.println("Meal Type: " + mealType);
+
+            for (String menuItemWithVotes : menuItemsWithVotes) {
+                System.out.println("  " + menuItemWithVotes);
+            }
+            System.out.println();
         }
         System.out.println("---------------------------------------");
     }
