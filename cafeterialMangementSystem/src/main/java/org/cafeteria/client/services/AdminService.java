@@ -1,25 +1,28 @@
 package org.cafeteria.client.services;
 
-import com.google.gson.JsonSyntaxException;
-import com.sun.istack.NotNull;
-
-import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
-import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
-
 import org.cafeteria.client.network.ServerConnection;
-import org.cafeteria.common.customException.CustomExceptions.*;
-import org.cafeteria.common.model.*;
+import org.cafeteria.client.repositories.AdminRepository;
+import org.cafeteria.common.model.MealTypeEnum;
+import org.cafeteria.common.model.MenuItem;
+import org.cafeteria.common.model.User;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.stream.Collectors;
+
+import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 public class AdminService extends UserManager {
 
+    private static AdminRepository adminRepository;
     public AdminService(ServerConnection connection, User user, Scanner scanner) {
-        super(connection, user, scanner);
+        super(user, scanner);
+        adminRepository = new AdminRepository(connection);
     }
 
     @Override
@@ -37,11 +40,11 @@ public class AdminService extends UserManager {
 
             switch (choice) {
                 case 1 -> handleDisplayMenu();
-                case 2 -> addMenuItem(fetchMenuItemFromUser());
+                case 2 -> adminRepository.addMenuItem(fetchMenuItemFromUser());
                 case 3 -> handleDeleteMenuItem();
                 case 4 -> handleUpdateMenuItem();
                 case 5 -> {
-                    connection.close();
+                    adminRepository.closeConnection();
                     return;
                 }
             }
@@ -49,36 +52,8 @@ public class AdminService extends UserManager {
     }
 
     public static void handleDisplayMenu() throws IOException {
-        List<MenuItem> menuItems = getMenuItems();
+        List<MenuItem> menuItems = adminRepository.getMenuItems();
         displayMenuItems(menuItems);
-    }
-
-    private static List<MenuItem> getMenuItems() throws IOException {
-        String request = createRequest(UserAction.SHOW_MENU, null);
-        System.out.println("request that is sent to server: " + request);
-
-        String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
-
-        if (response == null) {
-            throw new IOException("Server got disconnected. Please try again.");
-        }
-
-        try {
-            ParsedResponse parsedResponse = parseResponse(response);
-            ResponseCode responseCode = parsedResponse.getResponseCode();
-            if (responseCode == ResponseCode.OK) {
-                return deserializeList(parsedResponse.getJsonData(), MenuItem.class);
-            } else {
-                System.out.println("Some Error Occurred");
-            }
-        } catch (InvalidResponseException e) {
-            System.err.println("Invalid Response Received from Server" + e.getMessage());
-        } catch (JsonSyntaxException e) {
-            System.err.println("Error deserializing JSON data: " + e.getMessage());
-        }
-
-        return Collections.emptyList();
     }
 
     private static void displayMenuItems(List<MenuItem> menuItems) {
@@ -103,21 +78,6 @@ public class AdminService extends UserManager {
         System.out.println("--------------------------------------------------------------");
     }
 
-    private void addMenuItem(MenuItem menuItem) {
-        String request = createRequest(UserAction.ADD_MENU_ITEM, serializeData(menuItem));
-        System.out.println("request that is sent to server: " + request);
-        String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
-        try {
-            ParsedResponse parsedResponse = parseResponse(response);
-            ResponseCode responseCode = parsedResponse.getResponseCode();
-            if (responseCode == ResponseCode.OK)
-                System.out.println("Food Item Added Successfully in the Menu.");
-            else System.out.println("Some Error Occurred!!");
-        } catch (InvalidResponseException e) {
-            System.out.println("Invalid Response Received from Server");
-        }
-    }
 
     private MenuItem fetchMenuItemFromUser() {
         System.out.println("Enter name of the food item to add in the menu:");
@@ -132,76 +92,27 @@ public class AdminService extends UserManager {
     }
 
     private void handleUpdateMenuItem() {
-        MenuItem menuItem = getUpdatedMenuItem();
+        MenuItem menuItem = takeUserInputForItemUpdate();
         if (menuItem != null) {
-            updateMenuItem(menuItem);
+            adminRepository.updateMenuItem(menuItem);
         }
     }
 
     private void handleDeleteMenuItem() {
         System.out.println("Enter name of the food Item you want to delete from menu:");
         String name = sc.nextLine();
-        MenuItem menuItem = getFoodItemByName(name);
+        MenuItem menuItem = adminRepository.getFoodItemByName(name);
         if (menuItem != null) {
-            deleteMenuItem(menuItem);
+            adminRepository.deleteMenuItem(menuItem);
         } else {
             System.out.println("No such food item exists in the menu");
         }
     }
 
-    public static MenuItem getFoodItemByName(@NotNull String name) {
-        String request = createRequest(UserAction.GET_MENU_ITEM_BY_NAME, serializeData(name));
-        System.out.println("request that is sent to server: " + request);
-        String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
-        try {
-            ParsedResponse parsedResponse = parseResponse(response);
-            ResponseCode responseCode = parsedResponse.getResponseCode();
-            if (responseCode == ResponseCode.OK)
-                return deserializeData(parsedResponse.getJsonData(), MenuItem.class);
-        } catch (InvalidResponseException e) {
-            System.out.println("Invalid Response Received from Server");
-        }
-        return null;
-    }
-
-    public static MenuItem getMenuItemById(@NotNull int id) {
-        String request = createRequest(UserAction.GET_MENU_ITEM_BY_ID, serializeData(id));
-        System.out.println("request that is sent to server: " + request);
-        String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
-        try {
-            ParsedResponse parsedResponse = parseResponse(response);
-            ResponseCode responseCode = parsedResponse.getResponseCode();
-            if (responseCode == ResponseCode.OK)
-                return deserializeData(parsedResponse.getJsonData(), MenuItem.class);
-        } catch (InvalidResponseException e) {
-            System.out.println("Invalid Response Received from Server");
-        }
-        return null;
-    }
-
-
-    private void deleteMenuItem(MenuItem menuItem) {
-        String request = createRequest(UserAction.DELETE_MENU_ITEM, serializeData(menuItem));
-        System.out.println("request that is sent to server: " + request);
-        String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
-        try {
-            ParsedResponse parsedResponse = parseResponse(response);
-            ResponseCode responseCode = parsedResponse.getResponseCode();
-            if (responseCode == ResponseCode.OK)
-                System.out.println("Food Item Deleted Successfully from the Menu.");
-            else System.out.println("Some Error Occurred!!");
-        } catch (InvalidResponseException e) {
-            System.out.println("Invalid Response Received from Server");
-        }
-    }
-
-    private MenuItem getUpdatedMenuItem() {
+    private MenuItem takeUserInputForItemUpdate() {
         System.out.print("Enter the name of the food item you want to update: ");
         String name = sc.nextLine();
-        MenuItem menuItem = getFoodItemByName(name);
+        MenuItem menuItem = adminRepository.getFoodItemByName(name);
         if (menuItem != null) {
             System.out.println("Food item found: " + menuItem.getName());
             System.out.println("1. Update Price");
@@ -245,22 +156,6 @@ public class AdminService extends UserManager {
         } else {
             System.out.println("Food item with name '" + name + "' does not exist.");
             return null;
-        }
-    }
-
-    private void updateMenuItem(MenuItem menuItem) {
-        String request = createRequest(UserAction.UPDATE_MENU_ITEM, serializeData(menuItem));
-        System.out.println("request that is sent to server: " + request);
-        String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
-        try {
-            ParsedResponse parsedResponse = parseResponse(response);
-            ResponseCode responseCode = parsedResponse.getResponseCode();
-            if (responseCode == ResponseCode.OK)
-                System.out.println("Food Item Updated Successfully in the Menu.");
-            else System.out.println("Some Error Occurred!!");
-        } catch (InvalidResponseException e) {
-            System.out.println("Invalid Response Received from Server");
         }
     }
 }

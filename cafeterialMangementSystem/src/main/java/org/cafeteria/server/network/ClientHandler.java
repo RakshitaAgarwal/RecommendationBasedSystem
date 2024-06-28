@@ -65,7 +65,7 @@ public class ClientHandler implements Runnable {
 
             case UPDATE_MENU_ITEM -> response = menuController.updateMenuItem(request);
 
-            case SHOW_MENU -> response = menuController.ShowMenuItems();
+            case GET_ALL_MENU_ITEMS -> response = menuController.ShowMenuItems();
 
             case GET_MENU_ITEM_BY_NAME -> response = menuController.getMenuItemByName(request);
 

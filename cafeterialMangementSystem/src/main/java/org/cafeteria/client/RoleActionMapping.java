@@ -18,13 +18,13 @@ public class RoleActionMapping {
                 UserAction.ADD_MENU_ITEM,
                 UserAction.DELETE_MENU_ITEM,
                 UserAction.UPDATE_MENU_ITEM,
-                UserAction.SHOW_MENU
+                UserAction.GET_ALL_MENU_ITEMS
         ));
 
         roleActionMap.put(UserRoleEnum.CHEF, EnumSet.of(
                 UserAction.LOGIN,
                 UserAction.CREATE_USER,
-                UserAction.SHOW_MENU,
+                UserAction.GET_ALL_MENU_ITEMS,
                 UserAction.SEE_MONTHLY_REPORT,
                 UserAction.ROLL_OUT_NEXT_DAY_MENU_OPTIONS
         ));
@@ -33,7 +33,7 @@ public class RoleActionMapping {
                 UserAction.LOGIN,
                 UserAction.CREATE_USER,
                 UserAction.SEE_NOTIFICATIONS,
-                UserAction.SHOW_MENU,
+                UserAction.GET_ALL_MENU_ITEMS,
                 UserAction.VOTE_NEXT_DAY_MENU,
                 UserAction.PROVIDE_FEEDBACK
         ));

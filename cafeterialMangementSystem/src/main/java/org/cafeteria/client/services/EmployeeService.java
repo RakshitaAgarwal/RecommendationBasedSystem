@@ -1,21 +1,22 @@
 package org.cafeteria.client.services;
 
-import com.google.gson.JsonSyntaxException;
 import org.cafeteria.client.global.GlobalData;
 import org.cafeteria.client.network.ServerConnection;
-import org.cafeteria.common.customException.CustomExceptions;
+import org.cafeteria.client.repositories.EmployeeRepository;
 import org.cafeteria.common.model.*;
+import static org.cafeteria.client.repositories.AdminRepository.getFoodItemByName;
+import static org.cafeteria.client.repositories.AdminRepository.getMenuItemById;
+import static org.cafeteria.client.services.AdminService.handleDisplayMenu;
 
 import java.io.IOException;
 import java.util.*;
 
-import static org.cafeteria.client.services.AdminService.*;
-import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
-
 public class EmployeeService extends UserManager {
+    private static EmployeeRepository employeeRepository;
 
     public EmployeeService(ServerConnection connection, User user, Scanner sc) {
-        super(connection, user, sc);
+        super(user, sc);
+        employeeRepository = new EmployeeRepository(connection);
     }
 
     @Override
@@ -32,30 +33,14 @@ public class EmployeeService extends UserManager {
 
             switch (choice) {
                 case 1 -> handleDisplayMenu();
-                case 2 -> seeNotifications();
+                case 2 -> displayUserNotifications(employeeRepository.seeNotifications());
                 case 3 -> handleNextDayMealVoting();
-                case 4 -> provideFeedback();
+                case 4 -> employeeRepository.provideFeedback(takeUserFeedback());
                 case 5 -> {
-                    connection.close();
+                    employeeRepository.closeConnection();
                     return;
                 }
             }
-        }
-    }
-
-    public void seeNotifications() {
-        String request = createRequest(UserAction.SEE_NOTIFICATIONS, serializeData(GlobalData.loggedInUser));
-        System.out.println("request that is sent to server: " + request);
-        String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
-        try {
-            ParsedResponse parsedResponse = parseResponse(response);
-            ResponseCode responseCode = parsedResponse.getResponseCode();
-            if (responseCode == ResponseCode.OK) {
-                displayUserNotifications(deserializeList(parsedResponse.getJsonData(), Notification.class));
-            } else System.out.println("Some Error Occurred!!");
-        } catch (CustomExceptions.InvalidResponseException e) {
-            System.out.println("Invalid Response Received from Server");
         }
     }
 
@@ -78,7 +63,7 @@ public class EmployeeService extends UserManager {
     }
 
     public void handleNextDayMealVoting() throws IOException {
-        List<RolledOutMenuItem> rolledOutItems = getRolledOutMenuItems();
+        List<RolledOutMenuItem> rolledOutItems = employeeRepository.getRolledOutMenuItems();
         int isContinue;
         do {
             System.out.println("\nSelect the Meal Type index you want to cast vote for (1. Lunch 2. Breakfast 3. Dinner):");
@@ -90,7 +75,7 @@ public class EmployeeService extends UserManager {
                 int menuItemId = rolledOutItem.getMenuItemId();
                 MenuItem menuItem = getMenuItemById(menuItemId);
                 if (menuItem.getMealTypeId() == mealTypeId) {
-                    MenuItemRecommendation menuItemRecommendation = getRecommendationScoreForMenuItem(menuItemId);
+                    MenuItemRecommendation menuItemRecommendation = employeeRepository.getRecommendationScoreForMenuItem(menuItemId);
 
                     String menuItemRecommendationScore = menuItem.getName() + " " + menuItemRecommendation.getRecommendationScore() + " " + menuItemRecommendation.getSentimentOfItem();
                     rolledOutItemsMap.put(menuItemId, menuItemRecommendationScore);
@@ -106,7 +91,7 @@ public class EmployeeService extends UserManager {
 
             if (rolledOutItemsMap.containsKey(selectedIndex)) {
                 Vote userVote = new Vote(selectedIndex, GlobalData.loggedInUser.getId(), new Date());
-                voteForMenuItem(userVote);
+                employeeRepository.voteForMenuItem(userVote);
             } else {
                 System.out.println("Invalid selection");
             }
@@ -115,84 +100,7 @@ public class EmployeeService extends UserManager {
         } while (isContinue == 1);
     }
 
-    private MenuItemRecommendation getRecommendationScoreForMenuItem(int menuItemId) {
-        String request = createRequest(UserAction.GET_MENU_ITEM_RECOMMENDATION_SCORE, serializeData(menuItemId));
-        System.out.println("request that is sent to server: " + request);
-        String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
-        try {
-            ParsedResponse parsedResponse = parseResponse(response);
-            ResponseCode responseCode = parsedResponse.getResponseCode();
-            if (responseCode == ResponseCode.OK) {
-                return deserializeData(parsedResponse.getJsonData(), MenuItemRecommendation.class);
-            } else System.out.println("Some Error Occurred while getting Rolled Out Items!!");
-        } catch (CustomExceptions.InvalidResponseException e) {
-            System.out.println("Invalid Response Received from Server");
-        }
-        return null;
-    }
 
-    private List<RolledOutMenuItem> getRolledOutMenuItems() {
-        String request = createRequest(UserAction.GET_NEXT_DAY_MENU_OPTIONS, null);
-        System.out.println("request that is sent to server: " + request);
-        String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
-        try {
-            ParsedResponse parsedResponse = parseResponse(response);
-            ResponseCode responseCode = parsedResponse.getResponseCode();
-            if (responseCode == ResponseCode.OK) {
-                return deserializeList(parsedResponse.getJsonData(), RolledOutMenuItem.class);
-            } else System.out.println("Some Error Occurred while getting Rolled Out Items!!");
-        } catch (CustomExceptions.InvalidResponseException e) {
-            System.out.println("Invalid Response Received from Server");
-        }
-        return null;
-    }
-
-    private void voteForMenuItem(Vote userVote) throws IOException {
-        String request = createRequest(UserAction.VOTE_NEXT_DAY_MENU, serializeData(userVote));
-        System.out.println("request that is sent to server: " + request);
-        String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
-        if (response != null) {
-            try {
-                ParsedResponse parsedResponse = parseResponse(response);
-                ResponseCode responseCode = parsedResponse.getResponseCode();
-                if (responseCode == ResponseCode.OK) {
-                    System.out.println("Your vote has been successfully recorded.");
-                } else if (responseCode == ResponseCode.BAD_REQUEST) {
-                    System.out.println(deserializeData(parsedResponse.getJsonData(), String.class));
-                } else {
-                    System.out.println("Some error occurred while casting the vote");
-                }
-            } catch (CustomExceptions.InvalidResponseException e) {
-                System.out.println("Invalid Response Received from Server");
-            } catch (JsonSyntaxException e) {
-                System.out.println("Error deserializing JSON data: " + e.getMessage());
-            }
-        } else {
-            throw new IOException("Server Got Disconnected. Please Try again.");
-        }
-    }
-
-    public void provideFeedback() {
-        Feedback feedback = takeUserFeedback();
-        if (feedback != null) {
-            String request = createRequest(UserAction.PROVIDE_FEEDBACK, serializeData(feedback));
-            System.out.println("request that is sent to server: " + request);
-            String response = connection.sendData(request);
-            System.out.println("response that is received from server: " + response);
-            try {
-                ParsedResponse parsedResponse = parseResponse(response);
-                ResponseCode responseCode = parsedResponse.getResponseCode();
-                if (responseCode == ResponseCode.OK)
-                    System.out.println("Feedback updated Successfully.");
-                else System.out.println("Some Error Occurred!!");
-            } catch (CustomExceptions.InvalidResponseException e) {
-                System.out.println("Invalid Response Received from Server");
-            }
-        }
-    }
 
     private Feedback takeUserFeedback() {
         Feedback feedback = new Feedback();

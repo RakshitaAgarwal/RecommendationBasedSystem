@@ -1,47 +1,48 @@
 package org.cafeteria.client.services;
 
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
 import org.cafeteria.client.network.ServerConnection;
-import org.cafeteria.common.customException.CustomExceptions;
-import org.cafeteria.common.model.*;
-
-import static org.cafeteria.client.services.AdminService.getMenuItemById;
+import org.cafeteria.client.repositories.ChefRepository;
+import org.cafeteria.common.model.MealTypeEnum;
+import org.cafeteria.common.model.MenuItem;
+import org.cafeteria.common.model.MenuItemRecommendation;
+import org.cafeteria.common.model.User;
+import static org.cafeteria.client.repositories.AdminRepository.getMenuItemById;
 import static org.cafeteria.client.services.AdminService.handleDisplayMenu;
-import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
 public class ChefService extends UserManager {
+    private static ChefRepository chefRepository;
 
     public ChefService(ServerConnection connection, User user, Scanner sc) {
-        super(connection, user, sc);
+        super(user, sc);
+        chefRepository = new ChefRepository(connection);
     }
 
     @Override
     public void showUserActionItems() throws IOException {
         while (true) {
             System.out.println("1. Show Menu");
-            System.out.println("2. See Monthly Report");
-            System.out.println("3. Roll Out Items for Next Day Menu");
-            System.out.println("4. See Voting for Rolled out Menu Items");
-            System.out.println("5. Update Next Day final Menu Items");
-            System.out.println("6. Exit");
+            System.out.println("2. Roll Out Items for Next Day Menu");
+            System.out.println("3. See Voting for Rolled out Menu Items");
+            System.out.println("4. Update Next Day final Menu Items");
+            System.out.println("5. Exit");
             System.out.println("Enter your Choice: ");
             int choice = sc.nextInt();
             sc.nextLine();
 
             switch (choice) {
                 case 1 -> handleDisplayMenu();
-                case 2 -> seeMonthlyReport();
-                case 3 -> handleRollOutNextDayMenuOptions();
-                case 4 -> seeVotingForRolledOutItems();
-                case 5 -> handleUpdateNextDayFinalMenu();
-                case 6 -> {
-                    connection.close();
+                case 2 -> handleRollOutNextDayMenuOptions();
+                case 3 -> seeVotingForRolledOutItems();
+                case 4 -> handleUpdateNextDayFinalMenu();
+                case 5 -> {
+                    chefRepository.closeConnection();
                     return;
                 }
             }
@@ -49,35 +50,8 @@ public class ChefService extends UserManager {
     }
 
     private void seeVotingForRolledOutItems() throws IOException {
-        Map<Integer, Integer> nextDayVoting = getVotingForMenuItem();
+        Map<Integer, Integer> nextDayVoting = chefRepository.getVotingForMenuItem();
         displayVoting(nextDayVoting);
-    }
-
-    private Map<Integer, Integer> getVotingForMenuItem() throws IOException {
-        String request = createRequest(UserAction.GET_VOTING_FOR_NEXT_DAY_MENU, serializeData(new Date()));
-        System.out.println("request that is sent to server: " + request);
-        String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
-        if (response != null) {
-            try {
-                ParsedResponse parsedResponse = parseResponse(response);
-                ResponseCode responseCode = parsedResponse.getResponseCode();
-                if (responseCode == ResponseCode.OK) {
-                    Type mapType = new TypeToken<Map<Integer, Integer>>() {
-                    }.getType();
-                    return deserializeMap(parsedResponse.getJsonData(), mapType);
-                } else {
-                    System.out.println("Unexpected Response Code: " + responseCode);
-                }
-            } catch (CustomExceptions.InvalidResponseException e) {
-                System.out.println("Invalid Response Received from Server");
-            } catch (JsonSyntaxException e) {
-                System.out.println("Error deserializing JSON data: " + e.getMessage());
-            }
-        } else {
-            throw new IOException("Server Got Disconnected. Please Try again.");
-        }
-        return null;
     }
 
     private void displayVoting(Map<Integer, Integer> nextDayVoting) {
@@ -92,13 +66,8 @@ public class ChefService extends UserManager {
         System.out.println("---------------------------------------");
     }
 
-    public void seeMonthlyReport() {
-        String response = connection.sendData("SEE_MONTHLY_REPORT");
-        System.out.println(response);
-    }
-
     public void handleRollOutNextDayMenuOptions() {
-        Map<MealTypeEnum, List<MenuItemRecommendation>> recommendedItems = getRecommendationsForNextDayMenu();
+        Map<MealTypeEnum, List<MenuItemRecommendation>> recommendedItems = chefRepository.getRecommendationsForNextDayMenu();
         List<Integer> rolledOutItems = new ArrayList<>();
         if (recommendedItems == null || recommendedItems.isEmpty()) {
             rollOutRandomItems();
@@ -107,27 +76,8 @@ public class ChefService extends UserManager {
             rolledOutItems = getTopRolledOutMenuItemIds(recommendedItems, 5);
         }
         if (!rolledOutItems.isEmpty()) {
-            processRollOutMenuOptions(rolledOutItems);
+            chefRepository.processRollOutMenuOptions(rolledOutItems);
         }
-    }
-
-    private Map<MealTypeEnum, List<MenuItemRecommendation>> getRecommendationsForNextDayMenu() {
-        String request = createRequest(UserAction.GET_RECOMMENDATION_FOR_NEXT_DAY_MENU, null);
-        System.out.println("request that is sent to server: " + request);
-        String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
-        try {
-            ParsedResponse parsedResponse = parseResponse(response);
-            ResponseCode responseCode = parsedResponse.getResponseCode();
-            if (responseCode == ResponseCode.OK) {
-                Type mapType = new TypeToken<Map<MealTypeEnum, List<MenuItemRecommendation>>>() {
-                }.getType();
-                return deserializeMap(parsedResponse.getJsonData(), mapType);
-            } else System.out.println("Some Error Occurred while getting recommendations!!");
-        } catch (CustomExceptions.InvalidResponseException e) {
-            System.out.println("Invalid Response Received from Server");
-        }
-        return null;
     }
 
     private void rollOutRandomItems() {
@@ -163,22 +113,6 @@ public class ChefService extends UserManager {
         return menuItemIds;
     }
 
-    private void processRollOutMenuOptions(List<Integer> rolledOutItems) {
-        String request = createRequest(UserAction.ROLL_OUT_NEXT_DAY_MENU_OPTIONS, serializeData(rolledOutItems));
-        System.out.println("request that is sent to server: " + request);
-        String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
-        try {
-            ParsedResponse parsedResponse = parseResponse(response);
-            ResponseCode responseCode = parsedResponse.getResponseCode();
-            if (responseCode == ResponseCode.OK) {
-                System.out.println("Items rolled out successfully for voting");
-            } else System.out.println("Some Error Occurred!!");
-        } catch (CustomExceptions.InvalidResponseException e) {
-            System.out.println("Invalid Response Received from Server");
-        }
-    }
-
     private void handleUpdateNextDayFinalMenu() throws IOException {
         List<Integer> preparedMenuItemIds = new ArrayList<>();
         for (MealTypeEnum mealType : MealTypeEnum.values()) {
@@ -202,28 +136,9 @@ public class ChefService extends UserManager {
             }
         }
         if (preparedMenuItemIds.size() == MealTypeEnum.values().length) {
-            processUpdatingFinalMenu(preparedMenuItemIds);
+            chefRepository.processUpdatingFinalMenu(preparedMenuItemIds);
         } else {
             System.out.println("Invalid Input!!. Please Try again later.");
-        }
-    }
-
-    private void processUpdatingFinalMenu(List<Integer> preparedMenuItemIds) throws IOException {
-        String request = createRequest(UserAction.UPDATE_NEXT_DAY_FINAL_MENU, serializeData(preparedMenuItemIds));
-        System.out.println("request that is sent to server: " + request);
-        String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
-        if (response != null) {
-            try {
-                ParsedResponse parsedResponse = parseResponse(response);
-                System.out.println(deserializeData(parsedResponse.getJsonData(), String.class));
-            } catch (CustomExceptions.InvalidResponseException e) {
-                System.out.println("Invalid Response Received from Server");
-            } catch (JsonSyntaxException e) {
-                System.out.println("Error deserializing JSON data: " + e.getMessage());
-            }
-        } else {
-            throw new IOException("Server Got Disconnected. Please Try again.");
         }
     }
 }
