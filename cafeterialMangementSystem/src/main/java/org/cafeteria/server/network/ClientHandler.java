@@ -2,8 +2,6 @@ package org.cafeteria.server.network;
 
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.ParsedRequest;
-import org.cafeteria.server.controller.RecommendationController;
-
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.parseRequest;
 import static org.cafeteria.server.Server.*;
 
@@ -83,13 +81,15 @@ public class ClientHandler implements Runnable {
 
             case VOTE_NEXT_DAY_MENU -> response = votingController.voteForNextDayMenu(request);
 
-            case GET_RECOMMENDATION_FOR_NEXT_DAY_MENU -> response = rolledOutMenuItemController.getRecommendationsForNextDayMenu();
+            case GET_VOTING_FOR_NEXT_DAY_MENU -> response = votingController.getVotingForNextDayMenu(request);
 
             case GET_MENU_ITEM_RECOMMENDATION_SCORE -> response = recommendationController.getRecommendationScoreForMenuItem(request);
 
+            case GET_RECOMMENDATION_FOR_NEXT_DAY_MENU -> response = recommendationController.getRecommendationsForNextDayMenu();
+
             case ROLL_OUT_NEXT_DAY_MENU_OPTIONS -> response = rolledOutMenuItemController.rollOutNextDayMenuOptions(request);
 
-            case GET_NEXT_DAY_MENU_OPTIONS -> response = rolledOutMenuItemController.getNextDayMenuOptions(request);
+            case GET_NEXT_DAY_MENU_OPTIONS -> response = rolledOutMenuItemController.getNextDayMenuOptions();
         }
         return response;
     }

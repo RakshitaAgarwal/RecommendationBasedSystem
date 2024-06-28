@@ -1,14 +1,14 @@
 package org.cafeteria.server.repositories;
 
-import org.cafeteria.common.model.MenuItemUserVote;
+import org.cafeteria.common.model.Vote;
 import org.cafeteria.server.network.JdbcConnection;
 import org.cafeteria.server.repositories.interfaces.IVotingRepository;
+
 import static org.cafeteria.common.util.Utils.dateToTimestamp;
 import static org.cafeteria.common.util.Utils.timestampToDate;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.Date;
 
 public class VotingRepository implements IVotingRepository {
@@ -19,7 +19,7 @@ public class VotingRepository implements IVotingRepository {
     }
 
     @Override
-    public boolean add(MenuItemUserVote item) throws SQLException {
+    public boolean add(Vote item) throws SQLException {
         String query = "INSERT INTO MenuItemUserVote (menuItemId, userId, dateTime) VALUES (?, ?, ?);";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, item.getMenuItemId());
@@ -30,32 +30,32 @@ public class VotingRepository implements IVotingRepository {
     }
 
     @Override
-    public boolean delete(MenuItemUserVote item) throws SQLException {
+    public boolean delete(Vote item) throws SQLException {
         return false;
     }
 
     @Override
-    public boolean update(MenuItemUserVote item) throws SQLException {
+    public boolean update(Vote item) throws SQLException {
         return false;
     }
 
     @Override
-    public List<MenuItemUserVote> GetAll() throws SQLException {
+    public List<Vote> GetAll() throws SQLException {
         return null;
     }
 
     @Override
-    public MenuItemUserVote getById(int id) throws SQLException {
+    public Vote getById(int id) throws SQLException {
         return null;
     }
 
     @Override
-    public List<MenuItemUserVote> getByUserCurrentDate(int userId, String date) throws SQLException {
+    public List<Vote> getByUserCurrentDate(int userId, String date) throws SQLException {
         String query = "SELECT * FROM MenuItemUserVote WHERE userId = ? AND DATE(dateTime) = ?";
-        List<MenuItemUserVote> userVotes = new ArrayList<>();
+        List<Vote> userVotes = new ArrayList<>();
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1,userId);
+            statement.setInt(1, userId);
             statement.setString(2, date);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -63,7 +63,7 @@ public class VotingRepository implements IVotingRepository {
                 int menuItemId = resultSet.getInt("menuItemId");
                 Date dateTime = timestampToDate(resultSet.getTimestamp("dateTime"));
 
-                MenuItemUserVote userVote = new MenuItemUserVote();
+                Vote userVote = new Vote();
                 userVote.setId(id);
                 userVote.setUserId(userId);
                 userVote.setMenuItemId(menuItemId);
@@ -74,5 +74,49 @@ public class VotingRepository implements IVotingRepository {
         }
 
         return userVotes;
+    }
+
+    @Override
+    public List<Vote> getAllByDate(String date) throws SQLException {
+        String query = "SELECT * FROM MenuItemUserVote WHERE DATE(dateTime) = ?";
+        List<Vote> userVotes = new ArrayList<>();
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, date);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                int userId = resultSet.getInt("userId");
+                int menuItemId = resultSet.getInt("menuItemId");
+                Date dateTime = timestampToDate(resultSet.getTimestamp("dateTime"));
+
+                Vote userVote = new Vote();
+                userVote.setId(id);
+                userVote.setUserId(userId);
+                userVote.setMenuItemId(menuItemId);
+                userVote.setDateTime(dateTime);
+
+                userVotes.add(userVote);
+            }
+        }
+
+        return userVotes;
+    }
+
+    @Override
+    public Map<Integer, Integer> getNextDayMenuOptionsVotes(String date) throws SQLException {
+        String query = "SELECT menuItemId, Count(*) As voteCount FROM MenuItemUserVote WHERE DATE(date) = ? GROUP BY menuItemId";
+        Map<Integer, Integer> menuItemVotesByDate = new HashMap<>();
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, date);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int menuItemId = resultSet.getInt("menuItemId");
+                int voteCount = resultSet.getInt("voteCount");
+                menuItemVotesByDate.put(menuItemId, voteCount);
+            }
+        }
+        return menuItemVotesByDate;
     }
 }

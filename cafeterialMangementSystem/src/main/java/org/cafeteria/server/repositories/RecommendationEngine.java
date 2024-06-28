@@ -1,4 +1,4 @@
-package org.cafeteria.server.services;
+package org.cafeteria.server.repositories;
 
 import org.cafeteria.common.model.Feedback;
 import org.cafeteria.common.model.MenuItemRecommendation;

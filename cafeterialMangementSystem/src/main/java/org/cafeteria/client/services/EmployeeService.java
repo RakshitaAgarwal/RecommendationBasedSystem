@@ -31,7 +31,7 @@ public class EmployeeService extends UserManager {
             sc.nextLine();
 
             switch (choice) {
-                case 1 -> displayMenuFromServer();
+                case 1 -> displayMenu();
                 case 2 -> seeNotifications();
                 case 3 -> handleNextDayMealVoting();
                 case 4 -> provideFeedback();
@@ -105,7 +105,7 @@ public class EmployeeService extends UserManager {
             int selectedIndex = sc.nextInt();
 
             if (rolledOutItemsMap.containsKey(selectedIndex)) {
-                MenuItemUserVote userVote = new MenuItemUserVote(selectedIndex, GlobalData.loggedInUser.getId(), new Date());
+                Vote userVote = new Vote(selectedIndex, GlobalData.loggedInUser.getId(), new Date());
                 voteForMenuItem(userVote);
             } else {
                 System.out.println("Invalid selection");
@@ -149,7 +149,7 @@ public class EmployeeService extends UserManager {
         return null;
     }
 
-    private void voteForMenuItem(MenuItemUserVote userVote) throws IOException {
+    private void voteForMenuItem(Vote userVote) throws IOException {
         String request = createRequest(UserAction.VOTE_NEXT_DAY_MENU, serializeData(userVote));
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);

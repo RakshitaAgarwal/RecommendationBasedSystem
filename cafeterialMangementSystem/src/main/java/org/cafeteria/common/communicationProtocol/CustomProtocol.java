@@ -43,9 +43,6 @@ public class CustomProtocol {
     public static ParsedResponse parseResponse(String response) throws InvalidResponseException {
         if(response != null) {
             String[] responseArr = response.split(PARSE_DELIMITER, 3);
-            for(int i=1; i<3; i++){
-                System.out.println(responseArr[i]);
-            }
             if(responseArr.length == 3 && RESPONSE.equalsIgnoreCase(responseArr[0])){
                 return new ParsedResponse(ResponseCode.fromString(responseArr[1]), responseArr[2]);
             } else {

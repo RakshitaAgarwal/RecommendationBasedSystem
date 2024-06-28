@@ -1,7 +1,10 @@
 package org.cafeteria.common.util;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static org.cafeteria.common.constants.Constants.DATE_FORMAT;
 
 public class Utils {
     public static <E extends Enum<E>> E getEnumFromOrdinal(Class<E> enumClass, int ordinal) {
@@ -12,13 +15,10 @@ public class Utils {
         throw new IllegalArgumentException("Invalid ordinal for enum " + enumClass.getSimpleName() + ": " + ordinal);
     }
 
-    public static <E extends Enum<E>> int getOrdinalFromEnum(E enumValue) {
-        if (enumValue == null) {
-            throw new IllegalArgumentException("Enum value cannot be null");
-        }
-        return enumValue.ordinal();
+    public static String extractDate(Date date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+        return dateFormat.format(date);
     }
-
 
     public static Timestamp dateToTimestamp(Date date) {
         if (date == null) {

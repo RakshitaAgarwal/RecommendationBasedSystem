@@ -37,7 +37,7 @@ public class AdminService extends UserManager {
             sc.nextLine();
 
             switch (choice) {
-                case 1 -> displayMenuFromServer();
+                case 1 -> displayMenu();
                 case 2 -> addMenuItem(fetchMenuItemFromUser());
                 case 3 -> {
                     System.out.println("Enter name of the food Item you want to delete from menu:");
@@ -63,7 +63,7 @@ public class AdminService extends UserManager {
         }
     }
 
-    public static void displayMenuFromServer() throws IOException {
+    public static void displayMenu() throws IOException {
         String request = createRequest(UserAction.SHOW_MENU, null);
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);

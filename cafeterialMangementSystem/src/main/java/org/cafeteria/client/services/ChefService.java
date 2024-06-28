@@ -1,9 +1,12 @@
 package org.cafeteria.client.services;
 
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.common.customException.CustomExceptions;
 import org.cafeteria.common.model.*;
+import static org.cafeteria.client.services.AdminService.displayMenu;
+import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -11,9 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-
-import static org.cafeteria.client.services.AdminService.displayMenuFromServer;
-import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 
 public class ChefService extends UserManager {
 
@@ -27,23 +27,68 @@ public class ChefService extends UserManager {
             System.out.println("1. Show Menu");
             System.out.println("2. See Monthly Report");
             System.out.println("3. Roll Out Items for Next Day Menu");
-            System.out.println("4. Update Next Day final Menu Items");
-            System.out.println("5. Exit");
+            System.out.println("4. See Voting for Rolled out Menu Items");
+            System.out.println("5. Update Next Day final Menu Items");
+            System.out.println("6. Exit");
             System.out.println("Enter your Choice: ");
             int choice = sc.nextInt();
             sc.nextLine();
 
             switch (choice) {
-                case 1 -> displayMenuFromServer();
+                case 1 -> displayMenu();
                 case 2 -> seeMonthlyReport();
                 case 3 -> handleRollOutNextDayMenuOptions();
-                case 4 -> updateNextDayMenuItems();
-                case 5 -> {
+                case 4 -> seeVotingForRolledOutItems();
+                case 5 -> updateNextDayMenuItems();
+                case 6 -> {
                     connection.close();
                     return;
                 }
             }
         }
+    }
+
+    private void seeVotingForRolledOutItems() throws IOException {
+        Map<Integer, Integer> nextDayVoting = getVotingForMenuItem();
+        displayVoting(nextDayVoting);
+    }
+
+    private Map<Integer, Integer> getVotingForMenuItem() throws IOException {
+        String request = createRequest(UserAction.GET_VOTING_FOR_NEXT_DAY_MENU, null);
+        System.out.println("request that is sent to server: " + request);
+        String response = connection.sendData(request);
+        System.out.println("response that is received from server: " + response);
+        if (response != null) {
+            try {
+                ParsedResponse parsedResponse = parseResponse(response);
+                ResponseCode responseCode = parsedResponse.getResponseCode();
+                if (responseCode == ResponseCode.OK) {
+                    Type mapType = new TypeToken<Map<Integer, Integer>>() {}.getType();
+                    return deserializeMap(parsedResponse.getJsonData(), mapType);
+                } else {
+                    System.out.println("Unexpected Response Code: " + responseCode);
+                }
+            } catch (CustomExceptions.InvalidResponseException e) {
+                System.out.println("Invalid Response Received from Server");
+            } catch (JsonSyntaxException e) {
+                System.out.println("Error deserializing JSON data: " + e.getMessage());
+            }
+        } else {
+            throw new IOException("Server Got Disconnected. Please Try again.");
+        }
+        return null;
+    }
+
+    private void displayVoting(Map<Integer, Integer> nextDayVoting) {
+        System.out.println();
+        System.out.println("--------Votes For Next Day menu--------");
+        for (Map.Entry<Integer, Integer> entry : nextDayVoting.entrySet()) {
+            int menuItemId = entry.getKey();
+            int votes = entry.getValue();
+
+            System.out.println(menuItemId + " No of votes : " + votes);
+        }
+        System.out.println("------------------------------");
     }
 
     public void seeMonthlyReport() {

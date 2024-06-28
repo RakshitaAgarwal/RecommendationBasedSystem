@@ -2,7 +2,7 @@ package org.cafeteria.common.model;
 
 import java.util.Date;
 
-public class MenuItemUserVote {
+public class Vote {
     private int id;
     private int menuItemId;
     private int userId;
@@ -21,9 +21,9 @@ public class MenuItemUserVote {
         return id;
     }
 
-    public MenuItemUserVote() {}
+    public Vote() {}
 
-    public MenuItemUserVote(int menuItemId, int userId, Date dateTime) {
+    public Vote(int menuItemId, int userId, Date dateTime) {
         this.menuItemId = menuItemId;
         this.userId = userId;
         this.dateTime = dateTime;

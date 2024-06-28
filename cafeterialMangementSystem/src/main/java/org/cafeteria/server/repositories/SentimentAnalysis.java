@@ -1,4 +1,4 @@
-package org.cafeteria.server.services;
+package org.cafeteria.server.repositories;
 
 import org.cafeteria.server.model.SentimentResult;
 import java.util.HashSet;
