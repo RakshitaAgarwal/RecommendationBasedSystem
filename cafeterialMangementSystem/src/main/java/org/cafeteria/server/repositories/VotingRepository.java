@@ -20,7 +20,7 @@ public class VotingRepository implements IVotingRepository {
 
     @Override
     public boolean add(Vote item) throws SQLException {
-        String query = "INSERT INTO MenuItemUserVote (menuItemId, userId, dateTime) VALUES (?, ?, ?);";
+        String query = "INSERT INTO Vote (menuItemId, userId, dateTime) VALUES (?, ?, ?);";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, item.getMenuItemId());
             statement.setInt(2, item.getUserId());
@@ -51,7 +51,7 @@ public class VotingRepository implements IVotingRepository {
 
     @Override
     public List<Vote> getByUserCurrentDate(int userId, String date) throws SQLException {
-        String query = "SELECT * FROM MenuItemUserVote WHERE userId = ? AND DATE(dateTime) = ?";
+        String query = "SELECT * FROM Vote WHERE userId = ? AND DATE(dateTime) = ?";
         List<Vote> userVotes = new ArrayList<>();
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -78,7 +78,7 @@ public class VotingRepository implements IVotingRepository {
 
     @Override
     public List<Vote> getAllByDate(String date) throws SQLException {
-        String query = "SELECT * FROM MenuItemUserVote WHERE DATE(dateTime) = ?";
+        String query = "SELECT * FROM Vote WHERE DATE(dateTime) = ?";
         List<Vote> userVotes = new ArrayList<>();
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -105,7 +105,7 @@ public class VotingRepository implements IVotingRepository {
 
     @Override
     public Map<Integer, Integer> getNextDayMenuOptionsVotes(String date) throws SQLException {
-        String query = "SELECT menuItemId, Count(*) As voteCount FROM MenuItemUserVote WHERE DATE(date) = ? GROUP BY menuItemId";
+        String query = "SELECT menuItemId, Count(*) As voteCount FROM Vote WHERE DATE(date) = ? GROUP BY menuItemId";
         Map<Integer, Integer> menuItemVotesByDate = new HashMap<>();
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {

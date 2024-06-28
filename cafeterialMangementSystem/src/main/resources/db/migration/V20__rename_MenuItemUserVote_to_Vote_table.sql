@@ -1,0 +1,1 @@
+ALTER TABLE MenuItemUserVote RENAME TO Vote;
