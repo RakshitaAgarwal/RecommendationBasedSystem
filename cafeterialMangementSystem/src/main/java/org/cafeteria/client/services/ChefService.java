@@ -2,6 +2,7 @@ package org.cafeteria.client.services;
 
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.client.repositories.ChefRepository;
+import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.MealTypeEnum;
 import org.cafeteria.common.model.MenuItem;
 import org.cafeteria.common.model.MenuItemRecommendation;
@@ -22,7 +23,7 @@ public class ChefService extends UserManager {
     }
 
     @Override
-    public void showUserActionItems() throws IOException {
+    public void showUserActionItems() throws IOException, InternalServerError {
         while (true) {
             System.out.println("1. Show Menu");
             System.out.println("2. Roll Out Items for Next Day Menu");
@@ -33,26 +34,30 @@ public class ChefService extends UserManager {
             int choice = sc.nextInt();
             sc.nextLine();
 
-            switch (choice) {
-                case 1 -> handleDisplayMenu();
-                case 2 -> handleRollOutNextDayMenuOptions();
-                case 3 -> seeVotingForRolledOutItems();
-                case 4 -> handleUpdateNextDayFinalMenu();
-                case 5 -> {
-                    chefRepository.closeConnection();
-                    return;
+            try {
+                switch (choice) {
+                    case 1 -> handleDisplayMenu();
+                    case 2 -> handleRollOutNextDayMenuOptions();
+                    case 3 -> seeVotingForRolledOutItems();
+                    case 4 -> handleUpdateNextDayFinalMenu();
+                    case 5 -> {
+                        chefRepository.closeConnection();
+                        return;
+                    }
                 }
+            } catch (EmptyResponseException | InvalidResponseException e) {
+                System.out.println(e.getMessage());
             }
         }
     }
 
-    private void seeVotingForRolledOutItems() throws IOException {
+    private void seeVotingForRolledOutItems() throws IOException, EmptyResponseException, InvalidResponseException, InternalServerError {
         Map<Integer, Integer> nextDayVoting = chefRepository.getVotingForMenuItem();
         Map<MealTypeEnum, List<String>> categorizedVoting = categorizeVotesByMealType(nextDayVoting);
         displayVoting(categorizedVoting);
     }
 
-    private Map<MealTypeEnum, List<String>> categorizeVotesByMealType(Map<Integer, Integer> nextDayVoting) {
+    private Map<MealTypeEnum, List<String>> categorizeVotesByMealType(Map<Integer, Integer> nextDayVoting) throws IOException, InvalidResponseException, InternalServerError {
         Map<MealTypeEnum, List<String>> categorizedVotes = new HashMap<>();
 
         for (Map.Entry<Integer, Integer> entry : nextDayVoting.entrySet()) {
@@ -87,7 +92,7 @@ public class ChefService extends UserManager {
         System.out.println("---------------------------------------");
     }
 
-    public void handleRollOutNextDayMenuOptions() {
+    public void handleRollOutNextDayMenuOptions() throws IOException, InvalidResponseException, InternalServerError {
         Map<MealTypeEnum, List<MenuItemRecommendation>> recommendedItems = chefRepository.getRecommendationsForNextDayMenu();
         List<Integer> rolledOutItems = new ArrayList<>();
         if (recommendedItems == null || recommendedItems.isEmpty()) {
@@ -97,7 +102,7 @@ public class ChefService extends UserManager {
             rolledOutItems = getTopRolledOutMenuItemIds(recommendedItems, 5);
         }
         if (!rolledOutItems.isEmpty()) {
-            chefRepository.processRollOutMenuOptions(rolledOutItems);
+            System.out.println(chefRepository.processRollOutMenuOptions(rolledOutItems));
         }
     }
 
@@ -134,7 +139,7 @@ public class ChefService extends UserManager {
         return menuItemIds;
     }
 
-    private void handleUpdateNextDayFinalMenu() throws IOException {
+    private void handleUpdateNextDayFinalMenu() throws IOException, InvalidResponseException, InternalServerError {
         List<Integer> preparedMenuItemIds = new ArrayList<>();
         for (MealTypeEnum mealType : MealTypeEnum.values()) {
             int isContinue = 0;
@@ -157,7 +162,7 @@ public class ChefService extends UserManager {
             }
         }
         if (preparedMenuItemIds.size() == MealTypeEnum.values().length) {
-            chefRepository.processUpdatingFinalMenu(preparedMenuItemIds);
+            System.out.println(chefRepository.processUpdatingFinalMenu(preparedMenuItemIds));
         } else {
             System.out.println("Invalid Input!!. Please Try again later.");
         }

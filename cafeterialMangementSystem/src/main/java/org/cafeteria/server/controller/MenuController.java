@@ -26,9 +26,9 @@ public class MenuController {
         if (_menuService.add(menuItem)) {
             Notification notification = new Notification(1, menuItem.getName() + " added to the menu.", new Date());
             _notificationService.sendNotificationToAllEmployees(notification);
-            response = createResponse(ResponseCode.OK, null);
+            response = createResponse(ResponseCode.OK, serializeData(menuItem.getName() + " Added successfully in the Menu."));
         } else {
-            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred while adding Menu Item."));
         }
         return response;
     }
@@ -38,11 +38,11 @@ public class MenuController {
         boolean isItemUpdated = _menuService.delete(menuItem);
         String response;
         if(isItemUpdated) {
-            response = createResponse(ResponseCode.OK, null);
+            response = createResponse(ResponseCode.OK, serializeData(menuItem.getName() + " Deleted successfully from the Menu."));
             Notification notification = new Notification(2, menuItem.getName() + " deleted from the menu.", new Date());
             _notificationService.sendNotificationToAllEmployees(notification);
         } else {
-            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred while deleting Menu Item."));
         }
         return response;
     }
@@ -52,11 +52,11 @@ public class MenuController {
         boolean isItemUpdated = _menuService.update(menuItem);
         String response;
         if(isItemUpdated) {
-            response = createResponse(ResponseCode.OK, null);
+            response = createResponse(ResponseCode.OK, serializeData(menuItem.getName() + " Updated successfully in the Menu."));
             Notification notification = new Notification(3, menuItem.getName() + " updated in the menu.", new Date());
             _notificationService.sendNotificationToAllEmployees(notification);
         } else {
-            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred while updating Menu Item."));
         }
         return response;
     }
@@ -67,7 +67,7 @@ public class MenuController {
         if (!menu.isEmpty()) {
             response = createResponse(ResponseCode.OK, serializeData(menu));
         } else {
-            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
+            response = createResponse(ResponseCode.EMPTY_RESPONSE, serializeData("No menu Items exist in the Menu"));
         }
         return response;
     }
@@ -79,7 +79,7 @@ public class MenuController {
         if(menuItem != null) {
             response = createResponse(ResponseCode.OK, serializeData(menuItem));
         } else {
-            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
+            response = createResponse(ResponseCode.BAD_REQUEST, serializeData("No Item Exist with name: " + menuItemName));
         }
         return response;
     }
@@ -91,7 +91,7 @@ public class MenuController {
         if(menuItem != null) {
             response = createResponse(ResponseCode.OK, serializeData(menuItem));
         } else {
-            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
+            response = createResponse(ResponseCode.BAD_REQUEST, serializeData("No Such Item Exist with id: " + menuItemId));
         }
         return response;
     }

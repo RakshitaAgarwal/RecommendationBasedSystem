@@ -25,9 +25,9 @@ public class VotingController {
         String response;
         try {
             if (_votingService.add(userVote)) {
-                response = createResponse(ResponseCode.OK, null);
+                response = createResponse(ResponseCode.OK, serializeData(userVote.getUserId() + " vote successfully recorded."));
             } else {
-                response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
+                response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred. Please Try again."));
             }
         } catch (DuplicateEntryFoundException e) {
             response = createResponse(ResponseCode.BAD_REQUEST, serializeData("Vote Already Casted for this Category. Please come back tomorrow."));
@@ -41,12 +41,12 @@ public class VotingController {
         String response;
         if(nextDayMenuOptionsVotes!=null) {
             if(nextDayMenuOptionsVotes.isEmpty()) {
-                response = createResponse(ResponseCode.EMPTY_RESPONSE ,null);
+                response = createResponse(ResponseCode.EMPTY_RESPONSE ,serializeData("No Votes casted yet. Please come back later"));
             } else {
                 response = createResponse(ResponseCode.OK, serializeMap(nextDayMenuOptionsVotes));
             }
         } else {
-            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred. Please try again."));
         }
         return response;
     }

@@ -27,7 +27,7 @@ public class RecommendationController {
         if(menuItemRecommendation != null) {
             response = createResponse(ResponseCode.OK, serializeData(menuItemRecommendation));
         } else {
-            response = createResponse(ResponseCode.EMPTY_RESPONSE, null);
+            response = createResponse(ResponseCode.EMPTY_RESPONSE, serializeData("No Recommendations"));
         }
         return response;
     }
@@ -38,7 +38,7 @@ public class RecommendationController {
         if(menuItemByMeals != null) {
             response = createResponse(ResponseCode.OK, serializeMap(menuItemByMeals));
         } else {
-            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred while fetching recommendations."));
         }
         return response;
     }

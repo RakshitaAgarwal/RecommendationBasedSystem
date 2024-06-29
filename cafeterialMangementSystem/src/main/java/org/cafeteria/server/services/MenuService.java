@@ -6,6 +6,7 @@ import org.cafeteria.server.repositories.interfaces.IMenuRepository;
 import org.cafeteria.server.services.interfaces.IMenuService;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +30,16 @@ public class MenuService implements IMenuService {
         return menuItems.stream()
                 .filter(MenuItem::isAvailable)
                 .collect(Collectors.toList());
+    }
+
+    public static List<Integer> filterMealTypeMenuItemIds(List<MenuItem> mealTypeItems) {
+        List<MenuItem> filteredMenuItems = filterMenuItemsByLastPrepared(mealTypeItems);
+        filteredMenuItems = filterMenuItemBasedOnAvailability(filteredMenuItems);
+        List<Integer> filteredMealTypeItems = new ArrayList<>();
+        for(MenuItem menuItem :filteredMenuItems) {
+            filteredMealTypeItems.add(menuItem.getId());
+        }
+        return filteredMealTypeItems;
     }
 
     @Override

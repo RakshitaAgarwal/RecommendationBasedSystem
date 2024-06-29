@@ -7,11 +7,10 @@ import org.cafeteria.common.model.ResponseCode;
 import org.cafeteria.common.model.User;
 import org.cafeteria.server.services.NotificationService;
 import org.cafeteria.server.services.interfaces.INotificationService;
+import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 
 import java.sql.SQLException;
 import java.util.List;
-
-import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 
 public class NotificationController {
     private static INotificationService _notificationService;
@@ -20,14 +19,13 @@ public class NotificationController {
     }
     public String getUserNotification(@NotNull ParsedRequest request) throws SQLException {
         User user = deserializeData(request.getJsonData(), User.class);
-        List<Notification> userNotification = _notificationService.getUserNotification(user.getId());
+        List<Notification> userNotifications = _notificationService.getUserNotification(user.getId());
         String response;
-        if(userNotification != null) {
-            response = createResponse(ResponseCode.OK, serializeData(userNotification));
+        if(userNotifications != null) {
+            response = createResponse(ResponseCode.OK, serializeData(userNotifications));
         } else {
-            response = createResponse(ResponseCode.EMPTY_RESPONSE, null);
+            response = createResponse(ResponseCode.EMPTY_RESPONSE, serializeData("No Notification Found for: " + user.getName()));
         }
         return response;
     }
-
 }

@@ -31,7 +31,7 @@ public class RolledOutMenuItemController {
                 Notification notification = new Notification(NotificationTypeEnum.NEXT_DAY_OPTIONS.ordinal(), "Next Day Menu options are updated. Please Cast your vote for the day", new Date());
                 _notificationService.sendNotificationToAllEmployees(notification);
             } else {
-                response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
+                response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred while rolling out next day menu options. Please Try again."));
             }
         } catch (CustomExceptions.DuplicateEntryFoundException e) {
             response = createResponse(ResponseCode.BAD_REQUEST, serializeData(e.getMessage()));
@@ -45,7 +45,7 @@ public class RolledOutMenuItemController {
         if(recommendations != null) {
             response = createResponse(ResponseCode.OK, serializeData(recommendations));
         } else {
-            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred while fetching next day menu options. Please Try again."));
         }
         return response;
     }

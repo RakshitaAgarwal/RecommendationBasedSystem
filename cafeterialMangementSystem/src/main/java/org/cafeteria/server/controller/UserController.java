@@ -24,7 +24,7 @@ public class UserController {
         if (loggedInUser != null) {
             response = createResponse(ResponseCode.OK, serializeData(loggedInUser));
         } else {
-            response = createResponse(ResponseCode.UNAUTHORIZED, null);
+            response = createResponse(ResponseCode.UNAUTHORIZED, serializeData("No such user exist."));
         }
         return response;
     }

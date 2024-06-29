@@ -22,9 +22,9 @@ public class FeedbackController {
         Feedback feedback = deserializeData(request.getJsonData(), Feedback.class);
         String response;
         if(_feedbackService.add(feedback)) {
-            response = createResponse(ResponseCode.OK, null);
+            response = createResponse(ResponseCode.OK, serializeData("Feedback Recorded successfully."));
         } else {
-            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred"));
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred while adding feedback. Please Try again."));
         }
         return response;
     }

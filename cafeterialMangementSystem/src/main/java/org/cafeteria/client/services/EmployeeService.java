@@ -3,7 +3,9 @@ package org.cafeteria.client.services;
 import org.cafeteria.client.global.GlobalData;
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.client.repositories.EmployeeRepository;
+import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
+
 import static org.cafeteria.client.repositories.AdminRepository.getFoodItemByName;
 import static org.cafeteria.client.repositories.AdminRepository.getMenuItemById;
 import static org.cafeteria.client.services.AdminService.handleDisplayMenu;
@@ -20,7 +22,7 @@ public class EmployeeService extends UserManager {
     }
 
     @Override
-    public void showUserActionItems() throws IOException {
+    public void showUserActionItems() throws IOException, InternalServerError {
         while (true) {
             System.out.println("1. Show Menu");
             System.out.println("2. See Notifications");
@@ -31,17 +33,25 @@ public class EmployeeService extends UserManager {
             int choice = sc.nextInt();
             sc.nextLine();
 
-            switch (choice) {
-                case 1 -> handleDisplayMenu();
-                case 2 -> displayUserNotifications(employeeRepository.seeNotifications());
-                case 3 -> handleNextDayMealVoting();
-                case 4 -> employeeRepository.provideFeedback(takeUserFeedback());
-                case 5 -> {
-                    employeeRepository.closeConnection();
-                    return;
+            try {
+                switch (choice) {
+                    case 1 -> handleDisplayMenu();
+                    case 2 -> displayUserNotifications(employeeRepository.seeNotifications());
+                    case 3 -> handleNextDayMealVoting();
+                    case 4 -> handleProvideFeedback();
+                    case 5 -> {
+                        employeeRepository.closeConnection();
+                        return;
+                    }
                 }
+            } catch (InvalidResponseException e) {
+                System.out.println(e.getMessage());
             }
         }
+    }
+
+    public void handleProvideFeedback() throws IOException, InvalidResponseException, InternalServerError {
+        System.out.println(employeeRepository.provideFeedback(takeUserFeedback()));
     }
 
     public void displayUserNotifications(List<Notification> notifications) {
@@ -62,7 +72,7 @@ public class EmployeeService extends UserManager {
         }
     }
 
-    public void handleNextDayMealVoting() throws IOException {
+    public void handleNextDayMealVoting() throws IOException, InvalidResponseException, InternalServerError {
         List<RolledOutMenuItem> rolledOutItems = employeeRepository.getRolledOutMenuItems();
         int isContinue;
         do {
@@ -91,7 +101,7 @@ public class EmployeeService extends UserManager {
 
             if (rolledOutItemsMap.containsKey(selectedIndex)) {
                 Vote userVote = new Vote(selectedIndex, GlobalData.loggedInUser.getId(), new Date());
-                employeeRepository.voteForMenuItem(userVote);
+                System.out.println(employeeRepository.voteForMenuItem(userVote));
             } else {
                 System.out.println("Invalid selection");
             }
@@ -101,8 +111,7 @@ public class EmployeeService extends UserManager {
     }
 
 
-
-    private Feedback takeUserFeedback() {
+    private Feedback takeUserFeedback() throws IOException, InvalidResponseException, InternalServerError {
         Feedback feedback = new Feedback();
         System.out.println("Enter the food item you want to provide feedback for:");
         String foodItemName = sc.nextLine();

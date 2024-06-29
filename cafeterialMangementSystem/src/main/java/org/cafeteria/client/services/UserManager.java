@@ -1,5 +1,6 @@
 package org.cafeteria.client.services;
 
+import org.cafeteria.common.customException.CustomExceptions;
 import org.cafeteria.common.model.User;
 import java.io.IOException;
 import java.util.Scanner;
@@ -13,5 +14,5 @@ public abstract class UserManager {
         UserManager.sc = sc;
     }
 
-    public abstract void showUserActionItems() throws IOException;
+    public abstract void showUserActionItems() throws IOException, CustomExceptions.InvalidResponseException, CustomExceptions.InternalServerError, CustomExceptions.EmptyResponseException;
 }

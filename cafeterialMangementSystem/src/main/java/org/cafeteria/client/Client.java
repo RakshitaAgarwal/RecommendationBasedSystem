@@ -6,17 +6,17 @@ import org.cafeteria.client.services.AdminService;
 import org.cafeteria.client.services.AuthenticationService;
 import org.cafeteria.client.services.ChefService;
 import org.cafeteria.client.services.EmployeeService;
-import org.cafeteria.common.customException.CustomExceptions;
+import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.User;
 import org.cafeteria.common.model.UserRoleEnum;
-
-import java.io.IOException;
-import java.util.Properties;
-import java.util.Scanner;
 
 import static org.cafeteria.common.constants.Constants.SERVER_ADDRESS;
 import static org.cafeteria.common.constants.Constants.SERVER_PORT;
 import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
+
+import java.io.IOException;
+import java.util.Properties;
+import java.util.Scanner;
 
 public class Client {
     private static final Scanner sc = new Scanner(System.in);
@@ -37,7 +37,7 @@ public class Client {
                     User user = new AuthenticationService(connection).login(userToLogin);
                     updateGlobalData(user);
                     showUserActionItems(user);
-                } catch (CustomExceptions.LoginFailedException e) {
+                } catch (LoginFailedException e) {
                     System.out.println("Login Failed");
                     System.out.println("Do you want to try again? If yes please enter 1.");
                     choice = sc.nextInt();
@@ -57,23 +57,27 @@ public class Client {
 
     private static void showUserActionItems(User user) throws IOException {
         UserRoleEnum userRole = getEnumFromOrdinal(UserRoleEnum.class, user.getUserRoleId());
-        switch (userRole) {
-            case ADMIN -> {
-                AdminService adminService = new AdminService(connection, user, sc);
-                adminService.showUserActionItems();
+        try {
+            switch (userRole) {
+                case ADMIN -> {
+                    AdminService adminService = new AdminService(connection, user, sc);
+                    adminService.showUserActionItems();
+                }
+                case CHEF -> {
+                    ChefService chef = new ChefService(connection, user, sc);
+                    chef.showUserActionItems();
+                }
+                case EMP -> {
+                    EmployeeService employee = new EmployeeService(connection, user, sc);
+                    employee.showUserActionItems();
+                }
+                default -> {
+                    System.out.println("Some Error Occurred");
+                    connection.close();
+                }
             }
-            case CHEF -> {
-                ChefService chef = new ChefService(connection, user, sc);
-                chef.showUserActionItems();
-            }
-            case EMP -> {
-                EmployeeService employee = new EmployeeService(connection, user, sc);
-                employee.showUserActionItems();
-            }
-            default -> {
-                System.out.println("Some Error Occurred");
-                connection.close();
-            }
+        } catch (InternalServerError e) {
+            System.out.println(e.getMessage());
         }
     }
 

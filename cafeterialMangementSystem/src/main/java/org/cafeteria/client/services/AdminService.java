@@ -2,6 +2,7 @@ package org.cafeteria.client.services;
 
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.client.repositories.AdminRepository;
+import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.MealTypeEnum;
 import org.cafeteria.common.model.MenuItem;
 import org.cafeteria.common.model.User;
@@ -26,7 +27,7 @@ public class AdminService extends UserManager {
     }
 
     @Override
-    public void showUserActionItems() throws IOException {
+    public void showUserActionItems() throws IOException, InternalServerError {
         while (true) {
             System.out.println();
             System.out.println("1. Show Menu");
@@ -38,21 +39,29 @@ public class AdminService extends UserManager {
             int choice = sc.nextInt();
             sc.nextLine();
 
-            switch (choice) {
-                case 1 -> handleDisplayMenu();
-                case 2 -> adminRepository.addMenuItem(fetchMenuItemFromUser());
-                case 3 -> handleDeleteMenuItem();
-                case 4 -> handleUpdateMenuItem();
-                case 5 -> {
-                    adminRepository.closeConnection();
-                    return;
+            try {
+                switch (choice) {
+                    case 1 -> handleDisplayMenu();
+                    case 2 -> handleAddMenuItem();
+                    case 3 -> handleDeleteMenuItem();
+                    case 4 -> handleUpdateMenuItem();
+                    case 5 -> {
+                        adminRepository.closeConnection();
+                        return;
+                    }
                 }
+            } catch (InvalidResponseException e) {
+                System.out.println(e.getMessage());
             }
         }
     }
 
-    public static void handleDisplayMenu() throws IOException {
-        List<MenuItem> menuItems = adminRepository.getMenuItems();
+    public void handleAddMenuItem() throws IOException, InvalidResponseException, InternalServerError {
+        System.out.println(adminRepository.addMenuItem(fetchMenuItemFromUser()));
+    }
+
+    public static void handleDisplayMenu() throws IOException, InvalidResponseException, InternalServerError {
+        List<MenuItem> menuItems = AdminRepository.getMenuItems();
         displayMenuItems(menuItems);
     }
 
@@ -91,28 +100,28 @@ public class AdminService extends UserManager {
         return new MenuItem(name, price, isAvailable, mealTypeId);
     }
 
-    private void handleUpdateMenuItem() {
+    private void handleUpdateMenuItem() throws IOException, InvalidResponseException, InternalServerError {
         MenuItem menuItem = takeUserInputForItemUpdate();
         if (menuItem != null) {
-            adminRepository.updateMenuItem(menuItem);
+            System.out.println(adminRepository.updateMenuItem(menuItem));
         }
     }
 
-    private void handleDeleteMenuItem() {
+    private void handleDeleteMenuItem() throws IOException, InvalidResponseException, InternalServerError {
         System.out.println("Enter name of the food Item you want to delete from menu:");
         String name = sc.nextLine();
-        MenuItem menuItem = adminRepository.getFoodItemByName(name);
+        MenuItem menuItem = AdminRepository.getFoodItemByName(name);
         if (menuItem != null) {
-            adminRepository.deleteMenuItem(menuItem);
+            System.out.println(adminRepository.deleteMenuItem(menuItem));
         } else {
             System.out.println("No such food item exists in the menu");
         }
     }
 
-    private MenuItem takeUserInputForItemUpdate() {
+    private MenuItem takeUserInputForItemUpdate() throws IOException, InvalidResponseException, InternalServerError {
         System.out.print("Enter the name of the food item you want to update: ");
         String name = sc.nextLine();
-        MenuItem menuItem = adminRepository.getFoodItemByName(name);
+        MenuItem menuItem = AdminRepository.getFoodItemByName(name);
         if (menuItem != null) {
             System.out.println("Food item found: " + menuItem.getName());
             System.out.println("1. Update Price");
