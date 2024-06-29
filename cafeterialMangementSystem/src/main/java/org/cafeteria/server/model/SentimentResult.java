@@ -5,12 +5,14 @@ public class SentimentResult {
     private double positiveSentimentScore;
     private double negativeSentimentScore;
     private double neutralSentimentScore;
+    private String keyPhrase;
 
-    public SentimentResult(String sentiment, double positiveSentimentScore, double negativeSentimentScore, double neutralSentimentScore) {
+    public SentimentResult(String sentiment, double positiveSentimentScore, double negativeSentimentScore, double neutralSentimentScore, String keyPhrase) {
         this.sentiment = sentiment;
         this.positiveSentimentScore = positiveSentimentScore;
         this.negativeSentimentScore = negativeSentimentScore;
         this.neutralSentimentScore = neutralSentimentScore;
+        this.keyPhrase = keyPhrase;
     }
 
     public String getSentiment() {
@@ -43,5 +45,13 @@ public class SentimentResult {
 
     public void setNeutralSentimentScore(double neutralSentimentScore) {
         this.neutralSentimentScore = neutralSentimentScore;
+    }
+
+    public String getKeyPhrase() {
+        return keyPhrase;
+    }
+
+    public void setKeyPhrase(String keyPhrase) {
+        this.keyPhrase = keyPhrase;
     }
 }

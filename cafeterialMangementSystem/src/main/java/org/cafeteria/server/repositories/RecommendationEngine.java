@@ -2,6 +2,7 @@ package org.cafeteria.server.repositories;
 
 import org.cafeteria.common.model.Feedback;
 import org.cafeteria.common.model.MenuItemRecommendation;
+import org.cafeteria.server.model.SentimentResult;
 import org.cafeteria.server.services.interfaces.IFeedbackService;
 
 import java.sql.SQLException;
@@ -45,11 +46,12 @@ public class RecommendationEngine {
 
     public MenuItemRecommendation evaluateMenuItemRecommendation(int menuItemId) throws SQLException {
         List<Feedback> menuItemFeedbacks = _feedbackService.getFeedbackByMenuItem(menuItemId);
-        double averageRating = calculateAverageRatingOfMenuItem(menuItemFeedbacks);
-        double averageSentiment = calculateAverageSentimentOfMenuItem(menuItemFeedbacks);
-        double recommendationScore = calculateRecommendationScore(averageRating, averageSentiment);
+        SentimentResult sentimentResult = calculateAverageSentimentOfMenuItem(menuItemFeedbacks);
 
-        String sentimentOfMenuItem = "tasty";
+        double averageRating = calculateAverageRatingOfMenuItem(menuItemFeedbacks);
+        double averageSentiment = sentimentResult.getPositiveSentimentScore() + (sentimentResult.getNeutralSentimentScore() * 0.5) - sentimentResult.getNegativeSentimentScore();
+        double recommendationScore = calculateRecommendationScore(averageRating, averageSentiment);
+        String sentimentOfMenuItem = sentimentResult.getSentiment() + " " + sentimentResult.getKeyPhrase();
 
         return new MenuItemRecommendation(menuItemId, recommendationScore, sentimentOfMenuItem);
     }
@@ -61,7 +63,7 @@ public class RecommendationEngine {
                 .orElse(0.0);
     }
 
-    private double calculateAverageSentimentOfMenuItem(List<Feedback> menuItemFeedbacks) {
+    private SentimentResult calculateAverageSentimentOfMenuItem(List<Feedback> menuItemFeedbacks) {
         SentimentAnalysis sentimentAnalysis = new SentimentAnalysis();
         List<String> commentsList = new ArrayList<>();
 
@@ -71,15 +73,14 @@ public class RecommendationEngine {
                 commentsList.add(comment);
             }
         }
-        return sentimentAnalysis.calculateAverageSentimentAnalysis(commentsList).getPositiveSentimentScore();
+        return sentimentAnalysis.calculateAverageSentimentAnalysis(commentsList);
     }
 
     private double calculateRecommendationScore(double avgRating, double avgSentiment) {
         double ratingWeight = 0.3;
         double sentimentWeight = 0.7;
         double normalizedRating = avgRating / 5.0;
-        double recommendationScore = (ratingWeight * normalizedRating) + (sentimentWeight * avgSentiment);
-        return recommendationScore;
+        return (ratingWeight * normalizedRating) + (sentimentWeight * avgSentiment);
     }
 
     private List<MenuItemRecommendation> getTopItems(List<MenuItemRecommendation> menuItemRecommendations, int noOfTopRecommendationRequired) {

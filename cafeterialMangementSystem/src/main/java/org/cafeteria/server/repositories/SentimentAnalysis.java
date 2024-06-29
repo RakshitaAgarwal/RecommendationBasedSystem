@@ -1,11 +1,7 @@
 package org.cafeteria.server.repositories;
 
 import org.cafeteria.server.model.SentimentResult;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class SentimentAnalysis {
     private static final Set<String> STOP_WORDS = new HashSet<>();
@@ -32,14 +28,15 @@ public class SentimentAnalysis {
 
     public SentimentResult analyzeSentiment(String comment) {
         if (comment == null || comment.trim().isEmpty()) {
-            return new SentimentResult("Neutral", 0, 0, 0);
+            return new SentimentResult("Neutral", 0, 0, 0, "");
         }
+
+        List<String> filteredComment = tokenizeAndFilter(comment);
 
         double positiveCount = 0, negativeCount = 0, neutralCount = 0;
         boolean negation = false;
-        List<String> filteredTokens = tokenizeAndFilter(comment);
 
-        for (String token : filteredTokens) {
+        for (String token : filteredComment) {
             if (NEGATION_WORDS.contains(token)) {
                 negation = true;
             } else {
@@ -69,7 +66,7 @@ public class SentimentAnalysis {
 
         double totalSentimentWords = positiveCount + negativeCount + neutralCount;
         if (totalSentimentWords == 0) {
-            return new SentimentResult("Neutral", 0, 0, 0);
+            return new SentimentResult("Neutral", 0, 0, 0, "");
         }
 
         double positiveScore = (positiveCount / totalSentimentWords) * 100;
@@ -78,7 +75,9 @@ public class SentimentAnalysis {
 
         String sentiment = determineSentiment(positiveScore, negativeScore, neutralScore);
 
-        return new SentimentResult(sentiment, positiveScore, negativeScore, neutralScore);
+        Map<String, Integer> phraseFrequency = extractPhrasesWithFrequency(filteredComment);
+
+        return new SentimentResult(sentiment, positiveScore, negativeScore, neutralScore, getMostFrequentPhrase(phraseFrequency));
     }
 
     private List<String> tokenizeAndFilter(String comment) {
@@ -95,11 +94,46 @@ public class SentimentAnalysis {
 
     private String determineSentiment(double positiveScore, double negativeScore, double neutralScore) {
         if (positiveScore > negativeScore && positiveScore > neutralScore) {
-            return "Positive";
+            return "Good";
         } else if (negativeScore > positiveScore && negativeScore > neutralScore) {
-            return "Negative";
+            return "OK";
         } else {
-            return "Neutral";
+            return "Bad";
         }
+    }
+
+    private Map<String, Integer> extractPhrasesWithFrequency(List<String> filteredComment) {
+        Map<String, Integer> phraseFrequency = new HashMap<>();
+
+        StringBuilder phrase = new StringBuilder();
+        for (String token : filteredComment) {
+            if (isNounOrAdjective(token)) {
+                phrase.append(token).append(" ");
+            } else {
+                if (phrase.length() > 0) {
+                    String keyPhrase = phrase.toString().trim();
+                    phraseFrequency.put(keyPhrase, phraseFrequency.getOrDefault(keyPhrase, 0) + 1);
+                    phrase.setLength(0);
+                }
+            }
+        }
+        return phraseFrequency;
+    }
+
+    private String getMostFrequentPhrase(Map<String, Integer> phraseFrequency) {
+        String mostFrequentPhrase = null;
+        int maxFrequency = 0;
+
+        for (Map.Entry<String, Integer> entry : phraseFrequency.entrySet()) {
+            if (entry.getValue() > maxFrequency) {
+                mostFrequentPhrase = entry.getKey();
+                maxFrequency = entry.getValue();
+            }
+        }
+        return mostFrequentPhrase;
+    }
+
+    private boolean isNounOrAdjective(String word) {
+        return word.endsWith("ing") || word.endsWith("ed") || word.endsWith("ly") || word.length() > 3;
     }
 }
