@@ -15,7 +15,7 @@ public class EmployeeRepository extends UserRepository {
         super(connection);
     }
 
-    public MenuItemRecommendation getRecommendationScoreForMenuItem(int menuItemId) throws InvalidResponseException, InternalServerError, IOException {
+    public MenuItemRecommendation getRecommendationScoreForMenuItem(int menuItemId) throws InvalidResponseException, IOException, BadResponseException {
         String request = createRequest(UserAction.GET_MENU_ITEM_RECOMMENDATION_SCORE, serializeData(menuItemId));
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
@@ -26,10 +26,10 @@ public class EmployeeRepository extends UserRepository {
         ResponseCode responseCode = parsedResponse.getResponseCode();
         if (responseCode == ResponseCode.OK) {
             return deserializeData(parsedResponse.getJsonData(), MenuItemRecommendation.class);
-        } else throw new InternalServerError("Some Error Occurred while getting Rolled Out Items!!");
+        } else throw new BadResponseException("Some Error Occurred while getting Rolled Out Items!!");
     }
 
-    public List<RolledOutMenuItem> getRolledOutMenuItems() throws IOException, InvalidResponseException, InternalServerError {
+    public List<RolledOutMenuItem> getRolledOutMenuItems() throws IOException, InvalidResponseException, BadResponseException {
         String request = createRequest(UserAction.GET_NEXT_DAY_MENU_OPTIONS, null);
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
@@ -40,10 +40,10 @@ public class EmployeeRepository extends UserRepository {
         ResponseCode responseCode = parsedResponse.getResponseCode();
         if (responseCode == ResponseCode.OK) {
             return deserializeList(parsedResponse.getJsonData(), RolledOutMenuItem.class);
-        } else throw new InternalServerError(deserializeData(parsedResponse.getJsonData(), String.class));
+        } else throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
 
-    public String voteForMenuItem(Vote userVote) throws IOException, InvalidResponseException, InternalServerError {
+    public String voteForMenuItem(Vote userVote) throws IOException, InvalidResponseException, BadResponseException {
         String request = createRequest(UserAction.VOTE_NEXT_DAY_MENU, serializeData(userVote));
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
@@ -58,10 +58,10 @@ public class EmployeeRepository extends UserRepository {
         else if (responseCode == ResponseCode.BAD_REQUEST)
             return (deserializeData(parsedResponse.getJsonData(), String.class));
         else
-            throw new InternalServerError(deserializeData(parsedResponse.getJsonData(), String.class));
+            throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
 
-    public String provideFeedback(Feedback feedback) throws IOException, InvalidResponseException, InternalServerError {
+    public String provideFeedback(Feedback feedback) throws IOException, InvalidResponseException, BadResponseException {
         String request = createRequest(UserAction.PROVIDE_FEEDBACK, serializeData(feedback));
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
@@ -73,10 +73,10 @@ public class EmployeeRepository extends UserRepository {
         ResponseCode responseCode = parsedResponse.getResponseCode();
         if (responseCode == ResponseCode.OK)
             return deserializeData(parsedResponse.getJsonData(), String.class);
-        else throw new InternalServerError(deserializeData(parsedResponse.getJsonData(), String.class));
+        else throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
 
-    public List<Notification> seeNotifications() throws IOException, InvalidResponseException, InternalServerError {
+    public List<Notification> seeNotifications() throws IOException, InvalidResponseException, BadResponseException {
         String request = createRequest(UserAction.SEE_NOTIFICATIONS, serializeData(GlobalData.loggedInUser));
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
@@ -88,7 +88,7 @@ public class EmployeeRepository extends UserRepository {
         ResponseCode responseCode = parsedResponse.getResponseCode();
         if (responseCode == ResponseCode.OK) {
             return deserializeList(parsedResponse.getJsonData(), Notification.class);
-        } else throw new InternalServerError(deserializeData(parsedResponse.getJsonData(), String.class));
+        } else throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
 
     @Override

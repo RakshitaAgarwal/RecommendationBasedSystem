@@ -23,7 +23,7 @@ public class ChefService extends UserManager {
     }
 
     @Override
-    public void showUserActionItems() throws IOException, InternalServerError {
+    public void showUserActionItems() throws IOException {
         while (true) {
             System.out.println("1. Show Menu");
             System.out.println("2. Roll Out Items for Next Day Menu");
@@ -45,19 +45,19 @@ public class ChefService extends UserManager {
                         return;
                     }
                 }
-            } catch (EmptyResponseException | InvalidResponseException e) {
+            } catch (BadResponseException | InvalidResponseException e) {
                 System.out.println(e.getMessage());
             }
         }
     }
 
-    private void seeVotingForRolledOutItems() throws IOException, EmptyResponseException, InvalidResponseException, InternalServerError {
+    private void seeVotingForRolledOutItems() throws IOException, BadResponseException, InvalidResponseException {
         Map<Integer, Integer> nextDayVoting = chefRepository.getVotingForMenuItem();
         Map<MealTypeEnum, List<String>> categorizedVoting = categorizeVotesByMealType(nextDayVoting);
         displayVoting(categorizedVoting);
     }
 
-    private Map<MealTypeEnum, List<String>> categorizeVotesByMealType(Map<Integer, Integer> nextDayVoting) throws IOException, InvalidResponseException, InternalServerError {
+    private Map<MealTypeEnum, List<String>> categorizeVotesByMealType(Map<Integer, Integer> nextDayVoting) throws IOException, InvalidResponseException, BadResponseException {
         Map<MealTypeEnum, List<String>> categorizedVotes = new HashMap<>();
 
         for (Map.Entry<Integer, Integer> entry : nextDayVoting.entrySet()) {
@@ -92,7 +92,7 @@ public class ChefService extends UserManager {
         System.out.println("---------------------------------------");
     }
 
-    public void handleRollOutNextDayMenuOptions() throws IOException, InvalidResponseException, InternalServerError {
+    public void handleRollOutNextDayMenuOptions() throws IOException, InvalidResponseException, BadResponseException {
         Map<MealTypeEnum, List<MenuItemRecommendation>> recommendedItems = chefRepository.getRecommendationsForNextDayMenu();
         List<Integer> rolledOutItems = new ArrayList<>();
         if (recommendedItems == null || recommendedItems.isEmpty()) {
@@ -139,7 +139,7 @@ public class ChefService extends UserManager {
         return menuItemIds;
     }
 
-    private void handleUpdateNextDayFinalMenu() throws IOException, InvalidResponseException, InternalServerError {
+    private void handleUpdateNextDayFinalMenu() throws IOException, InvalidResponseException, BadResponseException {
         List<Integer> preparedMenuItemIds = new ArrayList<>();
         for (MealTypeEnum mealType : MealTypeEnum.values()) {
             int isContinue = 0;

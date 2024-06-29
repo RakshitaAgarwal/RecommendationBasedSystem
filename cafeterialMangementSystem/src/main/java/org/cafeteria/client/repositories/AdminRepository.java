@@ -18,7 +18,7 @@ public class AdminRepository extends UserRepository {
         super(connection);
     }
 
-    public String addMenuItem(MenuItem menuItem) throws InvalidResponseException, InternalServerError, IOException {
+    public String addMenuItem(MenuItem menuItem) throws InvalidResponseException, IOException, BadResponseException {
         String request = createRequest(UserAction.ADD_MENU_ITEM, serializeData(menuItem));
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
@@ -31,10 +31,10 @@ public class AdminRepository extends UserRepository {
         if (responseCode == ResponseCode.OK)
             return deserializeData(parsedResponse.getJsonData(), String.class);
         else
-            throw new InternalServerError(deserializeData(parsedResponse.getJsonData(), String.class));
+            throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
 
-    public String deleteMenuItem(MenuItem menuItem) throws InvalidResponseException, IOException, InternalServerError {
+    public String deleteMenuItem(MenuItem menuItem) throws InvalidResponseException, IOException, BadResponseException {
         String request = createRequest(UserAction.DELETE_MENU_ITEM, serializeData(menuItem));
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
@@ -47,10 +47,10 @@ public class AdminRepository extends UserRepository {
         if (responseCode == ResponseCode.OK)
             return deserializeData(parsedResponse.getJsonData(), String.class);
         else
-            throw new InternalServerError(deserializeData(parsedResponse.getJsonData(), String.class));
+            throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
 
-    public String updateMenuItem(MenuItem menuItem) throws InvalidResponseException, IOException, InternalServerError {
+    public String updateMenuItem(MenuItem menuItem) throws InvalidResponseException, IOException, BadResponseException {
         String request = createRequest(UserAction.UPDATE_MENU_ITEM, serializeData(menuItem));
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
@@ -63,10 +63,10 @@ public class AdminRepository extends UserRepository {
         if (responseCode == ResponseCode.OK)
             return deserializeData(parsedResponse.getJsonData(), String.class);
         else
-            throw new InternalServerError(deserializeData(parsedResponse.getJsonData(), String.class));
+            throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
 
-    public static MenuItem getMenuItemById(@NotNull int id) throws InternalServerError, InvalidResponseException, IOException {
+    public static MenuItem getMenuItemById(@NotNull int id) throws InvalidResponseException, IOException, BadResponseException {
         String request = createRequest(UserAction.GET_MENU_ITEM_BY_ID, serializeData(id));
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
@@ -79,10 +79,10 @@ public class AdminRepository extends UserRepository {
         if (responseCode == ResponseCode.OK)
             return deserializeData(parsedResponse.getJsonData(), MenuItem.class);
         else
-            throw new InternalServerError(deserializeData(parsedResponse.getJsonData(), String.class));
+            throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
 
-    public static MenuItem getFoodItemByName(@NotNull String name) throws IOException, InvalidResponseException, InternalServerError {
+    public static MenuItem getFoodItemByName(@NotNull String name) throws IOException, InvalidResponseException, BadResponseException {
         String request = createRequest(UserAction.GET_MENU_ITEM_BY_NAME, serializeData(name));
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
@@ -95,10 +95,10 @@ public class AdminRepository extends UserRepository {
         if (responseCode == ResponseCode.OK)
             return deserializeData(parsedResponse.getJsonData(), MenuItem.class);
         else
-            throw new InternalServerError(deserializeData(parsedResponse.getJsonData(), String.class));
+            throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
 
-    public static List<MenuItem> getMenuItems() throws IOException, InvalidResponseException, InternalServerError {
+    public static List<MenuItem> getMenuItems() throws IOException, InvalidResponseException, BadResponseException {
         String request = createRequest(UserAction.GET_ALL_MENU_ITEMS, null);
         System.out.println("request that is sent to server: " + request);
 
@@ -113,7 +113,7 @@ public class AdminRepository extends UserRepository {
         if (responseCode == ResponseCode.OK)
             return deserializeList(parsedResponse.getJsonData(), MenuItem.class);
         else
-            throw new InternalServerError(deserializeData(parsedResponse.getJsonData(), String.class));
+            throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
 
     @Override

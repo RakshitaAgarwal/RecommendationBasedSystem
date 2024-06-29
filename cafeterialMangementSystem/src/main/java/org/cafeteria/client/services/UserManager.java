@@ -14,5 +14,5 @@ public abstract class UserManager {
         UserManager.sc = sc;
     }
 
-    public abstract void showUserActionItems() throws IOException, CustomExceptions.InvalidResponseException, CustomExceptions.InternalServerError, CustomExceptions.EmptyResponseException;
+    public abstract void showUserActionItems() throws IOException, CustomExceptions.InvalidResponseException, CustomExceptions.BadResponseException;
 }

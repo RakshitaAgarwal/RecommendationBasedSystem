@@ -27,7 +27,7 @@ public class AdminService extends UserManager {
     }
 
     @Override
-    public void showUserActionItems() throws IOException, InternalServerError {
+    public void showUserActionItems() throws IOException {
         while (true) {
             System.out.println();
             System.out.println("1. Show Menu");
@@ -50,17 +50,17 @@ public class AdminService extends UserManager {
                         return;
                     }
                 }
-            } catch (InvalidResponseException e) {
+            } catch (InvalidResponseException | BadResponseException e) {
                 System.out.println(e.getMessage());
             }
         }
     }
 
-    public void handleAddMenuItem() throws IOException, InvalidResponseException, InternalServerError {
+    public void handleAddMenuItem() throws IOException, InvalidResponseException, BadResponseException {
         System.out.println(adminRepository.addMenuItem(fetchMenuItemFromUser()));
     }
 
-    public static void handleDisplayMenu() throws IOException, InvalidResponseException, InternalServerError {
+    public static void handleDisplayMenu() throws IOException, InvalidResponseException, BadResponseException {
         List<MenuItem> menuItems = AdminRepository.getMenuItems();
         displayMenuItems(menuItems);
     }
@@ -100,14 +100,14 @@ public class AdminService extends UserManager {
         return new MenuItem(name, price, isAvailable, mealTypeId);
     }
 
-    private void handleUpdateMenuItem() throws IOException, InvalidResponseException, InternalServerError {
+    private void handleUpdateMenuItem() throws IOException, InvalidResponseException, BadResponseException {
         MenuItem menuItem = takeUserInputForItemUpdate();
         if (menuItem != null) {
             System.out.println(adminRepository.updateMenuItem(menuItem));
         }
     }
 
-    private void handleDeleteMenuItem() throws IOException, InvalidResponseException, InternalServerError {
+    private void handleDeleteMenuItem() throws IOException, InvalidResponseException, BadResponseException {
         System.out.println("Enter name of the food Item you want to delete from menu:");
         String name = sc.nextLine();
         MenuItem menuItem = AdminRepository.getFoodItemByName(name);
@@ -118,7 +118,7 @@ public class AdminService extends UserManager {
         }
     }
 
-    private MenuItem takeUserInputForItemUpdate() throws IOException, InvalidResponseException, InternalServerError {
+    private MenuItem takeUserInputForItemUpdate() throws IOException, InvalidResponseException, BadResponseException {
         System.out.print("Enter the name of the food item you want to update: ");
         String name = sc.nextLine();
         MenuItem menuItem = AdminRepository.getFoodItemByName(name);

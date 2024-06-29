@@ -18,7 +18,7 @@ public class ChefRepository extends UserRepository {
         super(connection);
     }
 
-    public Map<Integer, Integer> getVotingForMenuItem() throws IOException, EmptyResponseException, InvalidResponseException, InternalServerError {
+    public Map<Integer, Integer> getVotingForMenuItem() throws IOException, BadResponseException, InvalidResponseException {
         String request = createRequest(UserAction.GET_VOTING_FOR_NEXT_DAY_MENU, serializeData(new Date()));
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
@@ -33,12 +33,10 @@ public class ChefRepository extends UserRepository {
             Type mapType = new TypeToken<Map<Integer, Integer>>() {
             }.getType();
             return deserializeMap(parsedResponse.getJsonData(), mapType);
-        } else if (responseCode == ResponseCode.EMPTY_RESPONSE) {
-            throw new EmptyResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
-        } else throw new EmptyResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
+        } else throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
 
-    public Map<MealTypeEnum, List<MenuItemRecommendation>> getRecommendationsForNextDayMenu() throws IOException, InvalidResponseException, InternalServerError {
+    public Map<MealTypeEnum, List<MenuItemRecommendation>> getRecommendationsForNextDayMenu() throws IOException, InvalidResponseException, BadResponseException {
         String request = createRequest(UserAction.GET_RECOMMENDATION_FOR_NEXT_DAY_MENU, null);
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
@@ -54,10 +52,10 @@ public class ChefRepository extends UserRepository {
             Type mapType = new TypeToken<Map<MealTypeEnum, List<MenuItemRecommendation>>>() {
             }.getType();
             return deserializeMap(parsedResponse.getJsonData(), mapType);
-        } else throw new InternalServerError(deserializeData(parsedResponse.getJsonData(), String.class));
+        } else throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
 
-    public String processRollOutMenuOptions(List<Integer> rolledOutItems) throws InvalidResponseException, IOException, InternalServerError {
+    public String processRollOutMenuOptions(List<Integer> rolledOutItems) throws InvalidResponseException, IOException, BadResponseException {
         String request = createRequest(UserAction.ROLL_OUT_NEXT_DAY_MENU_OPTIONS, serializeData(rolledOutItems));
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
@@ -69,10 +67,10 @@ public class ChefRepository extends UserRepository {
         ResponseCode responseCode = parsedResponse.getResponseCode();
         if (responseCode == ResponseCode.OK) {
             return deserializeData(parsedResponse.getJsonData(), String.class);
-        } else throw new InternalServerError(deserializeData(parsedResponse.getJsonData(), String.class));
+        } else throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
 
-    public String processUpdatingFinalMenu(List<Integer> preparedMenuItemIds) throws IOException, InvalidResponseException, InternalServerError {
+    public String processUpdatingFinalMenu(List<Integer> preparedMenuItemIds) throws IOException, InvalidResponseException, BadResponseException {
         String request = createRequest(UserAction.UPDATE_NEXT_DAY_FINAL_MENU, serializeData(preparedMenuItemIds));
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
@@ -84,7 +82,7 @@ public class ChefRepository extends UserRepository {
         ResponseCode responseCode = parsedResponse.getResponseCode();
         if(responseCode == ResponseCode.OK) {
             return deserializeData(parsedResponse.getJsonData(), String.class);
-        }else throw new InternalServerError(deserializeData(parsedResponse.getJsonData(), String.class));
+        }else throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
 
     @Override

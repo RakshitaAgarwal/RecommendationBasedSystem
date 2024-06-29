@@ -22,7 +22,7 @@ public class EmployeeService extends UserManager {
     }
 
     @Override
-    public void showUserActionItems() throws IOException, InternalServerError {
+    public void showUserActionItems() throws IOException {
         while (true) {
             System.out.println("1. Show Menu");
             System.out.println("2. See Notifications");
@@ -44,13 +44,13 @@ public class EmployeeService extends UserManager {
                         return;
                     }
                 }
-            } catch (InvalidResponseException e) {
+            } catch (InvalidResponseException | BadResponseException e) {
                 System.out.println(e.getMessage());
             }
         }
     }
 
-    public void handleProvideFeedback() throws IOException, InvalidResponseException, InternalServerError {
+    public void handleProvideFeedback() throws IOException, InvalidResponseException, BadResponseException {
         System.out.println(employeeRepository.provideFeedback(takeUserFeedback()));
     }
 
@@ -72,7 +72,7 @@ public class EmployeeService extends UserManager {
         }
     }
 
-    public void handleNextDayMealVoting() throws IOException, InvalidResponseException, InternalServerError {
+    public void handleNextDayMealVoting() throws IOException, InvalidResponseException, BadResponseException {
         List<RolledOutMenuItem> rolledOutItems = employeeRepository.getRolledOutMenuItems();
         int isContinue;
         do {
@@ -95,15 +95,18 @@ public class EmployeeService extends UserManager {
             for (Map.Entry<Integer, String> entry : rolledOutItemsMap.entrySet()) {
                 System.out.println(entry.getKey() + ". " + entry.getValue());
             }
+            if (rolledOutItemsMap.isEmpty())
+                System.out.println("No Items Rolled out yet. Please come back later");
+            else {
+                System.out.println("Enter the index of the recommendation you want to vote for:");
+                int selectedIndex = sc.nextInt();
 
-            System.out.println("Enter the index of the recommendation you want to vote for:");
-            int selectedIndex = sc.nextInt();
-
-            if (rolledOutItemsMap.containsKey(selectedIndex)) {
-                Vote userVote = new Vote(selectedIndex, GlobalData.loggedInUser.getId(), new Date());
-                System.out.println(employeeRepository.voteForMenuItem(userVote));
-            } else {
-                System.out.println("Invalid selection");
+                if (rolledOutItemsMap.containsKey(selectedIndex)) {
+                    Vote userVote = new Vote(selectedIndex, GlobalData.loggedInUser.getId(), new Date());
+                    System.out.println(employeeRepository.voteForMenuItem(userVote));
+                } else {
+                    System.out.println("Invalid selection");
+                }
             }
             System.out.println("Do you wish to cast vote for another Meal Type? Enter 1-Yes / 0-No.");
             isContinue = sc.nextInt();
@@ -111,7 +114,7 @@ public class EmployeeService extends UserManager {
     }
 
 
-    private Feedback takeUserFeedback() throws IOException, InvalidResponseException, InternalServerError {
+    private Feedback takeUserFeedback() throws IOException, InvalidResponseException, BadResponseException {
         Feedback feedback = new Feedback();
         System.out.println("Enter the food item you want to provide feedback for:");
         String foodItemName = sc.nextLine();

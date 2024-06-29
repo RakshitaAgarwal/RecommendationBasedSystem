@@ -57,27 +57,23 @@ public class Client {
 
     private static void showUserActionItems(User user) throws IOException {
         UserRoleEnum userRole = getEnumFromOrdinal(UserRoleEnum.class, user.getUserRoleId());
-        try {
-            switch (userRole) {
-                case ADMIN -> {
-                    AdminService adminService = new AdminService(connection, user, sc);
-                    adminService.showUserActionItems();
-                }
-                case CHEF -> {
-                    ChefService chef = new ChefService(connection, user, sc);
-                    chef.showUserActionItems();
-                }
-                case EMP -> {
-                    EmployeeService employee = new EmployeeService(connection, user, sc);
-                    employee.showUserActionItems();
-                }
-                default -> {
-                    System.out.println("Some Error Occurred");
-                    connection.close();
-                }
+        switch (userRole) {
+            case ADMIN -> {
+                AdminService adminService = new AdminService(connection, user, sc);
+                adminService.showUserActionItems();
             }
-        } catch (InternalServerError e) {
-            System.out.println(e.getMessage());
+            case CHEF -> {
+                ChefService chef = new ChefService(connection, user, sc);
+                chef.showUserActionItems();
+            }
+            case EMP -> {
+                EmployeeService employee = new EmployeeService(connection, user, sc);
+                employee.showUserActionItems();
+            }
+            default -> {
+                System.out.println("Some Error Occurred");
+                connection.close();
+            }
         }
     }
 
