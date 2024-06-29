@@ -4,6 +4,7 @@ import org.cafeteria.client.network.ServerConnection;
 import java.io.IOException;
 
 public abstract class UserRepository {
+
     protected static ServerConnection connection;
     UserRepository(ServerConnection connection) {
         UserRepository.connection = connection;

@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 
 import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
-public class AdminService extends UserManager {
+public class AdminHandler extends UserManager {
 
     private static AdminRepository adminRepository;
-    public AdminService(ServerConnection connection, User user, Scanner scanner) {
+    public AdminHandler(ServerConnection connection, User user, Scanner scanner) {
         super(user, scanner);
         adminRepository = new AdminRepository(connection);
     }
@@ -34,7 +34,8 @@ public class AdminService extends UserManager {
             System.out.println("2. Add Menu Item");
             System.out.println("3. Delete Menu Item");
             System.out.println("4. Update Menu Item");
-            System.out.println("5. Exit");
+            System.out.println("5. See Discarded Menu Items");
+            System.out.println("6. Exit");
             System.out.println("Enter your Choice: ");
             int choice = sc.nextInt();
             sc.nextLine();
@@ -45,7 +46,8 @@ public class AdminService extends UserManager {
                     case 2 -> handleAddMenuItem();
                     case 3 -> handleDeleteMenuItem();
                     case 4 -> handleUpdateMenuItem();
-                    case 5 -> {
+                    case 5 -> handleDiscardMenuItems();
+                    case 6 -> {
                         adminRepository.closeConnection();
                         return;
                     }
@@ -166,5 +168,8 @@ public class AdminService extends UserManager {
             System.out.println("Food item with name '" + name + "' does not exist.");
             return null;
         }
+    }
+
+    private void handleDiscardMenuItems() {
     }
 }

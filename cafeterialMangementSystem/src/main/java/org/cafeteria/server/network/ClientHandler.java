@@ -71,7 +71,7 @@ public class ClientHandler implements Runnable {
 
             case GET_MENU_ITEM_BY_ID -> response = menuController.getMenuItemById(request);
 
-            case SEE_MONTHLY_REPORT -> response = feedbackController.getFeedbackReport(request);
+            case SEE_DISCARD_MENU_ITEMS -> response = menuController.discardMenuItems(request);
 
             case PROVIDE_FEEDBACK -> response = feedbackController.addFeedback(request);
 

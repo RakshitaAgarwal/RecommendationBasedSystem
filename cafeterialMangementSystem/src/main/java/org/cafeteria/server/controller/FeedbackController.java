@@ -21,15 +21,11 @@ public class FeedbackController {
     public String addFeedback(@NotNull ParsedRequest request) throws SQLException, DuplicateEntryFoundException {
         Feedback feedback = deserializeData(request.getJsonData(), Feedback.class);
         String response;
-        if(_feedbackService.add(feedback)) {
+        if (_feedbackService.add(feedback)) {
             response = createResponse(ResponseCode.OK, serializeData("Feedback Recorded successfully."));
         } else {
             response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred while adding feedback. Please Try again."));
         }
         return response;
-    }
-
-    public String getFeedbackReport(@NotNull ParsedRequest request) throws SQLException {
-        return "";
     }
 }

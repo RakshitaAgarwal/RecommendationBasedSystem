@@ -2,10 +2,10 @@ package org.cafeteria.client;
 
 import org.cafeteria.client.global.GlobalData;
 import org.cafeteria.client.network.ServerConnection;
-import org.cafeteria.client.services.AdminService;
-import org.cafeteria.client.services.AuthenticationService;
-import org.cafeteria.client.services.ChefService;
-import org.cafeteria.client.services.EmployeeService;
+import org.cafeteria.client.services.AdminHandler;
+import org.cafeteria.client.services.AuthenticationHandler;
+import org.cafeteria.client.services.ChefHandler;
+import org.cafeteria.client.services.EmployeeHandler;
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.User;
 import org.cafeteria.common.model.UserRoleEnum;
@@ -34,7 +34,7 @@ public class Client {
                 System.out.println("Please Login to proceed.");
                 User userToLogin = fetchUserCredentialsForLogin();
                 try {
-                    User user = new AuthenticationService(connection).login(userToLogin);
+                    User user = new AuthenticationHandler(connection).login(userToLogin);
                     updateGlobalData(user);
                     showUserActionItems(user);
                 } catch (LoginFailedException e) {
@@ -59,15 +59,15 @@ public class Client {
         UserRoleEnum userRole = getEnumFromOrdinal(UserRoleEnum.class, user.getUserRoleId());
         switch (userRole) {
             case ADMIN -> {
-                AdminService adminService = new AdminService(connection, user, sc);
-                adminService.showUserActionItems();
+                AdminHandler adminHandler = new AdminHandler(connection, user, sc);
+                adminHandler.showUserActionItems();
             }
             case CHEF -> {
-                ChefService chef = new ChefService(connection, user, sc);
+                ChefHandler chef = new ChefHandler(connection, user, sc);
                 chef.showUserActionItems();
             }
             case EMP -> {
-                EmployeeService employee = new EmployeeService(connection, user, sc);
+                EmployeeHandler employee = new EmployeeHandler(connection, user, sc);
                 employee.showUserActionItems();
             }
             default -> {

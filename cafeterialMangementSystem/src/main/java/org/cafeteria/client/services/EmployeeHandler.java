@@ -5,18 +5,17 @@ import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.client.repositories.EmployeeRepository;
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
-
 import static org.cafeteria.client.repositories.AdminRepository.getFoodItemByName;
 import static org.cafeteria.client.repositories.AdminRepository.getMenuItemById;
-import static org.cafeteria.client.services.AdminService.handleDisplayMenu;
+import static org.cafeteria.client.services.AdminHandler.handleDisplayMenu;
 
 import java.io.IOException;
 import java.util.*;
 
-public class EmployeeService extends UserManager {
+public class EmployeeHandler extends UserManager {
     private static EmployeeRepository employeeRepository;
 
-    public EmployeeService(ServerConnection connection, User user, Scanner sc) {
+    public EmployeeHandler(ServerConnection connection, User user, Scanner sc) {
         super(user, sc);
         employeeRepository = new EmployeeRepository(connection);
     }

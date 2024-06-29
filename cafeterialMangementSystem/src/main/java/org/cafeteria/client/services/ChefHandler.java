@@ -8,16 +8,16 @@ import org.cafeteria.common.model.MenuItem;
 import org.cafeteria.common.model.MenuItemRecommendation;
 import org.cafeteria.common.model.User;
 import static org.cafeteria.client.repositories.AdminRepository.getMenuItemById;
-import static org.cafeteria.client.services.AdminService.handleDisplayMenu;
+import static org.cafeteria.client.services.AdminHandler.handleDisplayMenu;
 import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 import java.io.IOException;
 import java.util.*;
 
-public class ChefService extends UserManager {
+public class ChefHandler extends UserManager {
     private static ChefRepository chefRepository;
 
-    public ChefService(ServerConnection connection, User user, Scanner sc) {
+    public ChefHandler(ServerConnection connection, User user, Scanner sc) {
         super(user, sc);
         chefRepository = new ChefRepository(connection);
     }
@@ -29,7 +29,8 @@ public class ChefService extends UserManager {
             System.out.println("2. Roll Out Items for Next Day Menu");
             System.out.println("3. See Voting for Rolled out Menu Items");
             System.out.println("4. Update Next Day final Menu Items");
-            System.out.println("5. Exit");
+            System.out.println("5. See Discarded Menu Items");
+            System.out.println("6. Exit");
             System.out.println("Enter your Choice: ");
             int choice = sc.nextInt();
             sc.nextLine();
@@ -40,7 +41,8 @@ public class ChefService extends UserManager {
                     case 2 -> handleRollOutNextDayMenuOptions();
                     case 3 -> seeVotingForRolledOutItems();
                     case 4 -> handleUpdateNextDayFinalMenu();
-                    case 5 -> {
+                    case 5 -> handleDiscardMenuItems();
+                    case 6 -> {
                         chefRepository.closeConnection();
                         return;
                     }
@@ -94,19 +96,11 @@ public class ChefService extends UserManager {
 
     public void handleRollOutNextDayMenuOptions() throws IOException, InvalidResponseException, BadResponseException {
         Map<MealTypeEnum, List<MenuItemRecommendation>> recommendedItems = chefRepository.getRecommendationsForNextDayMenu();
-        List<Integer> rolledOutItems = new ArrayList<>();
-        if (recommendedItems == null || recommendedItems.isEmpty()) {
-            rollOutRandomItems();
-        } else {
-            displayMenuItemsRecommendationByMealType(recommendedItems);
-            rolledOutItems = getTopRolledOutMenuItemIds(recommendedItems, 5);
-        }
+        displayMenuItemsRecommendationByMealType(recommendedItems);
+        List<Integer> rolledOutItems = getTopRolledOutMenuItemIds(recommendedItems, 5);
         if (!rolledOutItems.isEmpty()) {
             System.out.println(chefRepository.processRollOutMenuOptions(rolledOutItems));
         }
-    }
-
-    private void rollOutRandomItems() {
     }
 
     public static void displayMenuItemsRecommendationByMealType(Map<MealTypeEnum, List<MenuItemRecommendation>> menuItemsByMealType) {
@@ -166,5 +160,8 @@ public class ChefService extends UserManager {
         } else {
             System.out.println("Invalid Input!!. Please Try again later.");
         }
+    }
+
+    private void handleDiscardMenuItems() {
     }
 }

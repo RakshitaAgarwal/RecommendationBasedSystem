@@ -1,0 +1,6 @@
+CREATE TABLE DiscardMenuItem (
+    Id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    menuItemId NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    price FLOAT NOT NULL
+);

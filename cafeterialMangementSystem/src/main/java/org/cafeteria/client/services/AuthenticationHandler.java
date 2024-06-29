@@ -12,10 +12,10 @@ import java.io.IOException;
 
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 
-public class AuthenticationService {
+public class AuthenticationHandler {
     private static ServerConnection connection;
 
-    public AuthenticationService(ServerConnection serverConnection) {
+    public AuthenticationHandler(ServerConnection serverConnection) {
         connection = serverConnection;
     }
 
