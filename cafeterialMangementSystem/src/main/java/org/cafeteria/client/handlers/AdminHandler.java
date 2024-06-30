@@ -4,6 +4,9 @@ import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.client.repositories.AdminRepository;
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
+import static org.cafeteria.client.repositories.AdminRepository.sendNotificationToAllEmployees;
+import static org.cafeteria.common.constants.Constants.DETAILED_FEEDBACK_MESSAGE;
+import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -13,10 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Collectors;
-
-import static org.cafeteria.client.repositories.AdminRepository.sendNotificationToAllEmployees;
-import static org.cafeteria.common.constants.Constants.DETAILED_FEEDBACK_MESSAGE;
-import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 public class AdminHandler extends UserManager {
 
@@ -171,7 +170,7 @@ public class AdminHandler extends UserManager {
         }
     }
 
-    public static void handleDiscardMenuItems() throws IOException {
+    public void handleDiscardMenuItems() throws IOException {
         try {
             List<DiscardMenuItem> discardedMenuItems = adminRepository.getDiscardMenuItems();
             displayDiscardedMenuItems(discardedMenuItems);
@@ -193,14 +192,14 @@ public class AdminHandler extends UserManager {
         }
     }
 
-    private static boolean isValidDiscardMenuItemId(int menuItemId, List<DiscardMenuItem> discardedMenuItems) {
+    private boolean isValidDiscardMenuItemId(int menuItemId, List<DiscardMenuItem> discardedMenuItems) {
         for (DiscardMenuItem discardMenuItem : discardedMenuItems) {
             if (discardMenuItem.getMenuItemId() == menuItemId) return true;
         }
         return false;
     }
 
-    private static void handleDiscardMenuItemAction(MenuItem menuItem) throws BadResponseException, IOException, InvalidResponseException {
+    private void handleDiscardMenuItemAction(MenuItem menuItem) throws BadResponseException, IOException, InvalidResponseException {
         System.out.println("Choose action to perform:");
         System.out.println("1. Remove the Food Item from Menu");
         System.out.println("2. Get Detailed Feedback");
@@ -215,7 +214,7 @@ public class AdminHandler extends UserManager {
         }
     }
 
-    private static void handleGetDetailedFeedback(String menuItemName) throws IOException, InvalidResponseException, BadResponseException {
+    private void handleGetDetailedFeedback(String menuItemName) throws IOException, InvalidResponseException, BadResponseException {
         String notificationMessage = String.format(DETAILED_FEEDBACK_MESSAGE, menuItemName, menuItemName, menuItemName);
         Notification notification = new Notification(
                 NotificationTypeEnum.GET_DETAILED_FEEDBACK.ordinal() + 1,
@@ -224,7 +223,7 @@ public class AdminHandler extends UserManager {
         System.out.println(sendNotificationToAllEmployees(notification));
     }
 
-    private static void displayDiscardedMenuItems(List<DiscardMenuItem> items) {
+    private void displayDiscardedMenuItems(List<DiscardMenuItem> items) {
         System.out.println("---------------------------------------------------------");
         System.out.printf("%-5s | %-10s | %-10s%n", "ID", "MenuItemID", "Avg. Rating");
         System.out.println("---------------------------------------------------------");

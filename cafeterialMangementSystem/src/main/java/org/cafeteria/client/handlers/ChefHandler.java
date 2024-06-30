@@ -1,12 +1,15 @@
 package org.cafeteria.client.handlers;
 
 import org.cafeteria.client.network.ServerConnection;
+import org.cafeteria.client.repositories.AdminRepository;
 import org.cafeteria.client.repositories.ChefRepository;
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
 
 import static org.cafeteria.client.repositories.AdminRepository.getMenuItemById;
 import static org.cafeteria.client.handlers.AdminHandler.handleDisplayMenu;
+import static org.cafeteria.client.repositories.AdminRepository.sendNotificationToAllEmployees;
+import static org.cafeteria.common.constants.Constants.DETAILED_FEEDBACK_MESSAGE;
 import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 import java.io.IOException;
@@ -14,10 +17,12 @@ import java.util.*;
 
 public class ChefHandler extends UserManager {
     private static ChefRepository chefRepository;
+    private static AdminRepository adminRepository;
 
     public ChefHandler(ServerConnection connection, User user, Scanner sc) {
         super(user, sc);
         chefRepository = new ChefRepository(connection);
+        adminRepository = new AdminRepository(connection);
     }
 
     @Override
@@ -160,23 +165,67 @@ public class ChefHandler extends UserManager {
         }
     }
 
-    public static void handleDiscardMenuItems() throws IOException {
+    public void handleDiscardMenuItems() throws IOException {
         try {
             List<DiscardMenuItem> discardedMenuItems = chefRepository.getDiscardMenuItems();
             displayDiscardedMenuItems(discardedMenuItems);
+            boolean isContinue;
+            do {
+                System.out.println("Enter the Menu Item Id you want to perform action for:");
+                int menuItemId = sc.nextInt();
+                MenuItem menuItem = getMenuItemById(menuItemId);
+                if (menuItem != null && isValidDiscardMenuItemId(menuItemId, discardedMenuItems)) {
+                    handleDiscardMenuItemAction(menuItem);
+                } else {
+                    System.out.println("Invalid Discard Menu Item Id.");
+                }
+                System.out.println("Do you wish to Continue for other Discard Menu Item? true/false");
+                isContinue = sc.nextBoolean();
+            } while (isContinue);
         } catch (InvalidResponseException | BadResponseException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    private static void displayDiscardedMenuItems(List<DiscardMenuItem> items) {
-        System.out.println("--------------------------------------------------------------------------");
-        System.out.printf("%-5s | %-10s | %-30s | %-10s | %-10s%n", "ID", "MenuItemID", "Name", "Price", "Rating");
-        System.out.println("--------------------------------------------------------------------------");
+    private boolean isValidDiscardMenuItemId(int menuItemId, List<DiscardMenuItem> discardedMenuItems) {
+        for (DiscardMenuItem discardMenuItem : discardedMenuItems) {
+            if (discardMenuItem.getMenuItemId() == menuItemId) return true;
+        }
+        return false;
+    }
+
+    private void handleDiscardMenuItemAction(MenuItem menuItem) throws BadResponseException, IOException, InvalidResponseException {
+        System.out.println("Choose action to perform:");
+        System.out.println("1. Remove the Food Item from Menu");
+        System.out.println("2. Get Detailed Feedback");
+        int choice = sc.nextInt();
+        switch (choice) {
+            case 1 -> {
+                System.out.println("Are you sure you want to permanently remove food item from menu. true/false");
+                if (sc.nextBoolean()) adminRepository.deleteMenuItem(menuItem);
+            }
+            case 2 -> handleGetDetailedFeedback(menuItem.getName());
+            default -> System.out.println("Invalid choice selected");
+        }
+    }
+
+    private void handleGetDetailedFeedback(String menuItemName) throws IOException, InvalidResponseException, BadResponseException {
+        String notificationMessage = String.format(DETAILED_FEEDBACK_MESSAGE, menuItemName, menuItemName, menuItemName);
+        Notification notification = new Notification(
+                NotificationTypeEnum.GET_DETAILED_FEEDBACK.ordinal() + 1,
+                notificationMessage,
+                new Date());
+        System.out.println(sendNotificationToAllEmployees(notification));
+    }
+
+    private void displayDiscardedMenuItems(List<DiscardMenuItem> items) {
+        System.out.println("---------------------------------------------------------");
+        System.out.printf("%-5s | %-10s | %-10s%n", "ID", "MenuItemID", "Avg. Rating");
+        System.out.println("---------------------------------------------------------");
         for (DiscardMenuItem item : items) {
-            System.out.printf("%-5d | %-10d | %-30s | %-10.2f | %-10.2f%n",
+            System.out.printf("%-5d | %-10d | %-10.2f%n",
                     item.getId(), item.getMenuItemId(), item.getAvgRating());
         }
-        System.out.println("--------------------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------");
     }
 }
