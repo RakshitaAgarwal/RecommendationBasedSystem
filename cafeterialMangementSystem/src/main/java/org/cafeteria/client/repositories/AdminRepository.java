@@ -3,10 +3,8 @@ package org.cafeteria.client.repositories;
 import com.sun.istack.NotNull;
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.common.customException.CustomExceptions.*;
-import org.cafeteria.common.model.MenuItem;
-import org.cafeteria.common.model.ParsedResponse;
-import org.cafeteria.common.model.ResponseCode;
-import org.cafeteria.common.model.UserAction;
+import org.cafeteria.common.model.*;
+
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 
 import java.io.IOException;
@@ -116,8 +114,20 @@ public class AdminRepository extends UserRepository {
             throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
 
-    @Override
-    public void closeConnection() throws IOException {
-        connection.close();
+    public List<DiscardMenuItem> getDiscardMenuItems() throws IOException, InvalidResponseException, BadResponseException {
+        String request = createRequest(UserAction.GET_DISCARD_MENU_ITEMS, null);
+        System.out.println("request that is sent to server: " + request);
+        String response = connection.sendData(request);
+        System.out.println("response that is received from server: " + response);
+
+        if (response == null) {
+            throw new IOException("Server Got Disconnected. Please Try again.");
+        }
+        ParsedResponse parsedResponse = parseResponse(response);
+        ResponseCode responseCode = parsedResponse.getResponseCode();
+        if (responseCode == ResponseCode.OK)
+            return deserializeList(parsedResponse.getJsonData(), DiscardMenuItem.class);
+        else
+            throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
 }

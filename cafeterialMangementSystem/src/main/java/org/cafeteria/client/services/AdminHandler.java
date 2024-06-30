@@ -3,6 +3,7 @@ package org.cafeteria.client.services;
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.client.repositories.AdminRepository;
 import org.cafeteria.common.customException.CustomExceptions.*;
+import org.cafeteria.common.model.DiscardMenuItem;
 import org.cafeteria.common.model.MealTypeEnum;
 import org.cafeteria.common.model.MenuItem;
 import org.cafeteria.common.model.User;
@@ -15,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Collectors;
-
 import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 public class AdminHandler extends UserManager {
@@ -170,6 +170,23 @@ public class AdminHandler extends UserManager {
         }
     }
 
-    private void handleDiscardMenuItems() {
+    public static void handleDiscardMenuItems() throws IOException {
+        try {
+            List<DiscardMenuItem> discardedMenuItems = adminRepository.getDiscardMenuItems();
+            displayDiscardedMenuItems(discardedMenuItems);
+        } catch (InvalidResponseException | BadResponseException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private static void displayDiscardedMenuItems(List<DiscardMenuItem> items) {
+        System.out.println("--------------------------------------------------------------------------");
+        System.out.printf("%-5s | %-10s | %-30s | %-10s | %-10s%n", "ID", "MenuItemID", "Name", "Price", "Rating");
+        System.out.println("--------------------------------------------------------------------------");
+        for (DiscardMenuItem item : items) {
+            System.out.printf("%-5d | %-10d | %-30s | %-10.2f | %-10.2f%n",
+                    item.getId(), item.getMenuItemId(), item.getName(), item.getPrice(), item.getRating());
+        }
+        System.out.println("--------------------------------------------------------------------------");
     }
 }

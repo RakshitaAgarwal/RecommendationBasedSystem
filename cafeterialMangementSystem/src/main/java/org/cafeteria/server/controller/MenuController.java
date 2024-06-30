@@ -61,10 +61,6 @@ public class MenuController {
         return response;
     }
 
-    public String discardMenuItems(@NotNull ParsedRequest request) throws SQLException {
-        return "";
-    }
-
     public String ShowMenuItems() throws SQLException {
         List<MenuItem> menu = _menuService.getAll();
         String response;

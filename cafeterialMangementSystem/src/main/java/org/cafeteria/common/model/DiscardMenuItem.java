@@ -5,14 +5,16 @@ public class DiscardMenuItem {
     private int menuItemId;
     private String name;
     private float price;
+    private float rating;
 
     public DiscardMenuItem() {}
 
-    public DiscardMenuItem(int id, int menuItemId, String name, float price) {
+    public DiscardMenuItem(int id, int menuItemId, String name, float price, float rating) {
         this.id = id;
         this.menuItemId = menuItemId;
         this.name = name;
         this.price = price;
+        this.rating = rating;
     }
 
     public int getId() {
@@ -45,6 +47,14 @@ public class DiscardMenuItem {
 
     public void setPrice(float price) {
         this.price = price;
+    }
+
+    public float getRating() {
+        return rating;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
     }
 
     @Override

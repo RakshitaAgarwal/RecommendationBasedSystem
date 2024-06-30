@@ -90,9 +90,4 @@ public class EmployeeRepository extends UserRepository {
             return deserializeList(parsedResponse.getJsonData(), Notification.class);
         } else throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
-
-    @Override
-    public void closeConnection() throws IOException {
-        connection.close();
-    }
 }

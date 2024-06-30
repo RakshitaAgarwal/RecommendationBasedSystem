@@ -25,7 +25,7 @@ public class RoleActionMapping {
                 UserAction.LOGIN,
                 UserAction.CREATE_USER,
                 UserAction.GET_ALL_MENU_ITEMS,
-                UserAction.SEE_DISCARD_MENU_ITEMS,
+                UserAction.GET_DISCARD_MENU_ITEMS,
                 UserAction.ROLL_OUT_NEXT_DAY_MENU_OPTIONS
         ));
 

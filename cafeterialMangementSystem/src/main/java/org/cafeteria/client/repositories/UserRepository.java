@@ -10,5 +10,7 @@ public abstract class UserRepository {
         UserRepository.connection = connection;
     }
 
-    public abstract void closeConnection() throws IOException;
+    public void closeConnection() throws IOException {
+        connection.close();
+    }
 }
