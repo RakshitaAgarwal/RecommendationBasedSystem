@@ -11,10 +11,7 @@ import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AdminHandler extends UserManager {
@@ -54,6 +51,9 @@ public class AdminHandler extends UserManager {
                 }
             } catch (InvalidResponseException | BadResponseException e) {
                 System.out.println(e.getMessage());
+            } catch(InputMismatchException e) {
+                sc.next();
+                System.out.println("Invalid Input Entered. Please Enter Valid Input");
             }
         }
     }

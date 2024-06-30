@@ -5,6 +5,7 @@ import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.client.repositories.EmployeeRepository;
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
+
 import static org.cafeteria.client.repositories.AdminRepository.getFoodItemByName;
 import static org.cafeteria.client.repositories.AdminRepository.getMenuItemById;
 import static org.cafeteria.client.handlers.AdminHandler.handleDisplayMenu;
@@ -45,6 +46,9 @@ public class EmployeeHandler extends UserManager {
                 }
             } catch (InvalidResponseException | BadResponseException e) {
                 System.out.println(e.getMessage());
+            } catch (InputMismatchException e) {
+                sc.next();
+                System.out.println("Invalid Input Entered. Please Enter Valid Input");
             }
         }
     }

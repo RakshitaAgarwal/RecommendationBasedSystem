@@ -52,6 +52,9 @@ public class ChefHandler extends UserManager {
                 }
             } catch (BadResponseException | InvalidResponseException e) {
                 System.out.println(e.getMessage());
+            } catch (InputMismatchException e) {
+                sc.next();
+                System.out.println("Invalid Input Entered. Please Enter Valid Input");
             }
         }
     }
@@ -202,7 +205,7 @@ public class ChefHandler extends UserManager {
         switch (choice) {
             case 1 -> {
                 System.out.println("Are you sure you want to permanently remove food item from menu. true/false");
-                if (sc.nextBoolean()) adminRepository.deleteMenuItem(menuItem);
+                if (sc.nextBoolean()) System.out.println(adminRepository.deleteMenuItem(menuItem));
             }
             case 2 -> handleGetDetailedFeedback(menuItem.getName());
             default -> System.out.println("Invalid choice selected");
