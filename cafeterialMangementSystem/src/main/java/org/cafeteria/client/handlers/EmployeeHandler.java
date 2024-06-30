@@ -1,4 +1,4 @@
-package org.cafeteria.client.services;
+package org.cafeteria.client.handlers;
 
 import org.cafeteria.client.global.GlobalData;
 import org.cafeteria.client.network.ServerConnection;
@@ -7,7 +7,7 @@ import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
 import static org.cafeteria.client.repositories.AdminRepository.getFoodItemByName;
 import static org.cafeteria.client.repositories.AdminRepository.getMenuItemById;
-import static org.cafeteria.client.services.AdminHandler.handleDisplayMenu;
+import static org.cafeteria.client.handlers.AdminHandler.handleDisplayMenu;
 
 import java.io.IOException;
 import java.util.*;

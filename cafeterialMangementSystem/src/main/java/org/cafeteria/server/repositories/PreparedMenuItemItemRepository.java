@@ -37,7 +37,7 @@ public class PreparedMenuItemItemRepository implements IPreparedMenuItemReposito
     }
 
     public List<PreparedMenuItem> getByDate(String rolledOutDate) throws SQLException {
-        String query = "SELECT * FROM PreparedMenuItem WHERE DATE(rolledOutDate) = ?";
+        String query = "SELECT * FROM PreparedMenuItem WHERE DATE(dateTime) = ?";
         List<PreparedMenuItem> preparedMenuItems;
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {

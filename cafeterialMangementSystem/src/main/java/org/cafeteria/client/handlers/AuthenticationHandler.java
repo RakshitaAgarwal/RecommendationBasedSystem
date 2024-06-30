@@ -1,4 +1,4 @@
-package org.cafeteria.client.services;
+package org.cafeteria.client.handlers;
 
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.common.customException.CustomExceptions.InvalidResponseException;

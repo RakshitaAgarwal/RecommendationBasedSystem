@@ -3,18 +3,14 @@ package org.cafeteria.common.model;
 public class DiscardMenuItem {
     private int id;
     private int menuItemId;
-    private String name;
-    private float price;
-    private float rating;
+    private float avgRating;
 
     public DiscardMenuItem() {}
 
-    public DiscardMenuItem(int id, int menuItemId, String name, float price, float rating) {
+    public DiscardMenuItem(int id, int menuItemId, float rating) {
         this.id = id;
         this.menuItemId = menuItemId;
-        this.name = name;
-        this.price = price;
-        this.rating = rating;
+        this.avgRating = rating;
     }
 
     public int getId() {
@@ -33,28 +29,12 @@ public class DiscardMenuItem {
         this.menuItemId = menuItemId;
     }
 
-    public String getName() {
-        return name;
+    public float getAvgRating() {
+        return avgRating;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public float getPrice() {
-        return price;
-    }
-
-    public void setPrice(float price) {
-        this.price = price;
-    }
-
-    public float getRating() {
-        return rating;
-    }
-
-    public void setRating(float rating) {
-        this.rating = rating;
+    public void setAvgRating(float avgRating) {
+        this.avgRating = avgRating;
     }
 
     @Override
@@ -62,8 +42,6 @@ public class DiscardMenuItem {
         return "DiscardMenuItem{" +
                 "id=" + id +
                 ", menuItemId=" + menuItemId +
-                ", name='" + name + '\'' +
-                ", price=" + price +
                 '}';
     }
 }

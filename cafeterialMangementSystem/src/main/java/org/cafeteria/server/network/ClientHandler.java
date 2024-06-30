@@ -2,6 +2,7 @@ package org.cafeteria.server.network;
 
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.ParsedRequest;
+
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.parseRequest;
 import static org.cafeteria.server.Server.*;
 
@@ -37,20 +38,12 @@ public class ClientHandler implements Runnable {
                 System.out.println("response that is sent to client: " + response);
                 out.println(response);
             }
-        } catch (SQLException | InvalidRequestException ex) {
-            throw new RuntimeException(ex);
+        } catch (DuplicateEntryFoundException | InvalidRequestException | SQLException e) {
+            System.out.println(e.getMessage());
         } catch (SocketException e) {
             System.out.println("Client Got disconnected");
         } catch (IOException e) {
             System.out.println("Some Error occurred while reading input from client");
-        } catch (DuplicateEntryFoundException e) {
-            System.out.println(e.getMessage());
-        } finally {
-            try {
-                clientSocket.close();
-            } catch (IOException e) {
-                System.out.println("Some error occurred while closing the connection.");
-            }
         }
     }
 
@@ -75,17 +68,23 @@ public class ClientHandler implements Runnable {
 
             case PROVIDE_FEEDBACK -> response = feedbackController.addFeedback(request);
 
+            case SEND_NOTIFICATION_TO_EMPLOYEES ->
+                    response = notificationController.sendNotificationToAllEmployees(request);
+
             case SEE_NOTIFICATIONS -> response = notificationController.getUserNotification(request);
 
             case VOTE_NEXT_DAY_MENU -> response = votingController.voteForNextDayMenu(request);
 
             case GET_VOTING_FOR_NEXT_DAY_MENU -> response = votingController.getVotingForNextDayMenu(request);
 
-            case GET_MENU_ITEM_RECOMMENDATION_SCORE -> response = recommendationController.getRecommendationScoreForMenuItem(request);
+            case GET_MENU_ITEM_RECOMMENDATION_SCORE ->
+                    response = recommendationController.getRecommendationScoreForMenuItem(request);
 
-            case GET_RECOMMENDATION_FOR_NEXT_DAY_MENU -> response = recommendationController.getRecommendationsForNextDayMenu();
+            case GET_RECOMMENDATION_FOR_NEXT_DAY_MENU ->
+                    response = recommendationController.getRecommendationsForNextDayMenu();
 
-            case ROLL_OUT_NEXT_DAY_MENU_OPTIONS -> response = rolledOutMenuItemController.rollOutNextDayMenuOptions(request);
+            case ROLL_OUT_NEXT_DAY_MENU_OPTIONS ->
+                    response = rolledOutMenuItemController.rollOutNextDayMenuOptions(request);
 
             case GET_NEXT_DAY_MENU_OPTIONS -> response = rolledOutMenuItemController.getNextDayMenuOptions();
 

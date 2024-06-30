@@ -1,4 +1,4 @@
-package org.cafeteria.client.services;
+package org.cafeteria.client.handlers;
 
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.client.repositories.ChefRepository;
@@ -6,7 +6,7 @@ import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
 
 import static org.cafeteria.client.repositories.AdminRepository.getMenuItemById;
-import static org.cafeteria.client.services.AdminHandler.handleDisplayMenu;
+import static org.cafeteria.client.handlers.AdminHandler.handleDisplayMenu;
 import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 import java.io.IOException;
@@ -175,7 +175,7 @@ public class ChefHandler extends UserManager {
         System.out.println("--------------------------------------------------------------------------");
         for (DiscardMenuItem item : items) {
             System.out.printf("%-5d | %-10d | %-30s | %-10.2f | %-10.2f%n",
-                    item.getId(), item.getMenuItemId(), item.getName(), item.getPrice(), item.getRating());
+                    item.getId(), item.getMenuItemId(), item.getAvgRating());
         }
         System.out.println("--------------------------------------------------------------------------");
     }

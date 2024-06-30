@@ -130,4 +130,20 @@ public class AdminRepository extends UserRepository {
         else
             throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
+
+    public static String sendNotificationToAllEmployees(Notification notification) throws IOException, InvalidResponseException, BadResponseException {
+        String request = createRequest(UserAction.SEND_NOTIFICATION_TO_EMPLOYEES, serializeData(notification));
+        System.out.println("request that is sent to server: " + request);
+        String response = connection.sendData(request);
+        System.out.println("response that is received from server: " + response);
+        if (response == null)
+            throw new IOException("Server Got Disconnected. Please Try again.");
+
+        ParsedResponse parsedResponse = parseResponse(response);
+        ResponseCode responseCode = parsedResponse.getResponseCode();
+        if (responseCode == ResponseCode.OK)
+            return deserializeData(parsedResponse.getJsonData(), String.class);
+        else
+            throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
+    }
 }

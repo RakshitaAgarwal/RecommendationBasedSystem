@@ -28,7 +28,7 @@ public class RolledOutMenuItemController {
         try {
             if(_rolledOutMenuItemService.rollOutNextDayMenuOptions(nextDayMenuOptions)) {
                 response = createResponse(ResponseCode.OK, null);
-                Notification notification = new Notification(NotificationTypeEnum.NEXT_DAY_OPTIONS.ordinal(), "Next Day Menu options are updated. Please Cast your vote for the day", new Date());
+                Notification notification = new Notification(NotificationTypeEnum.NEXT_DAY_OPTIONS.ordinal()+1, "Next Day Menu options are updated. Please Cast your vote for the day", new Date());
                 _notificationService.sendNotificationToAllEmployees(notification);
             } else {
                 response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred while rolling out next day menu options. Please Try again."));

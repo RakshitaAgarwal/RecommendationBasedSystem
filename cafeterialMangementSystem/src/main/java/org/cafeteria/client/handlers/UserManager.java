@@ -1,4 +1,4 @@
-package org.cafeteria.client.services;
+package org.cafeteria.client.handlers;
 
 import org.cafeteria.common.customException.CustomExceptions;
 import org.cafeteria.common.model.User;

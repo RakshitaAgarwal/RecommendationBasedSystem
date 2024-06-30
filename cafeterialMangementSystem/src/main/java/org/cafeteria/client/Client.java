@@ -2,10 +2,10 @@ package org.cafeteria.client;
 
 import org.cafeteria.client.global.GlobalData;
 import org.cafeteria.client.network.ServerConnection;
-import org.cafeteria.client.services.AdminHandler;
-import org.cafeteria.client.services.AuthenticationHandler;
-import org.cafeteria.client.services.ChefHandler;
-import org.cafeteria.client.services.EmployeeHandler;
+import org.cafeteria.client.handlers.AdminHandler;
+import org.cafeteria.client.handlers.AuthenticationHandler;
+import org.cafeteria.client.handlers.ChefHandler;
+import org.cafeteria.client.handlers.EmployeeHandler;
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.User;
 import org.cafeteria.common.model.UserRoleEnum;

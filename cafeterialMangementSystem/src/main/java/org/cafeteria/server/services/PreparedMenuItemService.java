@@ -27,7 +27,7 @@ public class PreparedMenuItemService implements IPreparedMenuItemService {
     public boolean addPreparedMenuItems(List<Integer> preparedMenuItemIds) throws SQLException, CustomExceptions.DuplicateEntryFoundException {
         List<PreparedMenuItem> preparedMenuItems = new ArrayList<>();
         Date date = new Date();
-        if(_preparedMenuItemRepository.getByDate(extractDate(date)).isEmpty())
+        if(!_preparedMenuItemRepository.getByDate(extractDate(date)).isEmpty())
             throw new CustomExceptions.DuplicateEntryFoundException("Prepared Menu Items have already been Updated for " + extractDate(date));
 
         for(Integer menuItemId :preparedMenuItemIds) {

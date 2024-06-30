@@ -28,4 +28,15 @@ public class NotificationController {
         }
         return response;
     }
+
+    public String sendNotificationToAllEmployees(@NotNull ParsedRequest request) throws SQLException {
+        Notification notification = deserializeData(request.getJsonData(), Notification.class);
+        String response;
+        if(_notificationService.sendNotificationToAllEmployees(notification)) {
+            response = createResponse(ResponseCode.OK, serializeData("Notification sent successfully"));
+        } else {
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, "Some error occurred while rolling out notification to employees. Please try again.");
+        }
+        return response;
+    }
 }

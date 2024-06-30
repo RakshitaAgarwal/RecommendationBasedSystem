@@ -7,8 +7,8 @@ DELIMITER $$
 
 CREATE PROCEDURE DiscardLowRatingMenuItems()
 BEGIN
-    INSERT INTO DiscardMenuItem (menuItemId, name, price, rating)
-    SELECT menuItem.id, menuItem.name, menuItem.price, feedbackByMenuItemId.avgRating
+    INSERT INTO DiscardMenuItem (menuItemId, avgRating)
+    SELECT menuItem.id, feedbackByMenuItemId.avgRating
     FROM Menu menuItem
     JOIN (
         SELECT menuItemId, AVG(rating) AS avgRating

@@ -24,7 +24,7 @@ public class MenuController {
         MenuItem menuItem = deserializeData(request.getJsonData(), MenuItem.class);
         String response;
         if (_menuService.add(menuItem)) {
-            Notification notification = new Notification(1, menuItem.getName() + " added to the menu.", new Date());
+            Notification notification = new Notification(NotificationTypeEnum.ADD_MENU.ordinal()+1, menuItem.getName() + " added to the menu.", new Date());
             _notificationService.sendNotificationToAllEmployees(notification);
             response = createResponse(ResponseCode.OK, serializeData(menuItem.getName() + " Added successfully in the Menu."));
         } else {
@@ -39,7 +39,7 @@ public class MenuController {
         String response;
         if(isItemUpdated) {
             response = createResponse(ResponseCode.OK, serializeData(menuItem.getName() + " Deleted successfully from the Menu."));
-            Notification notification = new Notification(2, menuItem.getName() + " deleted from the menu.", new Date());
+            Notification notification = new Notification(NotificationTypeEnum.DELETE_MENU.ordinal()+1, menuItem.getName() + " deleted from the menu.", new Date());
             _notificationService.sendNotificationToAllEmployees(notification);
         } else {
             response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred while deleting Menu Item."));
@@ -53,7 +53,7 @@ public class MenuController {
         String response;
         if(isItemUpdated) {
             response = createResponse(ResponseCode.OK, serializeData(menuItem.getName() + " Updated successfully in the Menu."));
-            Notification notification = new Notification(3, menuItem.getName() + " updated in the menu.", new Date());
+            Notification notification = new Notification(NotificationTypeEnum.UPDATE_MENU.ordinal()+1, menuItem.getName() + " updated in the menu.", new Date());
             _notificationService.sendNotificationToAllEmployees(notification);
         } else {
             response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred while updating Menu Item."));

@@ -27,11 +27,9 @@ public class DiscardMenuItemRepository implements IDiscardMenuItemsRepository {
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 int menuItemId = resultSet.getInt("menuItemId");
-                String name = resultSet.getString("name");
-                float price = resultSet.getFloat("price");
-                float rating = resultSet.getFloat("rating");
+                float rating = resultSet.getFloat("avgRating");
 
-                DiscardMenuItem item = new DiscardMenuItem(id, menuItemId, name, price, rating);
+                DiscardMenuItem item = new DiscardMenuItem(id, menuItemId, rating);
                 discardedMenuItems.add(item);
             }
         }
