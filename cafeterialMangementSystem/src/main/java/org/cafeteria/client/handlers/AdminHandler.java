@@ -146,7 +146,7 @@ public class AdminHandler extends UserManager {
                 }
                 case 3 -> {
                     System.out.print("Enter new last time prepared (yyyy-MM-dd): ");
-                    String date = sc.nextLine();
+                    String date = sc.next();
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                     try {
                         Date newDate = sdf.parse(date);
