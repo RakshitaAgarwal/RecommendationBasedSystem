@@ -3,7 +3,6 @@ package org.cafeteria.server.repositories;
 import org.cafeteria.common.model.MenuItem;
 import org.cafeteria.server.network.JdbcConnection;
 import org.cafeteria.server.repositories.interfaces.IMenuRepository;
-
 import static org.cafeteria.common.util.Utils.dateToTimestamp;
 import static org.cafeteria.common.util.Utils.timestampToDate;
 
@@ -20,12 +19,16 @@ public class MenuRepository implements IMenuRepository {
 
     @Override
     public boolean add(MenuItem item) throws SQLException {
-        String query = "INSERT INTO menu (name, price, isAvailable, mealTypeId) VALUES (?, ?, ?, ?);";
+        String query = "INSERT INTO menuItem (name, price, isAvailable, mealTypeId, menuItemTypeId, sweetContentLevelId, spiceContentLevelId, cuisineTypeId) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, item.getName());
             statement.setFloat(2, item.getPrice());
             statement.setBoolean(3, item.isAvailable());
             statement.setInt(4, item.getMealTypeId());
+            statement.setInt(5, item.getMenuItemTypeId());
+            statement.setInt(6, item.getSweetContentLevelId());
+            statement.setInt(7, item.getSpiceContentLevelId());
+            statement.setInt(8, item.getCuisineTypeId());
             return statement.executeUpdate() > 0;
         }
     }
@@ -37,7 +40,7 @@ public class MenuRepository implements IMenuRepository {
 
     @Override
     public boolean delete(MenuItem item) throws SQLException {
-        String query = "DELETE FROM menu WHERE id = ?";
+        String query = "DELETE FROM menuItem WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, item.getId());
             int rowsDeleted = statement.executeUpdate();
@@ -47,20 +50,24 @@ public class MenuRepository implements IMenuRepository {
 
     @Override
     public boolean update(MenuItem item) throws SQLException {
-        String query = "UPDATE menu SET price = ?, isAvailable = ?, lastTimePrepared = ?, mealTypeId = ? WHERE id = ?";
+        String query = "UPDATE menuItem SET price = ?, isAvailable = ?, lastTimePrepared = ?, mealTypeId = ?, menuItemTypeId = ?, sweetContentLevelId = ?, spiceContentLevelId =?, cuisineTypeId =? WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setFloat(1, item.getPrice());
             statement.setBoolean(2, item.isAvailable());
             statement.setTimestamp(3, dateToTimestamp(item.getLastTimePrepared()));
             statement.setInt(4, item.getMealTypeId());
-            statement.setInt(5, item.getId());
+            statement.setInt(5, item.getMenuItemTypeId());
+            statement.setInt(6, item.getSweetContentLevelId());
+            statement.setInt(7, item.getSpiceContentLevelId());
+            statement.setInt(8, item.getCuisineTypeId());
+            statement.setInt(9, item.getId());
             return statement.executeUpdate() > 0;
         }
     }
 
     @Override
     public List<MenuItem> GetAll() throws SQLException {
-        String query = "SELECT * FROM menu";
+        String query = "SELECT * FROM menuItem";
         List<MenuItem> menuItems = new ArrayList<>();
 
         try (PreparedStatement statement = connection.prepareStatement(query);
@@ -73,6 +80,10 @@ public class MenuRepository implements IMenuRepository {
                 boolean isAvailable = resultSet.getBoolean("isAvailable");
                 Timestamp lastTimePreparedTimestamp = resultSet.getTimestamp("lastTimePrepared");
                 int mealTypeId = resultSet.getInt("mealTypeId");
+                int menuItemTypeId = resultSet.getInt("menuItemTypeId");
+                int sweetContentLevelId = resultSet.getInt("sweetContentLevelId");
+                int spiceContentLevelId = resultSet.getInt("spiceContentLevelId");
+                int cuisineTypeId = resultSet.getInt("cuisineTypeId");
 
                 MenuItem menuItem = new MenuItem();
                 menuItem.setId(id);
@@ -81,6 +92,10 @@ public class MenuRepository implements IMenuRepository {
                 menuItem.setAvailable(isAvailable);
                 menuItem.setLastTimePrepared(timestampToDate(lastTimePreparedTimestamp));
                 menuItem.setMealTypeId(mealTypeId);
+                menuItem.setMenuItemTypeId(menuItemTypeId);
+                menuItem.setSweetContentLevelId(sweetContentLevelId);
+                menuItem.setSpiceContentLevelId(spiceContentLevelId);
+                menuItem.setCuisineTypeId(cuisineTypeId);
 
                 menuItems.add(menuItem);
             }
@@ -91,7 +106,7 @@ public class MenuRepository implements IMenuRepository {
 
     @Override
     public MenuItem getById(int id) throws SQLException {
-        String query = "SELECT * FROM menu WHERE id = ?";
+        String query = "SELECT * FROM menuItem WHERE id = ?";
         MenuItem menuItem = null;
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -104,6 +119,10 @@ public class MenuRepository implements IMenuRepository {
                     boolean isAvailable = resultSet.getBoolean("isAvailable");
                     Timestamp lastTimePreparedTimestamp = resultSet.getTimestamp("lastTimePrepared");
                     int mealTypeId = resultSet.getInt("mealTypeId");
+                    int menuItemTypeId = resultSet.getInt("menuItemTypeId");
+                    int sweetContentLevelId = resultSet.getInt("sweetContentLevelId");
+                    int spiceContentLevelId = resultSet.getInt("spiceContentLevelId");
+                    int cuisineTypeId = resultSet.getInt("cuisineTypeId");
 
                     menuItem = new MenuItem();
                     menuItem.setId(id);
@@ -112,6 +131,10 @@ public class MenuRepository implements IMenuRepository {
                     menuItem.setAvailable(isAvailable);
                     menuItem.setLastTimePrepared(timestampToDate(lastTimePreparedTimestamp));
                     menuItem.setMealTypeId(mealTypeId);
+                    menuItem.setMenuItemTypeId(menuItemTypeId);
+                    menuItem.setSweetContentLevelId(sweetContentLevelId);
+                    menuItem.setSpiceContentLevelId(spiceContentLevelId);
+                    menuItem.setCuisineTypeId(cuisineTypeId);
                 }
             }
         }
@@ -122,7 +145,7 @@ public class MenuRepository implements IMenuRepository {
 
     @Override
     public MenuItem getByName(String name) throws SQLException {
-        String query = "SELECT * FROM menu WHERE name = ?";
+        String query = "SELECT * FROM menuItem WHERE name = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, name);
             ResultSet resultSet = statement.executeQuery();
@@ -135,6 +158,10 @@ public class MenuRepository implements IMenuRepository {
                 menuItem.setMealTypeId(resultSet.getInt("mealTypeId"));
                 Timestamp timestamp = resultSet.getTimestamp("lastTimePrepared");
                 menuItem.setLastTimePrepared(timestampToDate(timestamp));
+                menuItem.setMenuItemTypeId(resultSet.getInt("menuItemTypeId"));
+                menuItem.setSweetContentLevelId(resultSet.getInt("sweetContentLevelId"));
+                menuItem.setSpiceContentLevelId(resultSet.getInt("spiceContentLevelId"));
+                menuItem.setCuisineTypeId(resultSet.getInt("cuisineTypeId"));
 
                 return menuItem;
             }
@@ -144,7 +171,7 @@ public class MenuRepository implements IMenuRepository {
 
     @Override
     public List<MenuItem> getByMealTypeId(int mealTypeId) throws SQLException {
-        String query = "SELECT * FROM menu WHERE mealTypeId = ?";
+        String query = "SELECT * FROM menuItem WHERE mealTypeId = ?";
         List<MenuItem> menuItems = new ArrayList<>();
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -156,6 +183,10 @@ public class MenuRepository implements IMenuRepository {
                 float price = resultSet.getFloat("price");
                 boolean isAvailable = resultSet.getBoolean("isAvailable");
                 Timestamp lastTimePreparedTimestamp = resultSet.getTimestamp("lastTimePrepared");
+                int menuItemTypeId = resultSet.getInt("menuItemTypeId");
+                int sweetContentLevelId = resultSet.getInt("sweetContentLevelId");
+                int spiceContentLevelId = resultSet.getInt("spiceContentLevelId");
+                int cuisineTypeId = resultSet.getInt("cuisineTypeId");
 
                 MenuItem menuItem = new MenuItem();
                 menuItem.setId(id);
@@ -164,6 +195,10 @@ public class MenuRepository implements IMenuRepository {
                 menuItem.setAvailable(isAvailable);
                 menuItem.setLastTimePrepared(timestampToDate(lastTimePreparedTimestamp));
                 menuItem.setMealTypeId(mealTypeId);
+                menuItem.setMenuItemTypeId(menuItemTypeId);
+                menuItem.setSweetContentLevelId(sweetContentLevelId);
+                menuItem.setSpiceContentLevelId(spiceContentLevelId);
+                menuItem.setCuisineTypeId(cuisineTypeId);
 
                 menuItems.add(menuItem);
             }

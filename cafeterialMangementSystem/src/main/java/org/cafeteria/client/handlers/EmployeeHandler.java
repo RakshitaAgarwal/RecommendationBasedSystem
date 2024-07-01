@@ -9,6 +9,7 @@ import org.cafeteria.common.model.*;
 import static org.cafeteria.client.repositories.AdminRepository.getFoodItemByName;
 import static org.cafeteria.client.repositories.AdminRepository.getMenuItemById;
 import static org.cafeteria.client.handlers.AdminHandler.handleDisplayMenu;
+import static org.cafeteria.common.util.Utils.extractDate;
 
 import java.io.IOException;
 import java.util.*;
@@ -115,8 +116,6 @@ public class EmployeeHandler extends UserManager {
             isContinue = sc.nextInt();
         } while (isContinue == 1);
     }
-
-
     private Feedback takeUserFeedback() throws IOException, InvalidResponseException, BadResponseException {
         Feedback feedback = new Feedback();
         System.out.println("Enter the food item you want to provide feedback for:");

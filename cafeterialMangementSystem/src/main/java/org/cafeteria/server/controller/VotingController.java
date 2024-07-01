@@ -25,7 +25,7 @@ public class VotingController {
         String response;
         try {
             if (_votingService.add(userVote)) {
-                response = createResponse(ResponseCode.OK, serializeData(userVote.getUserId() + " vote successfully recorded."));
+                response = createResponse(ResponseCode.OK, serializeData("User Id: " + userVote.getUserId() + " vote successfully recorded."));
             } else {
                 response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred. Please Try again."));
             }
@@ -39,9 +39,9 @@ public class VotingController {
         Date date = deserializeData(request.getJsonData(), Date.class);
         Map<Integer, Integer> nextDayMenuOptionsVotes = _votingService.getNextDayMenuOptionsVotes(date);
         String response;
-        if(nextDayMenuOptionsVotes!=null) {
-            if(nextDayMenuOptionsVotes.isEmpty()) {
-                response = createResponse(ResponseCode.EMPTY_RESPONSE ,serializeData("No Votes casted yet. Please come back later"));
+        if (nextDayMenuOptionsVotes != null) {
+            if (nextDayMenuOptionsVotes.isEmpty()) {
+                response = createResponse(ResponseCode.EMPTY_RESPONSE, serializeData("No Votes casted yet. Please come back later"));
             } else {
                 response = createResponse(ResponseCode.OK, serializeMap(nextDayMenuOptionsVotes));
             }

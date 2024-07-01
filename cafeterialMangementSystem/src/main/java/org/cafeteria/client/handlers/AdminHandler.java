@@ -4,11 +4,12 @@ import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.client.repositories.AdminRepository;
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
-import org.cafeteria.common.model.enums.MealTypeEnum;
-import org.cafeteria.common.model.enums.NotificationTypeEnum;
+import org.cafeteria.common.model.enums.*;
 
 import static org.cafeteria.client.repositories.AdminRepository.sendNotificationToAllEmployees;
+import static org.cafeteria.common.constants.Constants.DATE_FORMAT;
 import static org.cafeteria.common.constants.Constants.DETAILED_FEEDBACK_MESSAGE;
+import static org.cafeteria.common.util.Utils.extractDate;
 import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class AdminHandler extends UserManager {
                 }
             } catch (InvalidResponseException | BadResponseException e) {
                 System.out.println(e.getMessage());
-            } catch(InputMismatchException e) {
+            } catch (InputMismatchException e) {
                 sc.next();
                 System.out.println("Invalid Input Entered. Please Enter Valid Input");
             }
@@ -73,21 +74,36 @@ public class AdminHandler extends UserManager {
     private static void displayMenuItems(List<MenuItem> menuItems) {
         System.out.println();
         System.out.println("------------------------Food Item Menu------------------------");
-        Map<Integer, List<MenuItem>> groupedItems = menuItems.stream()
+
+        Map<Integer, List<MenuItem>> menuItemsByMeal = menuItems.stream()
                 .collect(Collectors.groupingBy(MenuItem::getMealTypeId));
 
-        for (Map.Entry<Integer, List<MenuItem>> entry : groupedItems.entrySet()) {
+        for (Map.Entry<Integer, List<MenuItem>> entry : menuItemsByMeal.entrySet()) {
             MealTypeEnum mealType = getEnumFromOrdinal(MealTypeEnum.class, entry.getKey());
             System.out.println("\nMeal Type: " + (mealType != null ? mealType : "Unknown"));
 
-            for (MenuItem item : entry.getValue()) {
-                System.out.println("  ID: " + item.getId() +
-                        "  Name: " + item.getName() +
-                        "  Price: " + item.getPrice() +
-                        "Rs.  Available: " + (item.isAvailable() ? "Yes" : "No") +
-                        "  Last Prepared: " + (item.getLastTimePrepared() != null ? item.getLastTimePrepared() : "N/A")
-                );
+            Map<Integer, List<MenuItem>> menuItemsByType = entry.getValue().stream()
+                    .collect(Collectors.groupingBy(MenuItem::getMenuItemTypeId));
+
+            System.out.format("%-5s %-20s %-10s %-10s %-10s %-15s %-15s %-15s %-15s%n",
+                    "ID", "Name", "Price (Rs.)", "Available", "Last Prepared", "Type", "Cuisine", "Sweet Level", "Spice Level");
+            System.out.println("--------------------------------------------------------------------------------------------");
+            for (List<MenuItem> items : menuItemsByType.values()) {
+                for (MenuItem item : items) {
+                    System.out.format("%-5d %-20s %-10.2f %-10s %-15s %-15s %-15s %-15s %-15s%n",
+                            item.getId(),
+                            item.getName(),
+                            item.getPrice(),
+                            (item.isAvailable() ? "Yes" : "No"),
+                            (item.getLastTimePrepared() != null ? extractDate(item.getLastTimePrepared()) : "N/A"),
+                            getEnumFromOrdinal(MenuItemTypeEnum.class, item.getMenuItemTypeId()),
+                            getEnumFromOrdinal(CuisineTypeEnum.class, item.getCuisineTypeId()),
+                            getEnumFromOrdinal(ContentLevelEnum.class, item.getSweetContentLevelId()),
+                            getEnumFromOrdinal(ContentLevelEnum.class, item.getSpiceContentLevelId())
+                    );
+                }
             }
+            System.out.println();
         }
         System.out.println("--------------------------------------------------------------");
     }
@@ -102,7 +118,16 @@ public class AdminHandler extends UserManager {
         boolean isAvailable = sc.nextBoolean();
         System.out.println("Enter the Meal type of the food item: 1. Lunch, 2. Breakfast, 3. Dinner");
         int mealTypeId = sc.nextInt();
-        return new MenuItem(name, price, isAvailable, mealTypeId);
+        System.out.println("Enter the Menu Item type of the food item: 1. VEG, 2. NON VEG, 3. EGG BASED");
+        int menuItemTypeId = sc.nextInt();
+        System.out.println("Select the sweet content level: 1. LOW, 2. MEDIUM, 3. HIGH");
+        int sweetContentLevelId = sc.nextInt();
+        System.out.println("Select the spice content level: 1. LOW, 2. MEDIUM, 3. HIGH");
+        int spiceContentLevelId = sc.nextInt();
+        System.out.println("Select the cuisine type: 1. NORTH INDIAN, 2. SOUTH INDIAN, 3. AMERICAN, 4. ITALIAN, 5. OTHER");
+        int cuisineTypeId = sc.nextInt();
+
+        return new MenuItem(name, price, isAvailable, mealTypeId, menuItemTypeId, sweetContentLevelId, spiceContentLevelId, cuisineTypeId);
     }
 
     private void handleUpdateMenuItem() throws IOException, InvalidResponseException, BadResponseException {
@@ -133,7 +158,11 @@ public class AdminHandler extends UserManager {
             System.out.println("2. Update Availability");
             System.out.println("3. Update Last Time Prepared");
             System.out.println("4. Update Meal Type");
-            System.out.print("Choose an option to update (1/2/3/4): ");
+            System.out.println("5. Update Menu Item Type");
+            System.out.println("6. Update Sweet Content Level");
+            System.out.println("7. Update Spice Content Level");
+            System.out.println("8. Update Cuisine");
+            System.out.print("Choose an option to update (1/2/3/4/5/6/7/8): ");
             int option = sc.nextInt();
 
             switch (option) {
@@ -162,6 +191,26 @@ public class AdminHandler extends UserManager {
                     System.out.println("Enter the new Meal Type of the food Item (1. Lunch, 2. Breakfast, 3. Dinner):");
                     int mealTypeId = sc.nextInt();
                     menuItem.setMealTypeId(mealTypeId);
+                }
+                case 5 -> {
+                    System.out.println("Enter the Menu Item type of the food item: 1. VEG, 2. NON VEG, 3. EGG BASED");
+                    int menuItemTypeId = sc.nextInt();
+                    menuItem.setMenuItemTypeId(menuItemTypeId);
+                }
+                case 6 -> {
+                    System.out.println("Select the sweet content level: 1. LOW, 2. MEDIUM, 3. HIGH");
+                    int sweetContentLevelId = sc.nextInt();
+                    menuItem.setSweetContentLevelId(sweetContentLevelId);
+                }
+                case 7 -> {
+                    System.out.println("Select the spice content level: 1. LOW, 2. MEDIUM, 3. HIGH");
+                    int spiceContentLevelId = sc.nextInt();
+                    menuItem.setSpiceContentLevelId(spiceContentLevelId);
+                }
+                case 8 -> {
+                    System.out.println("Select the cuisine type: 1. NORTH INDIAN, 2. SOUTH INDIAN, 3. AMERICAN, 4. ITALIAN, 5. OTHER");
+                    int cuisineTypeId = sc.nextInt();
+                    menuItem.setCuisineTypeId(cuisineTypeId);
                 }
                 default -> System.out.println("Invalid choice.");
             }
