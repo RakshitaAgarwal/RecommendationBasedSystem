@@ -2,7 +2,6 @@ package org.cafeteria.server.network;
 
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.ParsedRequest;
-
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.parseRequest;
 import static org.cafeteria.server.Server.*;
 
@@ -51,6 +50,12 @@ public class ClientHandler implements Runnable {
         String response = null;
         switch (request.getUserAction()) {
             case LOGIN -> response = userController.handleUserLogin(request);
+
+            case CREATE_USER_PROFILE -> response = userController.createUserProfile(request);
+
+            case UPDATE_USER_PROFILE -> response = userController.updateUserProfile(request);
+
+            case GET_USER_PROFILE -> response = userController.getUserProfile(request);
 
             case ADD_MENU_ITEM -> response = menuController.addMenuItem(request);
 
