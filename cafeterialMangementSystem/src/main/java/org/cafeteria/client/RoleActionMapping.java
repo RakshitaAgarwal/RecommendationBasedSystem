@@ -1,7 +1,7 @@
 package org.cafeteria.client;
 
 import org.cafeteria.common.model.UserAction;
-import org.cafeteria.common.model.UserRoleEnum;
+import org.cafeteria.common.model.enums.UserRoleEnum;
 
 import java.util.EnumMap;
 import java.util.EnumSet;

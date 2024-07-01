@@ -3,7 +3,7 @@ package org.cafeteria.server.controller;
 import com.sun.istack.NotNull;
 import org.cafeteria.common.customException.CustomExceptions.DuplicateEntryFoundException;
 import org.cafeteria.common.model.Notification;
-import org.cafeteria.common.model.NotificationTypeEnum;
+import org.cafeteria.common.model.enums.NotificationTypeEnum;
 import org.cafeteria.common.model.ParsedRequest;
 import org.cafeteria.common.model.ResponseCode;
 import org.cafeteria.server.services.NotificationService;

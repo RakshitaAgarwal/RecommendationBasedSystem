@@ -5,6 +5,8 @@ import org.cafeteria.client.repositories.AdminRepository;
 import org.cafeteria.client.repositories.ChefRepository;
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
+import org.cafeteria.common.model.enums.MealTypeEnum;
+import org.cafeteria.common.model.enums.NotificationTypeEnum;
 
 import static org.cafeteria.client.repositories.AdminRepository.getMenuItemById;
 import static org.cafeteria.client.handlers.AdminHandler.handleDisplayMenu;

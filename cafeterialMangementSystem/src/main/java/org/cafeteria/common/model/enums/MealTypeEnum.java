@@ -1,4 +1,4 @@
-package org.cafeteria.common.model;
+package org.cafeteria.common.model.enums;
 
 public enum MealTypeEnum {
     LUNCH,

@@ -1,6 +1,6 @@
 package org.cafeteria.server.services.interfaces;
 
-import org.cafeteria.common.model.MealTypeEnum;
+import org.cafeteria.common.model.enums.MealTypeEnum;
 import org.cafeteria.common.model.MenuItemRecommendation;
 
 import java.sql.SQLException;

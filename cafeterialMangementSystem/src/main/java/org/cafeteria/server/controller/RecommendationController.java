@@ -1,7 +1,7 @@
 package org.cafeteria.server.controller;
 
 import com.sun.istack.NotNull;
-import org.cafeteria.common.model.MealTypeEnum;
+import org.cafeteria.common.model.enums.MealTypeEnum;
 import org.cafeteria.common.model.MenuItemRecommendation;
 import org.cafeteria.common.model.ParsedRequest;
 import org.cafeteria.common.model.ResponseCode;

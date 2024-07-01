@@ -2,7 +2,7 @@ package org.cafeteria.server.services;
 
 import org.cafeteria.common.model.Notification;
 import org.cafeteria.common.model.User;
-import org.cafeteria.common.model.UserRoleEnum;
+import org.cafeteria.common.model.enums.UserRoleEnum;
 import org.cafeteria.server.repositories.NotificationRepository;
 import org.cafeteria.server.repositories.UserRepository;
 import org.cafeteria.server.repositories.interfaces.INotificationRepository;
@@ -10,7 +10,6 @@ import org.cafeteria.server.repositories.interfaces.IUserRepository;
 import org.cafeteria.server.services.interfaces.INotificationService;
 
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 
 public class NotificationService implements INotificationService {

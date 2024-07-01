@@ -4,6 +4,9 @@ import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.client.repositories.AdminRepository;
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
+import org.cafeteria.common.model.enums.MealTypeEnum;
+import org.cafeteria.common.model.enums.NotificationTypeEnum;
+
 import static org.cafeteria.client.repositories.AdminRepository.sendNotificationToAllEmployees;
 import static org.cafeteria.common.constants.Constants.DETAILED_FEEDBACK_MESSAGE;
 import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;

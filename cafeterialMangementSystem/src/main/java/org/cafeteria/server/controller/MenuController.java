@@ -4,6 +4,7 @@ import com.sun.istack.NotNull;
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 import org.cafeteria.common.customException.CustomExceptions.DuplicateEntryFoundException;
 import org.cafeteria.common.model.*;
+import org.cafeteria.common.model.enums.NotificationTypeEnum;
 import org.cafeteria.server.services.MenuService;
 import org.cafeteria.server.services.NotificationService;
 import org.cafeteria.server.services.interfaces.IMenuService;

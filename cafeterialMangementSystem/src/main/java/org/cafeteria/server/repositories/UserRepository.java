@@ -1,7 +1,6 @@
 package org.cafeteria.server.repositories;
 
 import org.cafeteria.common.model.User;
-import org.cafeteria.common.model.UserRoleEnum;
 import org.cafeteria.server.network.JdbcConnection;
 import org.cafeteria.server.repositories.interfaces.IUserRepository;
 

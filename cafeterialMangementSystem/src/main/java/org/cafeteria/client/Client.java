@@ -8,7 +8,7 @@ import org.cafeteria.client.handlers.ChefHandler;
 import org.cafeteria.client.handlers.EmployeeHandler;
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.User;
-import org.cafeteria.common.model.UserRoleEnum;
+import org.cafeteria.common.model.enums.UserRoleEnum;
 
 import static org.cafeteria.common.constants.Constants.SERVER_ADDRESS;
 import static org.cafeteria.common.constants.Constants.SERVER_PORT;

@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
+import org.cafeteria.common.model.enums.MealTypeEnum;
 
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.deserializeData;

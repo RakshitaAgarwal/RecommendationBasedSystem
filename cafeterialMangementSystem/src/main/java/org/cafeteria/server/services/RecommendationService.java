@@ -1,6 +1,6 @@
 package org.cafeteria.server.services;
 
-import org.cafeteria.common.model.MealTypeEnum;
+import org.cafeteria.common.model.enums.MealTypeEnum;
 import org.cafeteria.common.model.MenuItem;
 import org.cafeteria.common.model.MenuItemRecommendation;
 import org.cafeteria.server.repositories.RecommendationEngine;
