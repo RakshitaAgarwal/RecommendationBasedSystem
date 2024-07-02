@@ -15,6 +15,7 @@ import static org.cafeteria.common.constants.Constants.SERVER_PORT;
 import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 import java.io.IOException;
+import java.util.InputMismatchException;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -95,11 +96,18 @@ public class Client {
     }
 
     private static User fetchUserCredentialsForLogin() {
-        System.out.println("Enter your Employee ID:");
-        int userId = sc.nextInt();
-        sc.nextLine();
-        System.out.print("Enter your Username: ");
-        String username = sc.nextLine();
+        int userId = 0;
+        String username = "";
+        try {
+            System.out.println("Enter your Employee ID:");
+            userId = sc.nextInt();
+            sc.nextLine();
+            System.out.print("Enter your Username: ");
+            username = sc.nextLine();
+
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid Input");
+        }
         return new User(userId, username);
     }
 

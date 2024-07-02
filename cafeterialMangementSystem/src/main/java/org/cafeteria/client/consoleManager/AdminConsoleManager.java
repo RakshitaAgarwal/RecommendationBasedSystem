@@ -58,7 +58,7 @@ public class AdminConsoleManager extends UserConsoleManager{
         System.out.println("2. Get Detailed Feedback");
     }
 
-    public void displayMenuItems(List<MenuItem> menuItems) {
+    public static void displayMenuItems(List<MenuItem> menuItems) {
         System.out.println();
         System.out.println("------------------------Food Item Menu------------------------");
 
@@ -118,7 +118,7 @@ public class AdminConsoleManager extends UserConsoleManager{
                     System.out.printf("%d. %s%n", preference.ordinal() + 1, preference.name().replace("_", " "));
                 }
 
-                int selection = sc.nextInt();
+                int selection = takeUserChoice("");
                 if (selection >= 1 && selection <= ContentLevelEnum.values().length) {
                     spiceLevelId = selection;
                     validInput = true;
@@ -220,7 +220,7 @@ public class AdminConsoleManager extends UserConsoleManager{
 
         while (!validInput) {
             try {
-                System.out.println("Please Select your Favourite Cuisine:");
+                System.out.println("Please Select Meal Type:");
                 for (MealTypeEnum preference : MealTypeEnum.values()) {
                     System.out.printf("%d. %s%n", preference.ordinal() + 1, preference.name().replace("_", " "));
                 }

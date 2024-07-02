@@ -34,22 +34,37 @@ public class UserController {
         return response;
     }
 
-    public String createUserProfile(@NotNull ParsedRequest request) throws SQLException {
+    public String addUserProfile(@NotNull ParsedRequest request) throws SQLException {
         UserProfile userProfile = deserializeData(request.getJsonData(), UserProfile.class);
-        String response ="";
+        String response;
         if(_userProfileService.add(userProfile)) {
-            response = createResponse(ResponseCode.OK, serializeData(""));
+            response = createResponse(ResponseCode.OK, serializeData("User Profile Successfully created for " + userProfile.getUserId() + " user."));
         } else {
-//            response = createResponse(ResponseCode.)
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, "Some Error Occurred while creating User Profile");
         }
         return response;
     }
 
     public String updateUserProfile(@NotNull ParsedRequest request) throws SQLException {
-        return "";
+        UserProfile userProfile = deserializeData(request.getJsonData(), UserProfile.class);
+        String response;
+        if(_userProfileService.update(userProfile)) {
+            response = createResponse(ResponseCode.OK, serializeData("User Profile Updated Successfully"));
+        } else {
+            response = createResponse(ResponseCode.EMPTY_RESPONSE, serializeData("No User Profile found for " + userProfile.getUserId() + " user."));
+        }
+        return response;
     }
 
     public String getUserProfile(@NotNull ParsedRequest request) throws SQLException {
-        return "";
+        int userId = deserializeData(request.getJsonData(), Integer.class);
+        String response;
+        UserProfile userProfile = _userProfileService.getByUserId(userId);
+        if(userProfile != null) {
+            response = createResponse(ResponseCode.OK, serializeData(userProfile));
+        } else {
+            response = createResponse(ResponseCode.EMPTY_RESPONSE, serializeData("No User Profile found for " + userId + " user."));
+        }
+        return response;
     }
 }

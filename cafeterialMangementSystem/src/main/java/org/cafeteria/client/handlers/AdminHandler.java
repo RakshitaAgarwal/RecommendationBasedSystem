@@ -6,6 +6,7 @@ import org.cafeteria.client.repositories.AdminRepository;
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
 import org.cafeteria.common.model.enums.*;
+
 import static org.cafeteria.client.repositories.AdminRepository.sendNotificationToAllEmployees;
 import static org.cafeteria.common.constants.Constants.DETAILED_FEEDBACK_MESSAGE;
 
@@ -38,9 +39,9 @@ public class AdminHandler extends UserHandler {
                         adminRepository.closeConnection();
                         return;
                     }
-                    default -> adminConsoleManager.displayMessage("Invalid Choice");
+                    default -> throw new InvalidChoiceException("Invalid Choice");
                 }
-            } catch (InvalidResponseException | BadResponseException e) {
+            } catch (InvalidResponseException | BadResponseException | InvalidChoiceException e) {
                 adminConsoleManager.displayMessage(e.getMessage());
             }
         }
@@ -48,7 +49,7 @@ public class AdminHandler extends UserHandler {
 
     public static void handleDisplayMenu() throws IOException, InvalidResponseException, BadResponseException {
         List<MenuItem> menuItems = AdminRepository.getMenuItems();
-        adminConsoleManager.displayMenuItems(menuItems);
+        AdminConsoleManager.displayMenuItems(menuItems);
     }
 
     public void handleAddMenuItem() throws IOException, InvalidResponseException, BadResponseException {
@@ -68,60 +69,83 @@ public class AdminHandler extends UserHandler {
     }
 
     private void handleUpdateMenuItem() throws IOException, InvalidResponseException, BadResponseException {
-        MenuItem menuItem = getUpdatedMenuItem();
-        if (menuItem != null) {
-            adminConsoleManager.displayMessage(adminRepository.updateMenuItem(menuItem));
+        try {
+            MenuItem menuItem = getUpdatedMenuItem();
+            if (menuItem != null) {
+                adminConsoleManager.displayMessage(adminRepository.updateMenuItem(menuItem));
+            }
+        } catch (InvalidChoiceException e) {
+            adminConsoleManager.displayMessage(e.getMessage());
         }
     }
 
-    private MenuItem getUpdatedMenuItem() throws IOException, InvalidResponseException, BadResponseException {
+    private MenuItem getUpdatedMenuItem() throws InvalidChoiceException, IOException, InvalidResponseException {
         String menuItemName = adminConsoleManager.takeUserStringInput("Enter the name of the food item you want to update: ");
-        MenuItem menuItem = AdminRepository.getFoodItemByName(menuItemName);
-        if (menuItem != null) {
+        try {
+            MenuItem menuItem = AdminRepository.getFoodItemByName(menuItemName);
             adminConsoleManager.displayMessage("Food item found: " + menuItem.getName());
             adminConsoleManager.displayMenuItemUpdateOptions();
             int option = adminConsoleManager.takeUserChoice("Choose an option to update (1/2/3/4/5/6/7/8): ");
-            switch (option) {
-                case 1 -> {
-                    float newPrice = adminConsoleManager.takeUserFloatInput("Enter new price: ");
-                    menuItem.setPrice(newPrice);
-                }
-                case 2 -> {
-                    boolean isAvailable = adminConsoleManager.takeUserBooleanInput("Enter availability:");
-                    menuItem.setAvailable(isAvailable);
-                }
-                case 3 -> {
-                    Date date = adminConsoleManager.takeUserDateInput("Enter new last time prepared (yyyy-MM-dd): ");
-                    menuItem.setLastTimePrepared(date);
-                }
-                case 4 -> {
-                    int mealTypeId = adminConsoleManager.takeMealTypeId();
-                    menuItem.setMealTypeId(mealTypeId);
-                }
-                case 5 -> {
-                    int menuItemTypeId = adminConsoleManager.takeDietaryPreferenceId();
-                    menuItem.setMenuItemTypeId(menuItemTypeId);
-                }
-                case 6 -> {
-                    int sweetContentLevelId = adminConsoleManager.takeSweetLevelId();
-                    menuItem.setSweetContentLevelId(sweetContentLevelId);
-                }
-                case 7 -> {
-                    int spiceContentLevelId = adminConsoleManager.takeSpiceLevelId();
-                    menuItem.setSpiceContentLevelId(spiceContentLevelId);
-                }
-                case 8 -> {
-                    int cuisineTypeId = adminConsoleManager.takeCuisineId();
-                    menuItem.setCuisineTypeId(cuisineTypeId);
-                }
-                default -> adminConsoleManager.displayMessage("Invalid choice.");
-            }
+            updateMenuItem(menuItem, option);
             return menuItem;
-
-        } else {
-            adminConsoleManager.displayMessage("Food item with name '" + menuItemName + "' does not exist.");
+        } catch (BadResponseException e) {
+            adminConsoleManager.displayMessage(e.getMessage());
             return null;
         }
+    }
+
+    private void updateMenuItem(MenuItem menuItem, int option) throws InvalidChoiceException {
+        switch (option) {
+            case 1 -> updatePrice(menuItem);
+            case 2 -> updateAvailability(menuItem);
+            case 3 -> updateLastTimePrepared(menuItem);
+            case 4 -> updateMealType(menuItem);
+            case 5 -> updateDietaryPreference(menuItem);
+            case 6 -> updateSweetContentLevel(menuItem);
+            case 7 -> updateSpiceContentLevel(menuItem);
+            case 8 -> updateCuisineType(menuItem);
+            default -> throw new InvalidChoiceException("Invalid Choice");
+        }
+    }
+
+    private void updatePrice(MenuItem menuItem) {
+        float newPrice = adminConsoleManager.takeUserFloatInput("Enter new price: ");
+        menuItem.setPrice(newPrice);
+    }
+
+    private void updateAvailability(MenuItem menuItem) {
+        boolean isAvailable = adminConsoleManager.takeUserBooleanInput("Enter availability (true/false): ");
+        menuItem.setAvailable(isAvailable);
+    }
+
+    private void updateLastTimePrepared(MenuItem menuItem) {
+        Date date = adminConsoleManager.takeUserDateInput("Enter new last time prepared (yyyy-MM-dd): ");
+        menuItem.setLastTimePrepared(date);
+    }
+
+    private void updateMealType(MenuItem menuItem) {
+        int mealTypeId = adminConsoleManager.takeMealTypeId();
+        menuItem.setMealTypeId(mealTypeId);
+    }
+
+    private void updateDietaryPreference(MenuItem menuItem) {
+        int menuItemTypeId = adminConsoleManager.takeDietaryPreferenceId();
+        menuItem.setMenuItemTypeId(menuItemTypeId);
+    }
+
+    private void updateSweetContentLevel(MenuItem menuItem) {
+        int sweetContentLevelId = adminConsoleManager.takeSweetLevelId();
+        menuItem.setSweetContentLevelId(sweetContentLevelId);
+    }
+
+    private void updateSpiceContentLevel(MenuItem menuItem) {
+        int spiceContentLevelId = adminConsoleManager.takeSpiceLevelId();
+        menuItem.setSpiceContentLevelId(spiceContentLevelId);
+    }
+
+    private void updateCuisineType(MenuItem menuItem) {
+        int cuisineTypeId = adminConsoleManager.takeCuisineId();
+        menuItem.setCuisineTypeId(cuisineTypeId);
     }
 
     public void handleDiscardMenuItems() throws IOException, BadResponseException, InvalidResponseException {

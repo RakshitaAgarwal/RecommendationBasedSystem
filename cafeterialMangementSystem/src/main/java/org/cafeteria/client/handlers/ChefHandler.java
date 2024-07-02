@@ -45,9 +45,9 @@ public class ChefHandler extends UserHandler {
                         chefRepository.closeConnection();
                         return;
                     }
-                    case 7 -> chefConsoleManager.displayMessage("Invalid choice");
+                    default -> throw new InvalidChoiceException("Invalid choice");
                 }
-            } catch (BadResponseException | InvalidResponseException e) {
+            } catch (BadResponseException | InvalidResponseException | InvalidChoiceException e) {
                 chefConsoleManager.displayMessage(e.getMessage());
             }
         }

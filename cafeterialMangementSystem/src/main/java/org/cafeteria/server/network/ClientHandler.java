@@ -51,7 +51,7 @@ public class ClientHandler implements Runnable {
         switch (request.getUserAction()) {
             case LOGIN -> response = userController.handleUserLogin(request);
 
-            case CREATE_USER_PROFILE -> response = userController.createUserProfile(request);
+            case ADD_USER_PROFILE -> response = userController.addUserProfile(request);
 
             case UPDATE_USER_PROFILE -> response = userController.updateUserProfile(request);
 
@@ -94,6 +94,7 @@ public class ClientHandler implements Runnable {
             case GET_NEXT_DAY_MENU_OPTIONS -> response = rolledOutMenuItemController.getNextDayMenuOptions();
 
             case UPDATE_NEXT_DAY_FINAL_MENU -> response = preparedMenuItemController.updateDailyFoodMenu(request);
+
         }
         return response;
     }

@@ -13,6 +13,12 @@ public class CustomExceptions extends Exception {
         }
     }
 
+    public static class InvalidChoiceException extends Exception {
+        public InvalidChoiceException(String message) {
+            super(message);
+        }
+    }
+
     public static class BadResponseException extends Exception {
         public BadResponseException(String message) {
             super(message);

@@ -18,7 +18,7 @@ public abstract class UserConsoleManager {
     public int takeUserChoice(String message) {
         int choice = 0;
         try {
-            System.out.println(message);
+            System.out.print(message);
             choice = sc.nextInt();
         } catch (InputMismatchException e) {
             System.out.println("Invalid input. Please enter a number.");

@@ -90,4 +90,52 @@ public class EmployeeRepository extends UserRepository {
             return deserializeList(parsedResponse.getJsonData(), Notification.class);
         } else throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
+
+    public String addUserProfile(UserProfile userProfile) throws IOException, InvalidResponseException, BadResponseException {
+        String request = createRequest(UserAction.ADD_USER_PROFILE, serializeData(userProfile));
+        System.out.println("request that is sent to server: " + request);
+        String response = connection.sendData(request);
+        System.out.println("response that is received from server: " + response);
+        if (response == null)
+            throw new IOException("Server Got Disconnected. Please Try again.");
+
+        ParsedResponse parsedResponse = parseResponse(response);
+        ResponseCode responseCode = parsedResponse.getResponseCode();
+        if (responseCode == ResponseCode.OK)
+            return deserializeData(parsedResponse.getJsonData(), String.class);
+        else
+            throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
+    }
+
+    public UserProfile getUserProfile(int userId) throws IOException, InvalidResponseException, BadResponseException {
+        String request = createRequest(UserAction.GET_USER_PROFILE, serializeData(userId));
+        System.out.println("request that is sent to server: " + request);
+        String response = connection.sendData(request);
+        System.out.println("response that is received from server: " + response);
+        if (response == null)
+            throw new IOException("Server Got Disconnected. Please Try again.");
+
+        ParsedResponse parsedResponse = parseResponse(response);
+        ResponseCode responseCode = parsedResponse.getResponseCode();
+        if (responseCode == ResponseCode.OK)
+            return deserializeData(parsedResponse.getJsonData(), UserProfile.class);
+        else
+            throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
+    }
+
+    public String updateUserProfile(UserProfile userProfile) throws IOException, InvalidResponseException, BadResponseException {
+        String request = createRequest(UserAction.UPDATE_USER_PROFILE, serializeData(userProfile));
+        System.out.println("request that is sent to server: " + request);
+        String response = connection.sendData(request);
+        System.out.println("response that is received from server: " + response);
+        if (response == null)
+            throw new IOException("Server Got Disconnected. Please Try again.");
+
+        ParsedResponse parsedResponse = parseResponse(response);
+        ResponseCode responseCode = parsedResponse.getResponseCode();
+        if (responseCode == ResponseCode.OK)
+            return deserializeData(parsedResponse.getJsonData(), String.class);
+        else
+            throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
+    }
 }

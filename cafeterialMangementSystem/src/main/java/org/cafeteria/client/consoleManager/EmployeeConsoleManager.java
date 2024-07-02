@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
+
 public class EmployeeConsoleManager extends UserConsoleManager{
     public EmployeeConsoleManager(Scanner sc) {
         super(sc);
@@ -53,13 +55,27 @@ public class EmployeeConsoleManager extends UserConsoleManager{
         }
     }
 
-    public void displayEmployeeProfile(UserProfile userProfile) {}
+    public static void displayEmployeeProfile(UserProfile userProfile) {
+        System.out.println("Employee Profile Details:");
+        System.out.println("----------------------");
+        System.out.println("User ID: " + userProfile.getUserId());
+        System.out.println("Dietary Preference: " + getEnumFromOrdinal(MenuItemTypeEnum.class, userProfile.getDietaryPreferenceId()));
+        System.out.println("Spice Level: " + getEnumFromOrdinal(ContentLevelEnum.class, userProfile.getSpiceLevelId()));
+        System.out.println("Favorite Cuisine: " + getEnumFromOrdinal(CuisineTypeEnum.class, userProfile.getFavCuisineId()));
+        System.out.println("Sweet Tooth: " + (userProfile.isSweetTooth() ? "Yes" : "No"));
+        System.out.println("----------------------");
+    }
+
+    public void displayUserProfileUpdateOptions() {
+        System.out.println("1. Update Dietary Preference");
+        System.out.println("2. Update Spice level Preference");
+        System.out.println("3. Update Cuisine Preference");
+        System.out.println("4. Update Sweet Food Preference");
+    }
 
     public Feedback takeEmployeeFeedback(String foodItemName) {
-        System.out.println("Enter Feedback/Comment for " + foodItemName);
-        String comment = sc.nextLine();
-        System.out.println("Enter Rating for the " + foodItemName + " out of 5");
-        float rating = sc.nextFloat();
+        String comment = takeUserStringInput("Enter Feedback/Comment for " + foodItemName);
+        float rating = takeUserFloatInput("Enter Rating for the " + foodItemName + " out of 5");
         return new Feedback(comment, rating);
     }
 
@@ -74,7 +90,7 @@ public class EmployeeConsoleManager extends UserConsoleManager{
                     System.out.printf("%d. %s%n", preference.ordinal() + 1, preference.name().replace("_", " "));
                 }
 
-                int selection = sc.nextInt();
+                int selection = takeUserChoice("");
                 if (selection >= 1 && selection <= ContentLevelEnum.values().length) {
                     spiceLevelId = selection;
                     validInput = true;
@@ -101,7 +117,7 @@ public class EmployeeConsoleManager extends UserConsoleManager{
                     System.out.printf("%d. %s%n", preference.ordinal() + 1, preference.name().replace("_", " "));
                 }
 
-                int selection = sc.nextInt();
+                int selection = takeUserChoice("");
                 if (selection >= 1 && selection <= CuisineTypeEnum.values().length) {
                     favCuisineId = selection;
                     validInput = true;
@@ -128,7 +144,7 @@ public class EmployeeConsoleManager extends UserConsoleManager{
                     System.out.printf("%d. %s%n", preference.ordinal() + 1, preference.name().replace("_", " "));
                 }
 
-                int selection = sc.nextInt();
+                int selection = takeUserChoice("");
                 if (selection >= 1 && selection <= MenuItemTypeEnum.values().length) {
                     dietaryPreferenceId = selection;
                     validInput = true;
@@ -147,7 +163,7 @@ public class EmployeeConsoleManager extends UserConsoleManager{
     public boolean takeIsSweetTooth() {
         boolean isSweetTooth = false;
         try{
-            isSweetTooth = sc.nextBoolean();
+            isSweetTooth = takeUserBooleanInput("Are you a Sweet Tooth (true/false)");
         } catch (InputMismatchException e) {
             System.out.println("Invalid input. Please enter either true/false.");
             sc.next();
@@ -161,12 +177,12 @@ public class EmployeeConsoleManager extends UserConsoleManager{
 
         while (!validInput) {
             try {
-                System.out.println("Please Select your Favourite Cuisine:");
+                System.out.println("Please Select Meal Type:");
                 for (MealTypeEnum preference : MealTypeEnum.values()) {
                     System.out.printf("%d. %s%n", preference.ordinal() + 1, preference.name().replace("_", " "));
                 }
 
-                int selection = sc.nextInt();
+                int selection = takeUserChoice("");
                 if (selection >= 1 && selection <= MealTypeEnum.values().length) {
                     mealTypeId = selection;
                     validInput = true;

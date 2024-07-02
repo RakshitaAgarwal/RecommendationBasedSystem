@@ -4,9 +4,9 @@ import org.cafeteria.client.consoleManager.EmployeeConsoleManager;
 import org.cafeteria.client.global.GlobalData;
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.client.repositories.EmployeeRepository;
-import org.cafeteria.common.customException.CustomExceptions.BadResponseException;
-import org.cafeteria.common.customException.CustomExceptions.InvalidResponseException;
+import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
+
 import static org.cafeteria.client.handlers.AdminHandler.handleDisplayMenu;
 import static org.cafeteria.client.repositories.AdminRepository.getFoodItemByName;
 import static org.cafeteria.client.repositories.AdminRepository.getMenuItemById;
@@ -41,33 +41,72 @@ public class EmployeeHandler extends UserHandler {
                         employeeRepository.closeConnection();
                         return;
                     }
-                    default -> employeeConsoleManager.displayMessage("Invalid choice");
+                    default -> throw new InvalidChoiceException("Invalid Choice");
                 }
-            } catch (InvalidResponseException |BadResponseException e) {
+            } catch (InvalidResponseException | BadResponseException | InvalidChoiceException e) {
                 employeeConsoleManager.displayMessage(e.getMessage());
             }
         }
     }
 
-    private void handleDisplayUserProfile() {
-        UserProfile userProfile = null;
-        employeeConsoleManager.displayEmployeeProfile(userProfile);
+    private void handleDisplayUserProfile() throws IOException, InvalidResponseException {
+        UserProfile userProfile;
+        try {
+            userProfile = employeeRepository.getUserProfile(user.getId());
+            EmployeeConsoleManager.displayEmployeeProfile(userProfile);
+        } catch (BadResponseException e) {
+            employeeConsoleManager.displayMessage(e.getMessage());
+        }
     }
 
-    private void handleCreateUpdateUserProfile() {
-        if(hasUserProfile(GlobalData.loggedInUser.getId())) {
-            if(employeeConsoleManager.takeUserChoice("Your User Profile already exists. Do you want to update it. Press 1 - Yes.") == 1) {
-                updateUserProfile();
+    private void handleCreateUpdateUserProfile() throws IOException, InvalidResponseException, BadResponseException {
+        UserProfile userProfile;
+        try {
+            userProfile = employeeRepository.getUserProfile(user.getId());
+            if (employeeConsoleManager.takeUserChoice("Your User Profile already exists. Do you want to update it. Press 1 - Yes.") == 1) {
+                processUpdateUserProfile(userProfile);
             }
-        } else {
+        } catch (BadResponseException e) {
+            employeeConsoleManager.displayMessage("Your User Profile does not exist. Please create your User Profile.");
             createUserProfile();
         }
     }
 
-    private void updateUserProfile() {
+    private void processUpdateUserProfile(UserProfile userProfile) throws BadResponseException, IOException, InvalidResponseException {
+        try {
+            updateUserProfile(userProfile);
+            String response = employeeRepository.updateUserProfile(userProfile);
+            employeeConsoleManager.displayMessage(response);
+        } catch (InvalidChoiceException e) {
+            employeeConsoleManager.displayMessage(e.getMessage());
+        }
     }
 
-    private void createUserProfile() {
+    private void updateUserProfile(UserProfile userProfile) throws InvalidChoiceException {
+        employeeConsoleManager.displayUserProfileUpdateOptions();
+        int option = employeeConsoleManager.takeUserChoice("Choose an option to update: ");
+        switch (option) {
+            case 1 -> {
+                int dietaryPreferenceId = employeeConsoleManager.takeDietaryPreferenceId();
+                userProfile.setDietaryPreferenceId(dietaryPreferenceId);
+            }
+            case 2 -> {
+                int spiceLevelId = employeeConsoleManager.takeSpiceLevelId();
+                userProfile.setSpiceLevelId(spiceLevelId);
+            }
+            case 3 -> {
+                int favCuisineId = employeeConsoleManager.takeFavCuisineId();
+                userProfile.setFavCuisineId(favCuisineId);
+            }
+            case 4 -> {
+                boolean isSweetTooth = employeeConsoleManager.takeIsSweetTooth();
+                userProfile.setSweetTooth(isSweetTooth);
+            }
+            default -> throw new InvalidChoiceException("Invalid Choice");
+        }
+    }
+
+    private void createUserProfile() throws BadResponseException, IOException, InvalidResponseException {
         int dietaryPreferenceId = employeeConsoleManager.takeDietaryPreferenceId();
         int spiceLevelId = employeeConsoleManager.takeSpiceLevelId();
         int favCuisineId = employeeConsoleManager.takeFavCuisineId();
@@ -79,11 +118,8 @@ public class EmployeeHandler extends UserHandler {
                 favCuisineId,
                 isSweetTooth
         );
-
-    }
-
-    private boolean hasUserProfile(int userId) {
-        return false;
+        String response = employeeRepository.addUserProfile(userProfile);
+        employeeConsoleManager.displayMessage(response);
     }
 
     public void handleProvideFeedback() throws IOException, InvalidResponseException, BadResponseException {
