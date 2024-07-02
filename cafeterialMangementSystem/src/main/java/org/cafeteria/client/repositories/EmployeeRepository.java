@@ -76,8 +76,8 @@ public class EmployeeRepository extends UserRepository {
         else throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
 
-    public List<Notification> seeNotifications() throws IOException, InvalidResponseException, BadResponseException {
-        String request = createRequest(UserAction.SEE_NOTIFICATIONS, serializeData(GlobalData.loggedInUser));
+    public List<Notification> getNotifications() throws IOException, InvalidResponseException, BadResponseException {
+        String request = createRequest(UserAction.GET_NOTIFICATIONS, serializeData(GlobalData.loggedInUser));
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
         System.out.println("response that is received from server: " + response);

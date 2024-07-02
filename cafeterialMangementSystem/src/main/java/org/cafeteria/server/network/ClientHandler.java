@@ -76,7 +76,7 @@ public class ClientHandler implements Runnable {
             case SEND_NOTIFICATION_TO_EMPLOYEES ->
                     response = notificationController.sendNotificationToAllEmployees(request);
 
-            case SEE_NOTIFICATIONS -> response = notificationController.getUserNotification(request);
+            case GET_NOTIFICATIONS -> response = notificationController.getUserNotification(request);
 
             case VOTE_NEXT_DAY_MENU -> response = votingController.voteForNextDayMenu(request);
 

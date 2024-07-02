@@ -36,11 +36,11 @@ public class UserController {
 
     public String createUserProfile(@NotNull ParsedRequest request) throws SQLException {
         UserProfile userProfile = deserializeData(request.getJsonData(), UserProfile.class);
-        String response;
+        String response ="";
         if(_userProfileService.add(userProfile)) {
             response = createResponse(ResponseCode.OK, serializeData(""));
         } else {
-            response = createResponse(ResponseCode.)
+//            response = createResponse(ResponseCode.)
         }
         return response;
     }

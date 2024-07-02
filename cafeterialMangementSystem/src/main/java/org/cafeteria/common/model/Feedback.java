@@ -10,6 +10,12 @@ public class Feedback {
     private String comment;
     private Date dateTime;
 
+    public Feedback() {}
+    public Feedback(String comment, float rating) {
+        this.comment = comment;
+        this.rating = rating;
+    }
+
     public int getFeedbackId() {
         return feedbackId;
     }

@@ -32,7 +32,7 @@ public class RoleActionMapping {
         roleActionMap.put(UserRoleEnum.EMP, EnumSet.of(
                 UserAction.LOGIN,
                 UserAction.CREATE_USER,
-                UserAction.SEE_NOTIFICATIONS,
+                UserAction.GET_NOTIFICATIONS,
                 UserAction.GET_ALL_MENU_ITEMS,
                 UserAction.VOTE_NEXT_DAY_MENU,
                 UserAction.PROVIDE_FEEDBACK
