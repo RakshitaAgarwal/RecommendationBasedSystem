@@ -25,6 +25,12 @@ public class CustomExceptions extends Exception {
         }
     }
 
+    public static class EmptyResponseException extends Exception {
+        public EmptyResponseException(String message) {
+            super(message);
+        }
+    }
+
     public static class LoginFailedException extends Exception {
         public LoginFailedException(String message) {
             super(message);

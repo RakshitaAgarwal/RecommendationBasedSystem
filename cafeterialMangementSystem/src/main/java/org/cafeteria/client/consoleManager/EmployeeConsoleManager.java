@@ -1,6 +1,7 @@
 package org.cafeteria.client.consoleManager;
 
 import org.cafeteria.common.model.Feedback;
+import org.cafeteria.common.model.MenuItemRecommendation;
 import org.cafeteria.common.model.Notification;
 import org.cafeteria.common.model.UserProfile;
 import org.cafeteria.common.model.enums.ContentLevelEnum;
@@ -33,8 +34,9 @@ public class EmployeeConsoleManager extends UserConsoleManager{
 
     public void displayRolledOutMenuItems(Map<Integer, String> rolledOutItemsMap) {
         for (Map.Entry<Integer, String> entry : rolledOutItemsMap.entrySet()) {
-            System.out.println(entry.getKey() + ". " + entry.getValue());
+            System.out.println("ID: " + entry.getKey() + " | " + entry.getValue());
         }
+        System.out.println("-----------------------------------------");
     }
 
     public void displayEmployeeNotifications(List<Notification> notifications) {

@@ -4,6 +4,7 @@ import org.cafeteria.client.global.GlobalData;
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
+
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.deserializeData;
 
@@ -107,7 +108,7 @@ public class EmployeeRepository extends UserRepository {
             throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
 
-    public UserProfile getUserProfile(int userId) throws IOException, InvalidResponseException, BadResponseException {
+    public UserProfile getUserProfile(int userId) throws IOException, InvalidResponseException, EmptyResponseException {
         String request = createRequest(UserAction.GET_USER_PROFILE, serializeData(userId));
         System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
@@ -120,7 +121,7 @@ public class EmployeeRepository extends UserRepository {
         if (responseCode == ResponseCode.OK)
             return deserializeData(parsedResponse.getJsonData(), UserProfile.class);
         else
-            throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
+            throw new EmptyResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
 
     public String updateUserProfile(UserProfile userProfile) throws IOException, InvalidResponseException, BadResponseException {

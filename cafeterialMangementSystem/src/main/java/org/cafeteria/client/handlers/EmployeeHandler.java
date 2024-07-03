@@ -6,10 +6,12 @@ import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.client.repositories.EmployeeRepository;
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
+import org.cafeteria.common.model.enums.MealTypeEnum;
 
 import static org.cafeteria.client.handlers.AdminHandler.handleDisplayMenu;
 import static org.cafeteria.client.repositories.AdminRepository.getFoodItemByName;
 import static org.cafeteria.client.repositories.AdminRepository.getMenuItemById;
+import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 import java.io.IOException;
 import java.util.*;
@@ -55,7 +57,7 @@ public class EmployeeHandler extends UserHandler {
         try {
             userProfile = employeeRepository.getUserProfile(user.getId());
             EmployeeConsoleManager.displayEmployeeProfile(userProfile);
-        } catch (BadResponseException e) {
+        } catch (EmptyResponseException e) {
             employeeConsoleManager.displayMessage(e.getMessage());
         }
     }
@@ -67,7 +69,7 @@ public class EmployeeHandler extends UserHandler {
             if (employeeConsoleManager.takeUserChoice("Your User Profile already exists. Do you want to update it. Press 1 - Yes.") == 1) {
                 processUpdateUserProfile(userProfile);
             }
-        } catch (BadResponseException e) {
+        } catch (EmptyResponseException e) {
             employeeConsoleManager.displayMessage("Your User Profile does not exist. Please create your User Profile.");
             createUserProfile();
         }
@@ -137,12 +139,18 @@ public class EmployeeHandler extends UserHandler {
         do {
             int mealTypeId = employeeConsoleManager.takeMealTypeId();
             Map<Integer, String> rolledOutItemsForMealType = getRolledOutItemsForMealType(rolledOutItems, mealTypeId);
-            UserProfile userProfile = employeeRepository.getUserProfile(user.getId());
-            Map<Integer, MenuItem> menuItemMap = getMenuItemMap(rolledOutItemsForMealType);
-            if (userProfile != null)
-                sortRolledOutItemsForMealType(rolledOutItemsForMealType, userProfile, menuItemMap);
+            UserProfile userProfile;
+            try {
+                userProfile = employeeRepository.getUserProfile(user.getId());
+                Map<Integer, MenuItem> menuItemMap = getMenuItemMap(rolledOutItemsForMealType);
+                if (userProfile != null)
+                    rolledOutItemsForMealType = sortRolledOutItemsForMealType(rolledOutItemsForMealType, userProfile, menuItemMap);
+            } catch (EmptyResponseException e) {
+                System.out.println(e.getMessage() + "Getting default order of menu options. ");
+            }
+            employeeConsoleManager.displayMessage(getEnumFromOrdinal(MealTypeEnum.class, mealTypeId).name() + " Menu Options");
             processVotingForMealType(rolledOutItemsForMealType);
-            continueVoting = employeeConsoleManager.takeUserChoice("Do you wish to cast vote for another Meal Type? Enter 1-Yes / 0-No.");
+            continueVoting = employeeConsoleManager.takeUserChoice("Do you wish to cast vote for another Meal Type? Enter 1-Yes / 0-No: ");
         } while (continueVoting == 1);
     }
 
@@ -191,7 +199,7 @@ public class EmployeeHandler extends UserHandler {
             employeeConsoleManager.displayMessage("No Items Rolled out yet. Please come back later");
         else {
             employeeConsoleManager.displayRolledOutMenuItems(rolledOutItemsMap);
-            int menuItemId = employeeConsoleManager.takeUserChoice("Enter the Menu Item Id you want to vote for:");
+            int menuItemId = employeeConsoleManager.takeUserChoice("Enter the Menu Item Id you want to vote for: ");
 
             if (rolledOutItemsMap.containsKey(menuItemId)) {
                 Vote userVote = new Vote(menuItemId, user.getId(), new Date());
@@ -203,7 +211,8 @@ public class EmployeeHandler extends UserHandler {
     }
 
     private String formatRecommendation(MenuItem menuItem, MenuItemRecommendation recommendation) {
-        return menuItem.getName() + " " + recommendation.getRecommendationScore() + " " + recommendation.getSentimentOfItem();
+        String formattedScore = String.format("%.6f", recommendation.getRecommendationScore());
+        return "Menu Item Name: " + menuItem.getName() + " | Score: " + formattedScore + " | Key Phrases: " + recommendation.getSentimentOfItem();
     }
 
     public Feedback getUserFeedback() throws BadResponseException, IOException, InvalidResponseException {
