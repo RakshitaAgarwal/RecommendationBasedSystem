@@ -4,18 +4,24 @@ import org.cafeteria.client.consoleManager.ChefConsoleManager;
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.client.repositories.AdminRepository;
 import org.cafeteria.client.repositories.ChefRepository;
-import org.cafeteria.common.customException.CustomExceptions.*;
-import org.cafeteria.common.model.*;
+import org.cafeteria.common.customException.CustomExceptions.BadResponseException;
+import org.cafeteria.common.customException.CustomExceptions.InvalidChoiceException;
+import org.cafeteria.common.customException.CustomExceptions.InvalidResponseException;
+import org.cafeteria.common.model.DiscardMenuItem;
+import org.cafeteria.common.model.MenuItem;
+import org.cafeteria.common.model.MenuItemRecommendation;
+import org.cafeteria.common.model.User;
 import org.cafeteria.common.model.enums.MealTypeEnum;
-import org.cafeteria.common.model.enums.NotificationTypeEnum;
-import static org.cafeteria.client.repositories.AdminRepository.getMenuItemById;
-import static org.cafeteria.client.handlers.AdminHandler.handleDisplayMenu;
-import static org.cafeteria.client.repositories.AdminRepository.sendNotificationToAllEmployees;
-import static org.cafeteria.common.constants.Constants.DETAILED_FEEDBACK_MESSAGE;
-import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.cafeteria.client.handlers.AdminHandler.handleDisplayMenu;
+import static org.cafeteria.client.repositories.AdminRepository.getMenuItemById;
+import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 public class ChefHandler extends UserHandler {
     private static ChefRepository chefRepository;
@@ -175,17 +181,18 @@ public class ChefHandler extends UserHandler {
                 if (ChefConsoleManager.takeUserBooleanInput("Are you sure you want to permanently remove food item from menu. true/false"))
                     adminRepository.deleteMenuItem(menuItem);
             }
-            case 2 -> handleGetDetailedFeedback(menuItem.getName());
+            case 2 -> handleGetDetailedFeedback(menuItem.getId());
             default -> ChefConsoleManager.displayMessage("Invalid choice selected");
         }
     }
 
-    private void handleGetDetailedFeedback(String menuItemName) throws IOException, InvalidResponseException, BadResponseException {
-        String notificationMessage = String.format(DETAILED_FEEDBACK_MESSAGE, menuItemName, menuItemName, menuItemName);
-        Notification notification = new Notification(
-                NotificationTypeEnum.GET_DETAILED_FEEDBACK.ordinal() + 1,
-                notificationMessage,
-                new Date());
-        ChefConsoleManager.displayMessage(sendNotificationToAllEmployees(notification));
+    private void handleGetDetailedFeedback(int menuItemId) throws IOException, InvalidResponseException {
+        String response;
+        try {
+            response = chefRepository.createDetailedFeedbackRequest(menuItemId);
+        } catch (BadResponseException e) {
+            response = e.getMessage();
+        }
+        ChefConsoleManager.displayMessage(response);
     }
 }

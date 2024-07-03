@@ -1,16 +1,19 @@
 package org.cafeteria.client.handlers;
 
 import org.cafeteria.client.consoleManager.AdminConsoleManager;
+import org.cafeteria.client.consoleManager.ChefConsoleManager;
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.client.repositories.AdminRepository;
-import org.cafeteria.common.customException.CustomExceptions.*;
-import org.cafeteria.common.model.*;
-import org.cafeteria.common.model.enums.*;
-import static org.cafeteria.client.repositories.AdminRepository.sendNotificationToAllEmployees;
-import static org.cafeteria.common.constants.Constants.DETAILED_FEEDBACK_MESSAGE;
+import org.cafeteria.common.customException.CustomExceptions.BadResponseException;
+import org.cafeteria.common.customException.CustomExceptions.InvalidChoiceException;
+import org.cafeteria.common.customException.CustomExceptions.InvalidResponseException;
+import org.cafeteria.common.model.DiscardMenuItem;
+import org.cafeteria.common.model.MenuItem;
+import org.cafeteria.common.model.User;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
 public class AdminHandler extends UserHandler {
     private static AdminRepository adminRepository;
@@ -176,17 +179,18 @@ public class AdminHandler extends UserHandler {
                 if (AdminConsoleManager.takeUserBooleanInput("Are you sure you want to permanently remove food item from menu. true/false"))
                     adminRepository.deleteMenuItem(menuItem);
             }
-            case 2 -> handleGetDetailedFeedback(menuItem.getName());
+            case 2 -> handleGetDetailedFeedback(menuItem.getId());
             default -> AdminConsoleManager.displayMessage("Invalid choice selected");
         }
     }
 
-    private void handleGetDetailedFeedback(String menuItemName) throws IOException, InvalidResponseException, BadResponseException {
-        String notificationMessage = String.format(DETAILED_FEEDBACK_MESSAGE, menuItemName, menuItemName, menuItemName);
-        Notification notification = new Notification(
-                NotificationTypeEnum.GET_DETAILED_FEEDBACK.ordinal() + 1,
-                notificationMessage,
-                new Date());
-        AdminConsoleManager.displayMessage(sendNotificationToAllEmployees(notification));
+    private void handleGetDetailedFeedback(int menuItemId) throws IOException, InvalidResponseException {
+        String response;
+        try {
+            response = adminRepository.createDetailedFeedbackRequest(menuItemId);
+        } catch (BadResponseException e) {
+            response = e.getMessage();
+        }
+        ChefConsoleManager.displayMessage(response);
     }
 }

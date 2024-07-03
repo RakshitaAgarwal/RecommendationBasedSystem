@@ -18,7 +18,7 @@ public class Server {
     public static NotificationController notificationController;
     public static PreparedMenuItemController preparedMenuItemController;
     public static DiscardMenuItemController discardMenuItemController;
-
+    public static DetailedFeedbackController detailedFeedbackController;
     public static VotingController votingController;
     public static RecommendationController recommendationController;
 
@@ -41,6 +41,7 @@ public class Server {
         votingController = new VotingController();
         recommendationController = new RecommendationController();
         discardMenuItemController = new DiscardMenuItemController();
+        detailedFeedbackController = new DetailedFeedbackController();
     }
 
 

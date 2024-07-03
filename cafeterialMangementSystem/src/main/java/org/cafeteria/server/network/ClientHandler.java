@@ -71,6 +71,8 @@ public class ClientHandler implements Runnable {
 
             case GET_DISCARD_MENU_ITEMS -> response = discardMenuItemController.discardMenuItems();
 
+            case CREATE_DETAILED_FEEDBACK_REQUEST -> response = detailedFeedbackController.createDetailedFeedbackRequest(request);
+
             case PROVIDE_FEEDBACK -> response = feedbackController.addFeedback(request);
 
             case SEND_NOTIFICATION_TO_EMPLOYEES ->

@@ -92,4 +92,18 @@ public class ChefRepository extends UserRepository {
         else
             throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
+
+    public String createDetailedFeedbackRequest(int menuItemId) throws IOException, InvalidResponseException, BadResponseException {
+        String request = createRequest(UserAction.CREATE_DETAILED_FEEDBACK_REQUEST, serializeData(menuItemId));
+        String response = connection.sendData(request);
+        if (response == null) {
+            throw new IOException("Server Got Disconnected. Please Try again.");
+        }
+        ParsedResponse parsedResponse = parseResponse(response);
+        ResponseCode responseCode = parsedResponse.getResponseCode();
+        if (responseCode == ResponseCode.OK) {
+            return deserializeData(parsedResponse.getJsonData(), String.class);
+        } else
+            throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
+    }
 }
