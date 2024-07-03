@@ -1,7 +1,6 @@
 package org.cafeteria.client.consoleManager;
 
 import org.cafeteria.common.model.Feedback;
-import org.cafeteria.common.model.MenuItemRecommendation;
 import org.cafeteria.common.model.Notification;
 import org.cafeteria.common.model.UserProfile;
 import org.cafeteria.common.model.enums.ContentLevelEnum;
@@ -9,20 +8,14 @@ import org.cafeteria.common.model.enums.CuisineTypeEnum;
 import org.cafeteria.common.model.enums.MealTypeEnum;
 import org.cafeteria.common.model.enums.MenuItemTypeEnum;
 
-import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
-public class EmployeeConsoleManager extends UserConsoleManager{
-    public EmployeeConsoleManager(Scanner sc) {
-        super(sc);
-    }
+public class EmployeeConsoleManager extends UserConsoleManager {
 
-    @Override
-    public void displayUserActionItems() {
+    public static void displayUserActionItems() {
         System.out.println("1. See Menu");
         System.out.println("2. See Notifications");
         System.out.println("3. Vote For Next Day Menu");
@@ -32,14 +25,14 @@ public class EmployeeConsoleManager extends UserConsoleManager{
         System.out.println("7. Exit");
     }
 
-    public void displayRolledOutMenuItems(Map<Integer, String> rolledOutItemsMap) {
+    public static void displayRolledOutMenuItems(Map<Integer, String> rolledOutItemsMap) {
         for (Map.Entry<Integer, String> entry : rolledOutItemsMap.entrySet()) {
             System.out.println("ID: " + entry.getKey() + " | " + entry.getValue());
         }
         System.out.println("-----------------------------------------");
     }
 
-    public void displayEmployeeNotifications(List<Notification> notifications) {
+    public static void displayEmployeeNotifications(List<Notification> notifications) {
         if (notifications == null || notifications.isEmpty()) {
             System.out.println("No notifications to display.");
             return;
@@ -68,135 +61,103 @@ public class EmployeeConsoleManager extends UserConsoleManager{
         System.out.println("----------------------");
     }
 
-    public void displayUserProfileUpdateOptions() {
+    public static void displayUserProfileUpdateOptions() {
         System.out.println("1. Update Dietary Preference");
         System.out.println("2. Update Spice level Preference");
         System.out.println("3. Update Cuisine Preference");
         System.out.println("4. Update Sweet Food Preference");
     }
 
-    public Feedback takeEmployeeFeedback(String foodItemName) {
+    public static Feedback takeEmployeeFeedback(String foodItemName) {
         String comment = takeUserStringInput("Enter Feedback/Comment for " + foodItemName);
         float rating = takeUserFloatInput("Enter Rating for the " + foodItemName + " out of 5");
         return new Feedback(comment, rating);
     }
 
-    public int takeSpiceLevelId() {
+    public static int takeSpiceLevelId() {
         int spiceLevelId = 0;
         boolean validInput = false;
 
         while (!validInput) {
-            try {
-                System.out.println("Please Select your Spice Level Preference:");
-                for (ContentLevelEnum preference : ContentLevelEnum.values()) {
-                    System.out.printf("%d. %s%n", preference.ordinal() + 1, preference.name().replace("_", " "));
-                }
+            System.out.println("Please Select your Spice Level Preference:");
+            for (ContentLevelEnum preference : ContentLevelEnum.values()) {
+                System.out.printf("%d. %s%n", preference.ordinal() + 1, preference.name().replace("_", " "));
+            }
 
-                int selection = takeUserChoice("");
-                if (selection >= 1 && selection <= ContentLevelEnum.values().length) {
-                    spiceLevelId = selection;
-                    validInput = true;
-                } else {
-                    System.out.println("Invalid selection. Please choose a number between 1 and " + ContentLevelEnum.values().length + ".");
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please enter a number.");
-                sc.next();
+            int selection = takeUserIntInput("");
+            if (selection >= 1 && selection <= ContentLevelEnum.values().length) {
+                spiceLevelId = selection;
+                validInput = true;
+            } else {
+                System.out.println("Invalid selection. Please choose a number between 1 and " + ContentLevelEnum.values().length + ".");
             }
         }
 
         return spiceLevelId;
     }
 
-    public int takeFavCuisineId() {
+    public static int takeFavCuisineId() {
         int favCuisineId = 0;
         boolean validInput = false;
 
         while (!validInput) {
-            try {
-                System.out.println("Please Select your Favourite Cuisine:");
-                for (CuisineTypeEnum preference : CuisineTypeEnum.values()) {
-                    System.out.printf("%d. %s%n", preference.ordinal() + 1, preference.name().replace("_", " "));
-                }
+            System.out.println("Please Select your Favourite Cuisine:");
+            for (CuisineTypeEnum preference : CuisineTypeEnum.values()) {
+                System.out.printf("%d. %s%n", preference.ordinal() + 1, preference.name().replace("_", " "));
+            }
 
-                int selection = takeUserChoice("");
-                if (selection >= 1 && selection <= CuisineTypeEnum.values().length) {
-                    favCuisineId = selection;
-                    validInput = true;
-                } else {
-                    System.out.println("Invalid selection. Please choose a number between 1 and " + CuisineTypeEnum.values().length + ".");
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please enter a number.");
-                sc.next();
+            int selection = takeUserIntInput("");
+            if (selection >= 1 && selection <= CuisineTypeEnum.values().length) {
+                favCuisineId = selection;
+                validInput = true;
+            } else {
+                System.out.println("Invalid selection. Please choose a number between 1 and " + CuisineTypeEnum.values().length + ".");
             }
         }
 
         return favCuisineId;
     }
 
-    public int takeDietaryPreferenceId() {
+    public static int takeDietaryPreferenceId() {
         int dietaryPreferenceId = 0;
         boolean validInput = false;
 
         while (!validInput) {
-            try {
-                System.out.println("Please Select your Dietary Preference:");
-                for (MenuItemTypeEnum preference : MenuItemTypeEnum.values()) {
-                    System.out.printf("%d. %s%n", preference.ordinal() + 1, preference.name().replace("_", " "));
-                }
+            System.out.println("Please Select your Dietary Preference:");
+            for (MenuItemTypeEnum preference : MenuItemTypeEnum.values()) {
+                System.out.printf("%d. %s%n", preference.ordinal() + 1, preference.name().replace("_", " "));
+            }
 
-                int selection = takeUserChoice("");
-                if (selection >= 1 && selection <= MenuItemTypeEnum.values().length) {
-                    dietaryPreferenceId = selection;
-                    validInput = true;
-                } else {
-                    System.out.println("Invalid selection. Please choose a number between 1 and " + MenuItemTypeEnum.values().length + ".");
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please enter a number.");
-                sc.next();
+            int selection = takeUserIntInput("");
+            if (selection >= 1 && selection <= MenuItemTypeEnum.values().length) {
+                dietaryPreferenceId = selection;
+                validInput = true;
+            } else {
+                System.out.println("Invalid selection. Please choose a number between 1 and " + MenuItemTypeEnum.values().length + ".");
             }
         }
 
         return dietaryPreferenceId;
     }
 
-    public boolean takeIsSweetTooth() {
-        boolean isSweetTooth = false;
-        try{
-            isSweetTooth = takeUserBooleanInput("Are you a Sweet Tooth (true/false)");
-        } catch (InputMismatchException e) {
-            System.out.println("Invalid input. Please enter either true/false.");
-            sc.next();
-        }
-        return isSweetTooth;
-    }
-
-    public int takeMealTypeId() {
+    public static int takeMealTypeId() {
         int mealTypeId = 0;
         boolean validInput = false;
 
         while (!validInput) {
-            try {
-                System.out.println("Please Select Meal Type:");
-                for (MealTypeEnum preference : MealTypeEnum.values()) {
-                    System.out.printf("%d. %s%n", preference.ordinal() + 1, preference.name().replace("_", " "));
-                }
+            System.out.println("Please Select Meal Type:");
+            for (MealTypeEnum preference : MealTypeEnum.values()) {
+                System.out.printf("%d. %s%n", preference.ordinal() + 1, preference.name().replace("_", " "));
+            }
 
-                int selection = takeUserChoice("");
-                if (selection >= 1 && selection <= MealTypeEnum.values().length) {
-                    mealTypeId = selection;
-                    validInput = true;
-                } else {
-                    System.out.println("Invalid selection. Please choose a number between 1 and " + MealTypeEnum.values().length + ".");
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please enter a number.");
-                sc.next();
+            int selection = takeUserIntInput("");
+            if (selection >= 1 && selection <= MealTypeEnum.values().length) {
+                mealTypeId = selection;
+                validInput = true;
+            } else {
+                System.out.println("Invalid selection. Please choose a number between 1 and " + MealTypeEnum.values().length + ".");
             }
         }
-
         return mealTypeId;
     }
 }

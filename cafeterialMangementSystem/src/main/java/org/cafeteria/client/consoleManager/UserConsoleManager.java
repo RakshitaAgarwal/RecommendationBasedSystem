@@ -7,18 +7,12 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public abstract class UserConsoleManager {
-    protected Scanner sc;
+    protected static Scanner sc = new Scanner(System.in);
 
-    public UserConsoleManager(Scanner sc) {
-        this.sc = sc;
-    }
-
-    public abstract void displayUserActionItems();
-
-    public int takeUserChoice(String message) {
+    public static int takeUserIntInput(String message) {
         int choice = 0;
         try {
-            System.out.print(message);
+            System.out.println(message);
             choice = sc.nextInt();
         } catch (InputMismatchException e) {
             System.out.println("Invalid input. Please enter a number.");
@@ -27,13 +21,13 @@ public abstract class UserConsoleManager {
         return choice;
     }
 
-    public String takeUserStringInput(String message) {
+    public static String takeUserStringInput(String message) {
         System.out.println(message);
         sc.nextLine();
         return sc.nextLine();
     }
 
-    public float takeUserFloatInput(String message) {
+    public static float takeUserFloatInput(String message) {
         float input = 0F;
         try {
             System.out.println(message);
@@ -45,7 +39,7 @@ public abstract class UserConsoleManager {
         return input;
     }
 
-    public boolean takeUserBooleanInput(String message) {
+    public static boolean takeUserBooleanInput(String message) {
         boolean input = false;
         boolean isValid = false;
         while (!isValid) {
@@ -61,7 +55,7 @@ public abstract class UserConsoleManager {
         return input;
     }
 
-    public Date takeUserDateInput(String message) {
+    public static Date takeUserDateInput(String message) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         dateFormat.setLenient(false);
         Date inputDate = null;
@@ -87,9 +81,8 @@ public abstract class UserConsoleManager {
         return inputDate;
     }
 
-    public void displayMessage(String message) {
-        System.out.println("=========================================");
+    public static void displayMessage(String message) {
+        System.out.println("-----------------------------------------");
         System.out.println(message);
-        System.out.println("=========================================");
     }
 }

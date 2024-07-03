@@ -1,52 +1,48 @@
 package org.cafeteria.client;
 
+import org.cafeteria.client.consoleManager.UserConsoleManager;
 import org.cafeteria.client.global.GlobalData;
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.client.handlers.AdminHandler;
-import org.cafeteria.client.handlers.AuthenticationHandler;
+import org.cafeteria.client.repositories.AuthenticationRepository;
 import org.cafeteria.client.handlers.ChefHandler;
 import org.cafeteria.client.handlers.EmployeeHandler;
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.User;
 import org.cafeteria.common.model.enums.UserRoleEnum;
-
 import static org.cafeteria.common.constants.Constants.SERVER_ADDRESS;
 import static org.cafeteria.common.constants.Constants.SERVER_PORT;
 import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 import java.io.IOException;
-import java.util.InputMismatchException;
 import java.util.Properties;
-import java.util.Scanner;
 
-public class Client {
-    private static final Scanner sc = new Scanner(System.in);
+public class Client extends UserConsoleManager {
     private static ServerConnection connection;
     private static final String SERVER_PROPERTIES_FILE = "server.properties";
 
     public static void main(String[] args) {
         try {
             setUpApplication();
-            System.out.println("Welcome to Cafeteria Management System");
+            displayMessage("Welcome to Cafeteria Management System");
 
             int choice;
             do {
-                choice = 0;
-                System.out.println("Please Login to proceed.");
+                displayMessage("Please Login to proceed.");
                 User userToLogin = fetchUserCredentialsForLogin();
                 try {
-                    User user = new AuthenticationHandler(connection).login(userToLogin);
+                    User user = new AuthenticationRepository(connection).login(userToLogin);
                     updateGlobalData(user);
-                    showUserActionItems(user);
+                    showUserActionItems();
+                    choice = 0;
                 } catch (LoginFailedException e) {
-                    System.out.println("Login Failed");
-                    System.out.println("Do you want to try again? If yes please enter 1.");
-                    choice = sc.nextInt();
+                    displayMessage("Login Failed");
+                    choice = takeUserIntInput("Do you want to try again? If yes please enter 1.");
                 }
             } while (choice == 1);
 
         } catch (IOException e) {
-            System.out.println("Server Got Disconnected");
+            displayMessage("Server Got Disconnected");
         } finally {
             closeResources();
         }
@@ -56,23 +52,23 @@ public class Client {
         GlobalData.loggedInUser = user;
     }
 
-    private static void showUserActionItems(User user) throws IOException {
-        UserRoleEnum userRole = getEnumFromOrdinal(UserRoleEnum.class, user.getUserRoleId());
+    private static void showUserActionItems() throws IOException {
+        UserRoleEnum userRole = getEnumFromOrdinal(UserRoleEnum.class, GlobalData.loggedInUser.getUserRoleId());
         switch (userRole) {
             case ADMIN -> {
-                AdminHandler adminHandler = new AdminHandler(connection, user, sc);
+                AdminHandler adminHandler = new AdminHandler(connection, GlobalData.loggedInUser);
                 adminHandler.showUserActionItems();
             }
             case CHEF -> {
-                ChefHandler chef = new ChefHandler(connection, user, sc);
+                ChefHandler chef = new ChefHandler(connection, GlobalData.loggedInUser);
                 chef.showUserActionItems();
             }
             case EMP -> {
-                EmployeeHandler employee = new EmployeeHandler(connection, user, sc);
+                EmployeeHandler employee = new EmployeeHandler(connection, GlobalData.loggedInUser);
                 employee.showUserActionItems();
             }
             default -> {
-                System.out.println("Some Error Occurred");
+                displayMessage("Some Error Occurred");
                 connection.close();
             }
         }
@@ -92,22 +88,12 @@ public class Client {
 
     private static void createConnection() {
         connection = ServerConnection.getInstance(SERVER_ADDRESS, SERVER_PORT);
-        System.out.println("Server Got Connected");
+        displayMessage("Server Got Connected");
     }
 
     private static User fetchUserCredentialsForLogin() {
-        int userId = 0;
-        String username = "";
-        try {
-            System.out.println("Enter your Employee ID:");
-            userId = sc.nextInt();
-            sc.nextLine();
-            System.out.print("Enter your Username: ");
-            username = sc.nextLine();
-
-        } catch (InputMismatchException e) {
-            System.out.println("Invalid Input");
-        }
+        int userId = takeUserIntInput("Enter your Employee ID:");
+        String username = takeUserStringInput("Enter your Username: ");
         return new User(userId, username);
     }
 

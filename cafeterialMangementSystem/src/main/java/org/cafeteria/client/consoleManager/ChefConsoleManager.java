@@ -6,16 +6,10 @@ import org.cafeteria.common.model.enums.MealTypeEnum;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 public class ChefConsoleManager extends UserConsoleManager{
 
-    public ChefConsoleManager(Scanner sc) {
-        super(sc);
-    }
-
-    @Override
-    public void displayUserActionItems() {
+    public static void displayUserActionItems() {
         System.out.println("1. Show Menu");
         System.out.println("2. Roll Out Items for Next Day Menu");
         System.out.println("3. See Voting for Rolled out Menu Items");
@@ -24,7 +18,7 @@ public class ChefConsoleManager extends UserConsoleManager{
         System.out.println("6. Exit");
     }
 
-    public void displayVoting(Map<MealTypeEnum, List<String>> categorizedVotes) {
+    public static void displayVoting(Map<MealTypeEnum, List<String>> categorizedVotes) {
         System.out.println();
         System.out.println("--------Votes For Next Day menu--------");
         for (Map.Entry<MealTypeEnum, List<String>> entry : categorizedVotes.entrySet()) {
@@ -41,7 +35,7 @@ public class ChefConsoleManager extends UserConsoleManager{
         System.out.println("---------------------------------------");
     }
 
-    public void displayDiscardedMenuItems(List<DiscardMenuItem> items) {
+    public static void displayDiscardedMenuItems(List<DiscardMenuItem> items) {
         System.out.println("---------------------------------------------------------");
         System.out.printf("%-5s | %-10s | %-10s%n", "ID", "MenuItemID", "Avg. Rating");
         System.out.println("---------------------------------------------------------");
@@ -52,20 +46,20 @@ public class ChefConsoleManager extends UserConsoleManager{
         System.out.println("----------------------------------------------------------");
     }
 
-    public void displayDiscardMenuItemActions() {
+    public static void displayDiscardMenuItemActions() {
         System.out.println("Choose action to perform:");
         System.out.println("1. Remove the Food Item from Menu");
         System.out.println("2. Get Detailed Feedback");
     }
 
-    public void displayMenuItemsRecommendationByMealType(Map<MealTypeEnum, List<MenuItemRecommendation>> menuItemsByMealType) {
+    public static void displayMenuItemsRecommendationByMealType(Map<MealTypeEnum, List<MenuItemRecommendation>> menuItemsByMealType) {
         displayMessage("Menu Item Recommendations");
         for (Map.Entry<MealTypeEnum, List<MenuItemRecommendation>> entry : menuItemsByMealType.entrySet()) {
             MealTypeEnum mealType = entry.getKey();
             List<MenuItemRecommendation> menuItems = entry.getValue();
 
             System.out.println("Meal Type: " + mealType);
-            System.out.println("-------------------------------------");;
+            System.out.println("-------------------------------------");
             for (MenuItemRecommendation menuItemRecommendation : menuItems) {
                 String formattedScore = String.format("%.6f", menuItemRecommendation.getRecommendationScore());
                 String sentiment = menuItemRecommendation.getSentimentOfItem();

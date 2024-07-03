@@ -20,20 +20,18 @@ import java.util.*;
 public class ChefHandler extends UserHandler {
     private static ChefRepository chefRepository;
     private static AdminRepository adminRepository;
-    private static ChefConsoleManager chefConsoleManager;
 
-    public ChefHandler(ServerConnection connection, User user, Scanner sc) {
+    public ChefHandler(ServerConnection connection, User user) {
         super(user);
         chefRepository = new ChefRepository(connection);
         adminRepository = new AdminRepository(connection);
-        chefConsoleManager = new ChefConsoleManager(sc);
     }
 
     @Override
     public void showUserActionItems() throws IOException {
         while (true) {
-            chefConsoleManager.displayUserActionItems();
-            int choice = chefConsoleManager.takeUserChoice("Enter your Choice: ");
+            ChefConsoleManager.displayUserActionItems();
+            int choice = ChefConsoleManager.takeUserIntInput("Enter your Choice: ");
             try {
                 switch (choice) {
                     case 1 -> handleDisplayMenu();
@@ -48,18 +46,18 @@ public class ChefHandler extends UserHandler {
                     default -> throw new InvalidChoiceException("Invalid choice");
                 }
             } catch (BadResponseException | InvalidResponseException | InvalidChoiceException e) {
-                chefConsoleManager.displayMessage(e.getMessage());
+                ChefConsoleManager.displayMessage(e.getMessage());
             }
         }
     }
 
     public void handleRollOutNextDayMenuOptions() throws IOException, InvalidResponseException, BadResponseException {
         Map<MealTypeEnum, List<MenuItemRecommendation>> recommendedItems = chefRepository.getRecommendationsForNextDayMenu();
-        chefConsoleManager.displayMenuItemsRecommendationByMealType(recommendedItems);
+        ChefConsoleManager.displayMenuItemsRecommendationByMealType(recommendedItems);
         List<Integer> rolledOutItems = getTopRolledOutMenuItemIds(recommendedItems, 5);
         if (!rolledOutItems.isEmpty()) {
             String response = chefRepository.processRollOutMenuOptions(rolledOutItems);
-            chefConsoleManager.displayMessage(response);
+            ChefConsoleManager.displayMessage(response);
         }
     }
 
@@ -83,7 +81,7 @@ public class ChefHandler extends UserHandler {
     private void handleDisplayVotingForRolledOutItems() throws IOException, BadResponseException, InvalidResponseException {
         Map<Integer, Integer> nextDayVoting = chefRepository.getVotingForMenuItem();
         Map<MealTypeEnum, List<String>> categorizedVoting = categorizeVotesByMealType(nextDayVoting);
-        chefConsoleManager.displayVoting(categorizedVoting);
+        ChefConsoleManager.displayVoting(categorizedVoting);
     }
 
     private Map<MealTypeEnum, List<String>> categorizeVotesByMealType(Map<Integer, Integer> nextDayVoting) throws IOException, InvalidResponseException, BadResponseException {
@@ -108,7 +106,7 @@ public class ChefHandler extends UserHandler {
         List<Integer> preparedMenuItemIds = new ArrayList<>();
         for (MealTypeEnum mealType : MealTypeEnum.values()) {
             if (!updateMealTypeMenu(mealType, preparedMenuItemIds)) {
-                chefConsoleManager.displayMessage("No Item selected for " + mealType.name());
+                ChefConsoleManager.displayMessage("No Item selected for " + mealType.name());
                 break;
             }
         }
@@ -118,13 +116,13 @@ public class ChefHandler extends UserHandler {
     private boolean updateMealTypeMenu(MealTypeEnum mealType, List<Integer> preparedMenuItemIds) throws IOException, InvalidResponseException, BadResponseException {
         boolean isSuccess = false;
         do {
-            int menuItemId = chefConsoleManager.takeUserChoice("Enter Menu Item Id prepared for " + mealType.name());
+            int menuItemId = ChefConsoleManager.takeUserIntInput("Enter Menu Item Id prepared for " + mealType.name());
             MenuItem menuItem = getMenuItemById(menuItemId);
             if (isValidMenuItem(menuItem, mealType)) {
                 preparedMenuItemIds.add(menuItemId);
                 isSuccess = true;
             } else {
-                int continueUpdating = chefConsoleManager.takeUserChoice("Invalid Menu Item Id Entered. Do you want to try again (1. Yes / 0. No)");
+                int continueUpdating = ChefConsoleManager.takeUserIntInput("Invalid Menu Item Id Entered. Do you want to try again (1. Yes / 0. No)");
                 if (continueUpdating != 1) {
                     break;
                 }
@@ -140,9 +138,9 @@ public class ChefHandler extends UserHandler {
     private void finalizeMenu(List<Integer> preparedMenuItemIds) throws IOException, InvalidResponseException, BadResponseException {
         if (preparedMenuItemIds.size() == MealTypeEnum.values().length) {
             String response = chefRepository.processUpdatingFinalMenu(preparedMenuItemIds);
-            chefConsoleManager.displayMessage(response);
+            ChefConsoleManager.displayMessage(response);
         } else {
-            chefConsoleManager.displayMessage("Invalid Input!!. Please Try again later.");
+            ChefConsoleManager.displayMessage("Invalid Input!!. Please Try again later.");
         }
     }
 
@@ -150,15 +148,15 @@ public class ChefHandler extends UserHandler {
         List<DiscardMenuItem> discardedMenuItems = adminRepository.getDiscardMenuItems();
         boolean continueAction;
         do {
-            chefConsoleManager.displayDiscardedMenuItems(discardedMenuItems);
-            int menuItemId = chefConsoleManager.takeUserChoice("Enter the Menu Item Id you want to perform action for:");
+            ChefConsoleManager.displayDiscardedMenuItems(discardedMenuItems);
+            int menuItemId = ChefConsoleManager.takeUserIntInput("Enter the Menu Item Id you want to perform action for:");
             MenuItem menuItem = AdminRepository.getMenuItemById(menuItemId);
             if (menuItem != null && isValidDiscardMenuItemId(menuItemId, discardedMenuItems)) {
                 handleDiscardMenuItemAction(menuItem);
             } else {
-                chefConsoleManager.displayMessage("Invalid Discard Menu Item Id.");
+                ChefConsoleManager.displayMessage("Invalid Discard Menu Item Id.");
             }
-            continueAction = chefConsoleManager.takeUserBooleanInput("Do you wish to Continue for other Discard Menu Item? true/false");
+            continueAction = ChefConsoleManager.takeUserBooleanInput("Do you wish to Continue for other Discard Menu Item? true/false");
         } while (continueAction);
     }
 
@@ -170,15 +168,15 @@ public class ChefHandler extends UserHandler {
     }
 
     private void handleDiscardMenuItemAction(MenuItem menuItem) throws BadResponseException, IOException, InvalidResponseException {
-        chefConsoleManager.displayDiscardMenuItemActions();
-        int choice = chefConsoleManager.takeUserChoice("Enter Choice:");
+        ChefConsoleManager.displayDiscardMenuItemActions();
+        int choice = ChefConsoleManager.takeUserIntInput("Enter Choice:");
         switch (choice) {
             case 1 -> {
-                if (chefConsoleManager.takeUserBooleanInput("Are you sure you want to permanently remove food item from menu. true/false"))
+                if (ChefConsoleManager.takeUserBooleanInput("Are you sure you want to permanently remove food item from menu. true/false"))
                     adminRepository.deleteMenuItem(menuItem);
             }
             case 2 -> handleGetDetailedFeedback(menuItem.getName());
-            default -> chefConsoleManager.displayMessage("Invalid choice selected");
+            default -> ChefConsoleManager.displayMessage("Invalid choice selected");
         }
     }
 
@@ -188,6 +186,6 @@ public class ChefHandler extends UserHandler {
                 NotificationTypeEnum.GET_DETAILED_FEEDBACK.ordinal() + 1,
                 notificationMessage,
                 new Date());
-        chefConsoleManager.displayMessage(sendNotificationToAllEmployees(notification));
+        ChefConsoleManager.displayMessage(sendNotificationToAllEmployees(notification));
     }
 }

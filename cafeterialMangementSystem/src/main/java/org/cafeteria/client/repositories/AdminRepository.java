@@ -18,9 +18,7 @@ public class AdminRepository extends UserRepository {
 
     public String addMenuItem(MenuItem menuItem) throws InvalidResponseException, IOException, BadResponseException {
         String request = createRequest(UserAction.ADD_MENU_ITEM, serializeData(menuItem));
-        System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
         if (response == null)
             throw new IOException("Server Got Disconnected. Please Try again.");
 
@@ -34,9 +32,7 @@ public class AdminRepository extends UserRepository {
 
     public String deleteMenuItem(MenuItem menuItem) throws InvalidResponseException, IOException, BadResponseException {
         String request = createRequest(UserAction.DELETE_MENU_ITEM, serializeData(menuItem));
-        System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
         if (response == null)
             throw new IOException("Server Got Disconnected. Please Try again.");
 
@@ -50,9 +46,7 @@ public class AdminRepository extends UserRepository {
 
     public String updateMenuItem(MenuItem menuItem) throws InvalidResponseException, IOException, BadResponseException {
         String request = createRequest(UserAction.UPDATE_MENU_ITEM, serializeData(menuItem));
-        System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
         if (response == null)
             throw new IOException("Server Got Disconnected. Please Try again.");
 
@@ -66,9 +60,7 @@ public class AdminRepository extends UserRepository {
 
     public static MenuItem getMenuItemById(@NotNull int id) throws InvalidResponseException, IOException, BadResponseException {
         String request = createRequest(UserAction.GET_MENU_ITEM_BY_ID, serializeData(id));
-        System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
         if (response == null)
             throw new IOException("Server Got Disconnected. Please Try again.");
 
@@ -82,9 +74,7 @@ public class AdminRepository extends UserRepository {
 
     public static MenuItem getFoodItemByName(@NotNull String name) throws IOException, InvalidResponseException, BadResponseException {
         String request = createRequest(UserAction.GET_MENU_ITEM_BY_NAME, serializeData(name));
-        System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
         if (response == null) {
             throw new IOException("Server Got Disconnected. Please Try again.");
         }
@@ -98,10 +88,7 @@ public class AdminRepository extends UserRepository {
 
     public static List<MenuItem> getMenuItems() throws IOException, InvalidResponseException, BadResponseException {
         String request = createRequest(UserAction.GET_ALL_MENU_ITEMS, null);
-        System.out.println("request that is sent to server: " + request);
-
         String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
 
         if (response == null)
             throw new IOException("Server got disconnected. Please try again.");
@@ -116,9 +103,7 @@ public class AdminRepository extends UserRepository {
 
     public List<DiscardMenuItem> getDiscardMenuItems() throws IOException, InvalidResponseException, BadResponseException {
         String request = createRequest(UserAction.GET_DISCARD_MENU_ITEMS, null);
-        System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
 
         if (response == null) {
             throw new IOException("Server Got Disconnected. Please Try again.");
@@ -133,9 +118,7 @@ public class AdminRepository extends UserRepository {
 
     public static String sendNotificationToAllEmployees(Notification notification) throws IOException, InvalidResponseException, BadResponseException {
         String request = createRequest(UserAction.SEND_NOTIFICATION_TO_EMPLOYEES, serializeData(notification));
-        System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
         if (response == null)
             throw new IOException("Server Got Disconnected. Please Try again.");
 

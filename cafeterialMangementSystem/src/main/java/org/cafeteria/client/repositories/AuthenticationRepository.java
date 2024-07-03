@@ -1,4 +1,4 @@
-package org.cafeteria.client.handlers;
+package org.cafeteria.client.repositories;
 
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.common.customException.CustomExceptions.InvalidResponseException;
@@ -12,18 +12,16 @@ import java.io.IOException;
 
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 
-public class AuthenticationHandler {
+public class AuthenticationRepository {
     private static ServerConnection connection;
 
-    public AuthenticationHandler(ServerConnection serverConnection) {
+    public AuthenticationRepository(ServerConnection serverConnection) {
         connection = serverConnection;
     }
 
     public User login(User user) throws IOException, LoginFailedException {
         String request = createRequest(UserAction.LOGIN, serializeData(user));
-        System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
         try {
             ParsedResponse parsedResponse = parseResponse(response);
             ResponseCode responseCode = parsedResponse.getResponseCode();

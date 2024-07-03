@@ -6,7 +6,6 @@ import org.cafeteria.client.repositories.AdminRepository;
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
 import org.cafeteria.common.model.enums.*;
-
 import static org.cafeteria.client.repositories.AdminRepository.sendNotificationToAllEmployees;
 import static org.cafeteria.common.constants.Constants.DETAILED_FEEDBACK_MESSAGE;
 
@@ -15,19 +14,17 @@ import java.util.*;
 
 public class AdminHandler extends UserHandler {
     private static AdminRepository adminRepository;
-    private static AdminConsoleManager adminConsoleManager;
 
-    public AdminHandler(ServerConnection connection, User user, Scanner sc) {
+    public AdminHandler(ServerConnection connection, User user) {
         super(user);
         adminRepository = new AdminRepository(connection);
-        adminConsoleManager = new AdminConsoleManager(sc);
     }
 
     @Override
     public void showUserActionItems() throws IOException {
         while (true) {
-            adminConsoleManager.displayUserActionItems();
-            int choice = adminConsoleManager.takeUserChoice("Enter your Choice: ");
+            AdminConsoleManager.displayUserActionItems();
+            int choice = AdminConsoleManager.takeUserIntInput("Enter your Choice: ");
             try {
                 switch (choice) {
                     case 1 -> handleDisplayMenu();
@@ -42,7 +39,7 @@ public class AdminHandler extends UserHandler {
                     default -> throw new InvalidChoiceException("Invalid Choice");
                 }
             } catch (InvalidResponseException | BadResponseException | InvalidChoiceException e) {
-                adminConsoleManager.displayMessage(e.getMessage());
+                AdminConsoleManager.displayMessage(e.getMessage());
             }
         }
     }
@@ -53,18 +50,18 @@ public class AdminHandler extends UserHandler {
     }
 
     public void handleAddMenuItem() throws IOException, InvalidResponseException, BadResponseException {
-        MenuItem menuItem = adminConsoleManager.takeMenuItemFromUser();
+        MenuItem menuItem = AdminConsoleManager.takeMenuItemFromUser();
         String response = adminRepository.addMenuItem(menuItem);
-        adminConsoleManager.displayMessage(response);
+        AdminConsoleManager.displayMessage(response);
     }
 
     private void handleDeleteMenuItem() throws IOException, InvalidResponseException, BadResponseException {
-        String menuItemName = adminConsoleManager.takeUserStringInput("Enter name of the food Item you want to delete from menu:");
+        String menuItemName = AdminConsoleManager.takeUserStringInput("Enter name of the food Item you want to delete from menu:");
         MenuItem menuItem = AdminRepository.getFoodItemByName(menuItemName);
         if (menuItem != null) {
-            adminConsoleManager.displayMessage(adminRepository.deleteMenuItem(menuItem));
+            AdminConsoleManager.displayMessage(adminRepository.deleteMenuItem(menuItem));
         } else {
-            adminConsoleManager.displayMessage("No such food item exists in the menu");
+            AdminConsoleManager.displayMessage("No such food item exists in the menu");
         }
     }
 
@@ -72,24 +69,24 @@ public class AdminHandler extends UserHandler {
         try {
             MenuItem menuItem = getUpdatedMenuItem();
             if (menuItem != null) {
-                adminConsoleManager.displayMessage(adminRepository.updateMenuItem(menuItem));
+                AdminConsoleManager.displayMessage(adminRepository.updateMenuItem(menuItem));
             }
         } catch (InvalidChoiceException e) {
-            adminConsoleManager.displayMessage(e.getMessage());
+            AdminConsoleManager.displayMessage(e.getMessage());
         }
     }
 
     private MenuItem getUpdatedMenuItem() throws InvalidChoiceException, IOException, InvalidResponseException {
-        String menuItemName = adminConsoleManager.takeUserStringInput("Enter the name of the food item you want to update: ");
+        String menuItemName = AdminConsoleManager.takeUserStringInput("Enter the name of the food item you want to update: ");
         try {
             MenuItem menuItem = AdminRepository.getFoodItemByName(menuItemName);
-            adminConsoleManager.displayMessage("Food item found: " + menuItem.getName());
-            adminConsoleManager.displayMenuItemUpdateOptions();
-            int option = adminConsoleManager.takeUserChoice("Choose an option to update (1/2/3/4/5/6/7/8): ");
+            AdminConsoleManager.displayMessage("Food item found: " + menuItem.getName());
+            AdminConsoleManager.displayMenuItemUpdateOptions();
+            int option = AdminConsoleManager.takeUserIntInput("Choose an option to update (1/2/3/4/5/6/7/8): ");
             updateMenuItem(menuItem, option);
             return menuItem;
         } catch (BadResponseException e) {
-            adminConsoleManager.displayMessage(e.getMessage());
+            AdminConsoleManager.displayMessage(e.getMessage());
             return null;
         }
     }
@@ -109,42 +106,42 @@ public class AdminHandler extends UserHandler {
     }
 
     private void updatePrice(MenuItem menuItem) {
-        float newPrice = adminConsoleManager.takeUserFloatInput("Enter new price: ");
+        float newPrice = AdminConsoleManager.takeUserFloatInput("Enter new price: ");
         menuItem.setPrice(newPrice);
     }
 
     private void updateAvailability(MenuItem menuItem) {
-        boolean isAvailable = adminConsoleManager.takeUserBooleanInput("Enter availability (true/false): ");
+        boolean isAvailable = AdminConsoleManager.takeUserBooleanInput("Enter availability (true/false): ");
         menuItem.setAvailable(isAvailable);
     }
 
     private void updateLastTimePrepared(MenuItem menuItem) {
-        Date date = adminConsoleManager.takeUserDateInput("Enter new last time prepared (yyyy-MM-dd): ");
+        Date date = AdminConsoleManager.takeUserDateInput("Enter new last time prepared (yyyy-MM-dd): ");
         menuItem.setLastTimePrepared(date);
     }
 
     private void updateMealType(MenuItem menuItem) {
-        int mealTypeId = adminConsoleManager.takeMealTypeId();
+        int mealTypeId = AdminConsoleManager.takeMealTypeId();
         menuItem.setMealTypeId(mealTypeId);
     }
 
     private void updateDietaryPreference(MenuItem menuItem) {
-        int menuItemTypeId = adminConsoleManager.takeDietaryPreferenceId();
+        int menuItemTypeId = AdminConsoleManager.takeDietaryPreferenceId();
         menuItem.setMenuItemTypeId(menuItemTypeId);
     }
 
     private void updateSweetContentLevel(MenuItem menuItem) {
-        int sweetContentLevelId = adminConsoleManager.takeSweetLevelId();
+        int sweetContentLevelId = AdminConsoleManager.takeSweetLevelId();
         menuItem.setSweetContentLevelId(sweetContentLevelId);
     }
 
     private void updateSpiceContentLevel(MenuItem menuItem) {
-        int spiceContentLevelId = adminConsoleManager.takeSpiceLevelId();
+        int spiceContentLevelId = AdminConsoleManager.takeSpiceLevelId();
         menuItem.setSpiceContentLevelId(spiceContentLevelId);
     }
 
     private void updateCuisineType(MenuItem menuItem) {
-        int cuisineTypeId = adminConsoleManager.takeCuisineId();
+        int cuisineTypeId = AdminConsoleManager.takeCuisineId();
         menuItem.setCuisineTypeId(cuisineTypeId);
     }
 
@@ -152,15 +149,15 @@ public class AdminHandler extends UserHandler {
         List<DiscardMenuItem> discardedMenuItems = adminRepository.getDiscardMenuItems();
         boolean continueAction;
         do {
-            adminConsoleManager.displayDiscardedMenuItems(discardedMenuItems);
-            int menuItemId = adminConsoleManager.takeUserChoice("Enter the Menu Item Id you want to perform action for:");
+            AdminConsoleManager.displayDiscardedMenuItems(discardedMenuItems);
+            int menuItemId = AdminConsoleManager.takeUserIntInput("Enter the Menu Item Id you want to perform action for:");
             MenuItem menuItem = AdminRepository.getMenuItemById(menuItemId);
             if (menuItem != null && isValidDiscardMenuItemId(menuItemId, discardedMenuItems)) {
                 handleDiscardMenuItemAction(menuItem);
             } else {
                 System.out.println("Invalid Discard Menu Item Id.");
             }
-            continueAction = adminConsoleManager.takeUserBooleanInput("Do you wish to Continue for other Discard Menu Item? true/false");
+            continueAction = AdminConsoleManager.takeUserBooleanInput("Do you wish to Continue for other Discard Menu Item? true/false");
         } while (continueAction);
     }
 
@@ -172,15 +169,15 @@ public class AdminHandler extends UserHandler {
     }
 
     private void handleDiscardMenuItemAction(MenuItem menuItem) throws BadResponseException, IOException, InvalidResponseException {
-        adminConsoleManager.displayDiscardMenuItemActions();
-        int choice = adminConsoleManager.takeUserChoice("Enter Choice:");
+        AdminConsoleManager.displayDiscardMenuItemActions();
+        int choice = AdminConsoleManager.takeUserIntInput("Enter Choice:");
         switch (choice) {
             case 1 -> {
-                if (adminConsoleManager.takeUserBooleanInput("Are you sure you want to permanently remove food item from menu. true/false"))
+                if (AdminConsoleManager.takeUserBooleanInput("Are you sure you want to permanently remove food item from menu. true/false"))
                     adminRepository.deleteMenuItem(menuItem);
             }
             case 2 -> handleGetDetailedFeedback(menuItem.getName());
-            default -> adminConsoleManager.displayMessage("Invalid choice selected");
+            default -> AdminConsoleManager.displayMessage("Invalid choice selected");
         }
     }
 
@@ -190,6 +187,6 @@ public class AdminHandler extends UserHandler {
                 NotificationTypeEnum.GET_DETAILED_FEEDBACK.ordinal() + 1,
                 notificationMessage,
                 new Date());
-        adminConsoleManager.displayMessage(sendNotificationToAllEmployees(notification));
+        AdminConsoleManager.displayMessage(sendNotificationToAllEmployees(notification));
     }
 }

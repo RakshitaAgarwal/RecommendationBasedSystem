@@ -7,7 +7,6 @@ import org.cafeteria.client.repositories.EmployeeRepository;
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
 import org.cafeteria.common.model.enums.MealTypeEnum;
-
 import static org.cafeteria.client.handlers.AdminHandler.handleDisplayMenu;
 import static org.cafeteria.client.repositories.AdminRepository.getFoodItemByName;
 import static org.cafeteria.client.repositories.AdminRepository.getMenuItemById;
@@ -19,23 +18,21 @@ import java.util.stream.Collectors;
 
 public class EmployeeHandler extends UserHandler {
     private static EmployeeRepository employeeRepository;
-    private static EmployeeConsoleManager employeeConsoleManager;
 
-    public EmployeeHandler(ServerConnection connection, User user, Scanner sc) {
+    public EmployeeHandler(ServerConnection connection, User user) {
         super(user);
         employeeRepository = new EmployeeRepository(connection);
-        employeeConsoleManager = new EmployeeConsoleManager(sc);
     }
 
     @Override
     public void showUserActionItems() throws IOException {
         while (true) {
-            employeeConsoleManager.displayUserActionItems();
-            int choice = employeeConsoleManager.takeUserChoice("Enter your Choice: ");
+            EmployeeConsoleManager.displayUserActionItems();
+            int choice = EmployeeConsoleManager.takeUserIntInput("Enter your Choice: ");
             try {
                 switch (choice) {
                     case 1 -> handleDisplayMenu();
-                    case 2 -> employeeConsoleManager.displayEmployeeNotifications(getNotifications());
+                    case 2 -> EmployeeConsoleManager.displayEmployeeNotifications(getNotifications());
                     case 3 -> handleNextDayMealVoting();
                     case 4 -> handleProvideFeedback();
                     case 5 -> handleCreateUpdateUserProfile();
@@ -47,7 +44,7 @@ public class EmployeeHandler extends UserHandler {
                     default -> throw new InvalidChoiceException("Invalid Choice");
                 }
             } catch (InvalidResponseException | BadResponseException | InvalidChoiceException e) {
-                employeeConsoleManager.displayMessage(e.getMessage());
+                EmployeeConsoleManager.displayMessage(e.getMessage());
             }
         }
     }
@@ -58,7 +55,7 @@ public class EmployeeHandler extends UserHandler {
             userProfile = employeeRepository.getUserProfile(user.getId());
             EmployeeConsoleManager.displayEmployeeProfile(userProfile);
         } catch (EmptyResponseException e) {
-            employeeConsoleManager.displayMessage(e.getMessage());
+            EmployeeConsoleManager.displayMessage(e.getMessage());
         }
     }
 
@@ -66,11 +63,11 @@ public class EmployeeHandler extends UserHandler {
         UserProfile userProfile;
         try {
             userProfile = employeeRepository.getUserProfile(user.getId());
-            if (employeeConsoleManager.takeUserChoice("Your User Profile already exists. Do you want to update it. Press 1 - Yes.") == 1) {
+            if (EmployeeConsoleManager.takeUserIntInput("Your User Profile already exists. Do you want to update it. Press 1 - Yes.") == 1) {
                 processUpdateUserProfile(userProfile);
             }
         } catch (EmptyResponseException e) {
-            employeeConsoleManager.displayMessage("Your User Profile does not exist. Please create your User Profile.");
+            EmployeeConsoleManager.displayMessage("Your User Profile does not exist. Please create your User Profile.");
             createUserProfile();
         }
     }
@@ -79,30 +76,30 @@ public class EmployeeHandler extends UserHandler {
         try {
             updateUserProfile(userProfile);
             String response = employeeRepository.updateUserProfile(userProfile);
-            employeeConsoleManager.displayMessage(response);
+            EmployeeConsoleManager.displayMessage(response);
         } catch (InvalidChoiceException e) {
-            employeeConsoleManager.displayMessage(e.getMessage());
+            EmployeeConsoleManager.displayMessage(e.getMessage());
         }
     }
 
     private void updateUserProfile(UserProfile userProfile) throws InvalidChoiceException {
-        employeeConsoleManager.displayUserProfileUpdateOptions();
-        int option = employeeConsoleManager.takeUserChoice("Choose an option to update: ");
+        EmployeeConsoleManager.displayUserProfileUpdateOptions();
+        int option = EmployeeConsoleManager.takeUserIntInput("Choose an option to update: ");
         switch (option) {
             case 1 -> {
-                int dietaryPreferenceId = employeeConsoleManager.takeDietaryPreferenceId();
+                int dietaryPreferenceId = EmployeeConsoleManager.takeDietaryPreferenceId();
                 userProfile.setDietaryPreferenceId(dietaryPreferenceId);
             }
             case 2 -> {
-                int spiceLevelId = employeeConsoleManager.takeSpiceLevelId();
+                int spiceLevelId = EmployeeConsoleManager.takeSpiceLevelId();
                 userProfile.setSpiceLevelId(spiceLevelId);
             }
             case 3 -> {
-                int favCuisineId = employeeConsoleManager.takeFavCuisineId();
+                int favCuisineId = EmployeeConsoleManager.takeFavCuisineId();
                 userProfile.setFavCuisineId(favCuisineId);
             }
             case 4 -> {
-                boolean isSweetTooth = employeeConsoleManager.takeIsSweetTooth();
+                boolean isSweetTooth = EmployeeConsoleManager.takeUserBooleanInput("Are you a Sweet Tooth ");
                 userProfile.setSweetTooth(isSweetTooth);
             }
             default -> throw new InvalidChoiceException("Invalid Choice");
@@ -110,10 +107,10 @@ public class EmployeeHandler extends UserHandler {
     }
 
     private void createUserProfile() throws BadResponseException, IOException, InvalidResponseException {
-        int dietaryPreferenceId = employeeConsoleManager.takeDietaryPreferenceId();
-        int spiceLevelId = employeeConsoleManager.takeSpiceLevelId();
-        int favCuisineId = employeeConsoleManager.takeFavCuisineId();
-        boolean isSweetTooth = employeeConsoleManager.takeIsSweetTooth();
+        int dietaryPreferenceId = EmployeeConsoleManager.takeDietaryPreferenceId();
+        int spiceLevelId = EmployeeConsoleManager.takeSpiceLevelId();
+        int favCuisineId = EmployeeConsoleManager.takeFavCuisineId();
+        boolean isSweetTooth = EmployeeConsoleManager.takeUserBooleanInput("Are you a Sweet Tooth ");
         UserProfile userProfile = new UserProfile(
                 GlobalData.loggedInUser.getId(),
                 dietaryPreferenceId,
@@ -122,11 +119,11 @@ public class EmployeeHandler extends UserHandler {
                 isSweetTooth
         );
         String response = employeeRepository.addUserProfile(userProfile);
-        employeeConsoleManager.displayMessage(response);
+        EmployeeConsoleManager.displayMessage(response);
     }
 
     public void handleProvideFeedback() throws IOException, InvalidResponseException, BadResponseException {
-        employeeConsoleManager.displayMessage(employeeRepository.provideFeedback(getUserFeedback()));
+        EmployeeConsoleManager.displayMessage(employeeRepository.provideFeedback(getUserFeedback()));
     }
 
     public List<Notification> getNotifications() throws BadResponseException, IOException, InvalidResponseException {
@@ -137,7 +134,7 @@ public class EmployeeHandler extends UserHandler {
         List<RolledOutMenuItem> rolledOutItems = employeeRepository.getRolledOutMenuItems();
         int continueVoting;
         do {
-            int mealTypeId = employeeConsoleManager.takeMealTypeId();
+            int mealTypeId = EmployeeConsoleManager.takeMealTypeId();
             Map<Integer, String> rolledOutItemsForMealType = getRolledOutItemsForMealType(rolledOutItems, mealTypeId);
             UserProfile userProfile;
             try {
@@ -148,9 +145,9 @@ public class EmployeeHandler extends UserHandler {
             } catch (EmptyResponseException e) {
                 System.out.println(e.getMessage() + "Getting default order of menu options. ");
             }
-            employeeConsoleManager.displayMessage(getEnumFromOrdinal(MealTypeEnum.class, mealTypeId).name() + " Menu Options");
+            EmployeeConsoleManager.displayMessage(getEnumFromOrdinal(MealTypeEnum.class, mealTypeId).name() + " Menu Options");
             processVotingForMealType(rolledOutItemsForMealType);
-            continueVoting = employeeConsoleManager.takeUserChoice("Do you wish to cast vote for another Meal Type? Enter 1-Yes / 0-No: ");
+            continueVoting = EmployeeConsoleManager.takeUserIntInput("Do you wish to cast vote for another Meal Type? Enter 1-Yes / 0-No: ");
         } while (continueVoting == 1);
     }
 
@@ -181,7 +178,7 @@ public class EmployeeHandler extends UserHandler {
             UserProfile userProfile,
             Map<Integer, MenuItem> menuItemMap) {
 
-        Map<Integer, String> sortedEntries = rolledOutItemsForMealType.entrySet()
+        return rolledOutItemsForMealType.entrySet()
                 .stream()
                 .sorted(new MenuItemComparator(userProfile, menuItemMap))
                 .collect(Collectors.toMap(
@@ -190,22 +187,20 @@ public class EmployeeHandler extends UserHandler {
                         (e1, e2) -> e1,
                         LinkedHashMap::new
                 ));
-
-        return sortedEntries;
     }
 
     private void processVotingForMealType(Map<Integer, String> rolledOutItemsMap) throws BadResponseException, IOException, InvalidResponseException {
         if (rolledOutItemsMap.isEmpty())
-            employeeConsoleManager.displayMessage("No Items Rolled out yet. Please come back later");
+            EmployeeConsoleManager.displayMessage("No Items Rolled out yet. Please come back later");
         else {
-            employeeConsoleManager.displayRolledOutMenuItems(rolledOutItemsMap);
-            int menuItemId = employeeConsoleManager.takeUserChoice("Enter the Menu Item Id you want to vote for: ");
+            EmployeeConsoleManager.displayRolledOutMenuItems(rolledOutItemsMap);
+            int menuItemId = EmployeeConsoleManager.takeUserIntInput("Enter the Menu Item Id you want to vote for: ");
 
             if (rolledOutItemsMap.containsKey(menuItemId)) {
                 Vote userVote = new Vote(menuItemId, user.getId(), new Date());
-                employeeConsoleManager.displayMessage(employeeRepository.voteForMenuItem(userVote));
+                EmployeeConsoleManager.displayMessage(employeeRepository.voteForMenuItem(userVote));
             } else {
-                employeeConsoleManager.displayMessage("Invalid selection");
+                EmployeeConsoleManager.displayMessage("Invalid selection");
             }
         }
     }
@@ -216,15 +211,15 @@ public class EmployeeHandler extends UserHandler {
     }
 
     public Feedback getUserFeedback() throws BadResponseException, IOException, InvalidResponseException {
-        String foodItemName = employeeConsoleManager.takeUserStringInput("Enter the food item you want to provide feedback for:");
+        String foodItemName = EmployeeConsoleManager.takeUserStringInput("Enter the food item you want to provide feedback for:");
         MenuItem menuItem = getFoodItemByName(foodItemName);
         if (menuItem != null) {
-            Feedback feedback = employeeConsoleManager.takeEmployeeFeedback(foodItemName);
+            Feedback feedback = EmployeeConsoleManager.takeEmployeeFeedback(foodItemName);
             feedback.setMenuItemId(menuItem.getId());
             feedback.setUserId(GlobalData.loggedInUser.getId());
             feedback.setDateTime(new Date());
         } else {
-            employeeConsoleManager.displayMessage("No Such food item exists in the menu");
+            EmployeeConsoleManager.displayMessage("No Such food item exists in the menu");
         }
         return null;
     }

@@ -22,9 +22,7 @@ public class ChefRepository extends UserRepository {
 
     public Map<Integer, Integer> getVotingForMenuItem() throws IOException, BadResponseException, InvalidResponseException {
         String request = createRequest(UserAction.GET_VOTING_FOR_NEXT_DAY_MENU, serializeData(new Date()));
-        System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
 
         if (response == null) {
             throw new IOException("Server Got Disconnected. Please Try again.");
@@ -40,14 +38,11 @@ public class ChefRepository extends UserRepository {
 
     public Map<MealTypeEnum, List<MenuItemRecommendation>> getRecommendationsForNextDayMenu() throws IOException, InvalidResponseException, BadResponseException {
         String request = createRequest(UserAction.GET_RECOMMENDATION_FOR_NEXT_DAY_MENU, null);
-        System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
 
         if (response == null) {
             throw new IOException("Server Got Disconnected. Please Try again.");
         }
-
         ParsedResponse parsedResponse = parseResponse(response);
         ResponseCode responseCode = parsedResponse.getResponseCode();
         if (responseCode == ResponseCode.OK) {
@@ -59,9 +54,7 @@ public class ChefRepository extends UserRepository {
 
     public String processRollOutMenuOptions(List<Integer> rolledOutItems) throws InvalidResponseException, IOException, BadResponseException {
         String request = createRequest(UserAction.ROLL_OUT_NEXT_DAY_MENU_OPTIONS, serializeData(rolledOutItems));
-        System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
         if (response == null) {
             throw new IOException("Server Got Disconnected. Please Try again.");
         }
@@ -74,9 +67,7 @@ public class ChefRepository extends UserRepository {
 
     public String processUpdatingFinalMenu(List<Integer> preparedMenuItemIds) throws IOException, InvalidResponseException, BadResponseException {
         String request = createRequest(UserAction.UPDATE_NEXT_DAY_FINAL_MENU, serializeData(preparedMenuItemIds));
-        System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
         if (response == null) {
             throw new IOException("Server Got Disconnected. Please Try again.");
         }
@@ -89,9 +80,7 @@ public class ChefRepository extends UserRepository {
 
     public List<DiscardMenuItem> getDiscardMenuItems() throws IOException, InvalidResponseException, BadResponseException {
         String request = createRequest(UserAction.GET_DISCARD_MENU_ITEMS, null);
-        System.out.println("request that is sent to server: " + request);
         String response = connection.sendData(request);
-        System.out.println("response that is received from server: " + response);
 
         if (response == null) {
             throw new IOException("Server Got Disconnected. Please Try again.");
