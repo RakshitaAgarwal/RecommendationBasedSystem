@@ -7,5 +7,5 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface IFeedbackRepository extends ICrudRepository<Feedback> {
-    public List<Feedback> getFeedbacksByMenuItem(int menuItemId) throws SQLException;
+    public List<Feedback> getFeedbacksByMenuItemId(int menuItemId) throws SQLException;
 }

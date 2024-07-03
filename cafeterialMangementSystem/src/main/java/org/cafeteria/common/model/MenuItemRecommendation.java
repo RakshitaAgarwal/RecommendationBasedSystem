@@ -37,7 +37,7 @@ public class MenuItemRecommendation {
 
     @Override
     public String toString() {
-        return "MenuItemScore{" +
+        return "MenuItemRecommendation{" +
                 "menuItemId=" + menuItemId +
                 ", recommendationScore=" + recommendationScore +
                 '}';

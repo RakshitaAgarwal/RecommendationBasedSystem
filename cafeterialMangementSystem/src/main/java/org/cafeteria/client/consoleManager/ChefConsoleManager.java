@@ -59,15 +59,21 @@ public class ChefConsoleManager extends UserConsoleManager{
     }
 
     public void displayMenuItemsRecommendationByMealType(Map<MealTypeEnum, List<MenuItemRecommendation>> menuItemsByMealType) {
+        displayMessage("Menu Item Recommendations");
         for (Map.Entry<MealTypeEnum, List<MenuItemRecommendation>> entry : menuItemsByMealType.entrySet()) {
             MealTypeEnum mealType = entry.getKey();
             List<MenuItemRecommendation> menuItems = entry.getValue();
+
             System.out.println("Meal Type: " + mealType);
-            System.out.println("Menu Items:");
+            System.out.println("-------------------------------------");;
             for (MenuItemRecommendation menuItemRecommendation : menuItems) {
-                System.out.println("  " + menuItemRecommendation.getMenuItemId() + " " + menuItemRecommendation.getRecommendationScore() + " " + menuItemRecommendation.getSentimentOfItem());
+                String formattedScore = String.format("%.6f", menuItemRecommendation.getRecommendationScore());
+                String sentiment = menuItemRecommendation.getSentimentOfItem();
+                String menuItemInfo = String.format("ID: %d, Score: %s, Sentiment: %s",
+                        menuItemRecommendation.getMenuItemId(), formattedScore, sentiment);
+                System.out.println(menuItemInfo);
             }
-            System.out.println();
+            System.out.println("-----------------------------------------");
         }
     }
 }

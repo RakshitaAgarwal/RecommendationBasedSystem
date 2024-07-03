@@ -3,13 +3,12 @@ package org.cafeteria.server.repositories;
 import org.cafeteria.common.model.Feedback;
 import org.cafeteria.server.network.JdbcConnection;
 import org.cafeteria.server.repositories.interfaces.IFeedbackRepository;
+import static org.cafeteria.common.util.Utils.dateToTimestamp;
+import static org.cafeteria.common.util.Utils.timestampToDate;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.cafeteria.common.util.Utils.dateToTimestamp;
-import static org.cafeteria.common.util.Utils.timestampToDate;
 
 public class FeedbackRepository implements IFeedbackRepository {
     private final Connection connection;
@@ -77,13 +76,13 @@ public class FeedbackRepository implements IFeedbackRepository {
     }
 
     @Override
-    public List<Feedback> getFeedbacksByMenuItem(int menuItemId) throws SQLException {
-        String query = "SELECT * FROM Feedback where id = ?";
+    public List<Feedback> getFeedbacksByMenuItemId(int menuItemId) throws SQLException {
+        String query = "SELECT * FROM Feedback where menuItemId = ?";
         List<Feedback> feedbacks = new ArrayList<>();
         try(PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, menuItemId);
             ResultSet resultSet = statement.executeQuery();
-            if(resultSet.next()) {
+            while(resultSet.next()) {
                 Feedback feedback = new Feedback();
                 feedback.setFeedbackId(resultSet.getInt("id"));
                 feedback.setMenuItemId(menuItemId);
@@ -95,7 +94,7 @@ public class FeedbackRepository implements IFeedbackRepository {
 
                 feedbacks.add(feedback);
             }
-            return feedbacks;
         }
+        return feedbacks;
     }
 }

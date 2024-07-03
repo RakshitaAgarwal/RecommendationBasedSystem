@@ -1,9 +1,11 @@
 package org.cafeteria.server.repositories;
 
 import org.cafeteria.common.model.Feedback;
+import org.cafeteria.common.model.MenuItem;
 import org.cafeteria.common.model.MenuItemRecommendation;
 import org.cafeteria.server.model.SentimentResult;
 import org.cafeteria.server.services.interfaces.IFeedbackService;
+import org.cafeteria.server.services.interfaces.IMenuService;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -11,47 +13,38 @@ import java.util.*;
 public class RecommendationEngine {
 
     private final IFeedbackService _feedbackService;
+    private final IMenuService _menuService;
 
-    public RecommendationEngine(IFeedbackService feedbackService) {
+    public RecommendationEngine(IFeedbackService feedbackService, IMenuService menuService) {
         _feedbackService = feedbackService;
+        _menuService = menuService;
     }
 
     public List<MenuItemRecommendation> getTopRecommendedItems(List<Integer> filteredMenuItemIds, int topX) throws SQLException {
         List<MenuItemRecommendation> recommendedItems = getRecommendationsOfMenuItems(filteredMenuItemIds);
-        for (MenuItemRecommendation item : recommendedItems) {
-            System.out.println(item.getMenuItemId() + " " + item.getRecommendationScore());
-        }
-        Collections.sort(recommendedItems, Comparator.comparingDouble(MenuItemRecommendation::getRecommendationScore).reversed());
-        System.out.println("\n after sorting");
-        for (MenuItemRecommendation item : recommendedItems) {
-            System.out.println(item.getMenuItemId() + " " + item.getRecommendationScore());
-        }
-
+        recommendedItems.sort(Comparator.comparingDouble(MenuItemRecommendation::getRecommendationScore).reversed());
         List<MenuItemRecommendation> topElements = getTopItems(recommendedItems, topX);
-
-        for (MenuItemRecommendation menuItemRecommendation : topElements) {
-            System.out.println(menuItemRecommendation);
-        }
         return topElements;
     }
 
     public List<MenuItemRecommendation> getRecommendationsOfMenuItems(List<Integer> menuItemIds) throws SQLException {
-        List<MenuItemRecommendation> menuItemSentiments = new ArrayList<>();
+        List<MenuItemRecommendation> menuItemRecommendations = new ArrayList<>();
         for (int menuItemId : menuItemIds) {
-            MenuItemRecommendation menuItemRecommendation = evaluateMenuItemRecommendation(menuItemId);
-            menuItemSentiments.add(menuItemRecommendation);
+            MenuItem menuItem = _menuService.getById(menuItemId);
+            MenuItemRecommendation menuItemRecommendation = evaluateMenuItemRecommendation(menuItemId, menuItem.getName());
+            menuItemRecommendations.add(menuItemRecommendation);
         }
-        return menuItemSentiments;
+        return menuItemRecommendations;
     }
 
-    public MenuItemRecommendation evaluateMenuItemRecommendation(int menuItemId) throws SQLException {
-        List<Feedback> menuItemFeedbacks = _feedbackService.getFeedbackByMenuItem(menuItemId);
-        SentimentResult sentimentResult = calculateAverageSentimentOfMenuItem(menuItemFeedbacks);
+    public MenuItemRecommendation evaluateMenuItemRecommendation(int menuItemId, String menuItemName) throws SQLException {
+        List<Feedback> menuItemFeedbacks = _feedbackService.getFeedbackByMenuItemId(menuItemId);
+        SentimentResult sentimentResult = calculateAverageSentimentOfMenuItem(menuItemFeedbacks, menuItemName);
 
         double averageRating = calculateAverageRatingOfMenuItem(menuItemFeedbacks);
-        double averageSentiment = sentimentResult.getPositiveSentimentScore() + (sentimentResult.getNeutralSentimentScore() * 0.5) - sentimentResult.getNegativeSentimentScore();
-        double recommendationScore = calculateRecommendationScore(averageRating, averageSentiment);
-        String sentimentOfMenuItem = sentimentResult.getSentiment() + " " + sentimentResult.getKeyPhrase();
+        double averageSentimentScore = sentimentResult.getPositiveSentimentScore() + (sentimentResult.getNeutralSentimentScore() * 0.5) - sentimentResult.getNegativeSentimentScore();
+        double recommendationScore = calculateRecommendationScore(averageRating, averageSentimentScore);
+        String sentimentOfMenuItem = sentimentResult.getKeyPhrase() != null ? sentimentResult.getKeyPhrase() : sentimentResult.getSentiment();
 
         return new MenuItemRecommendation(menuItemId, recommendationScore, sentimentOfMenuItem);
     }
@@ -63,7 +56,7 @@ public class RecommendationEngine {
                 .orElse(0.0);
     }
 
-    private SentimentResult calculateAverageSentimentOfMenuItem(List<Feedback> menuItemFeedbacks) {
+    private SentimentResult calculateAverageSentimentOfMenuItem(List<Feedback> menuItemFeedbacks, String menuItemName) {
         SentimentAnalysis sentimentAnalysis = new SentimentAnalysis();
         List<String> commentsList = new ArrayList<>();
 
@@ -73,14 +66,11 @@ public class RecommendationEngine {
                 commentsList.add(comment);
             }
         }
-        return sentimentAnalysis.calculateAverageSentimentAnalysis(commentsList);
+        return sentimentAnalysis.calculateAverageSentimentAnalysis(commentsList, menuItemName);
     }
 
-    private double calculateRecommendationScore(double avgRating, double avgSentiment) {
-        double ratingWeight = 0.3;
-        double sentimentWeight = 0.7;
-        double normalizedRating = avgRating / 5.0;
-        return (ratingWeight * normalizedRating) + (sentimentWeight * avgSentiment);
+    private double calculateRecommendationScore(double avgRating, double avgSentimentScore) {
+        return ((20 * avgRating) + (avgSentimentScore))/2;
     }
 
     private List<MenuItemRecommendation> getTopItems(List<MenuItemRecommendation> menuItemRecommendations, int noOfTopRecommendationRequired) {

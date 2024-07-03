@@ -13,6 +13,7 @@ import static org.cafeteria.client.repositories.AdminRepository.getMenuItemById;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class EmployeeHandler extends UserHandler {
     private static EmployeeRepository employeeRepository;
@@ -135,10 +136,54 @@ public class EmployeeHandler extends UserHandler {
         int continueVoting;
         do {
             int mealTypeId = employeeConsoleManager.takeMealTypeId();
-            Map<Integer, String> rolledOutItemsMap = getRolledOutItemsForMealType(rolledOutItems, mealTypeId);
-            processVotingForMealType(rolledOutItemsMap);
+            Map<Integer, String> rolledOutItemsForMealType = getRolledOutItemsForMealType(rolledOutItems, mealTypeId);
+            UserProfile userProfile = employeeRepository.getUserProfile(user.getId());
+            Map<Integer, MenuItem> menuItemMap = getMenuItemMap(rolledOutItemsForMealType);
+            if (userProfile != null)
+                sortRolledOutItemsForMealType(rolledOutItemsForMealType, userProfile, menuItemMap);
+            processVotingForMealType(rolledOutItemsForMealType);
             continueVoting = employeeConsoleManager.takeUserChoice("Do you wish to cast vote for another Meal Type? Enter 1-Yes / 0-No.");
         } while (continueVoting == 1);
+    }
+
+    private Map<Integer, String> getRolledOutItemsForMealType(List<RolledOutMenuItem> rolledOutItems, int mealTypeId) throws IOException, InvalidResponseException, BadResponseException {
+        Map<Integer, String> rolledOutItemsMap = new HashMap<>();
+        for (RolledOutMenuItem rolledOutItem : rolledOutItems) {
+            MenuItem menuItem = getMenuItemById(rolledOutItem.getMenuItemId());
+            if (menuItem.getMealTypeId() == mealTypeId) {
+                MenuItemRecommendation recommendation = employeeRepository.getRecommendationScoreForMenuItem(menuItem.getId());
+                String recommendationScore = formatRecommendation(menuItem, recommendation);
+                rolledOutItemsMap.put(menuItem.getId(), recommendationScore);
+            }
+        }
+        return rolledOutItemsMap;
+    }
+
+    private Map<Integer, MenuItem> getMenuItemMap(Map<Integer, String> rolledOutItemsForMealType) throws BadResponseException, IOException, InvalidResponseException {
+        Map<Integer, MenuItem> menuItemMap = new HashMap<>();
+        for (Map.Entry<Integer, String> entry : rolledOutItemsForMealType.entrySet()) {
+            Integer menuItemId = entry.getKey();
+            menuItemMap.put(menuItemId, getMenuItemById(menuItemId));
+        }
+        return menuItemMap;
+    }
+
+    private Map<Integer, String> sortRolledOutItemsForMealType(
+            Map<Integer, String> rolledOutItemsForMealType,
+            UserProfile userProfile,
+            Map<Integer, MenuItem> menuItemMap) {
+
+        Map<Integer, String> sortedEntries = rolledOutItemsForMealType.entrySet()
+                .stream()
+                .sorted(new MenuItemComparator(userProfile, menuItemMap))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        return sortedEntries;
     }
 
     private void processVotingForMealType(Map<Integer, String> rolledOutItemsMap) throws BadResponseException, IOException, InvalidResponseException {
@@ -155,19 +200,6 @@ public class EmployeeHandler extends UserHandler {
                 employeeConsoleManager.displayMessage("Invalid selection");
             }
         }
-    }
-
-    private Map<Integer, String> getRolledOutItemsForMealType(List<RolledOutMenuItem> rolledOutItems, int mealTypeId) throws IOException, InvalidResponseException, BadResponseException {
-        Map<Integer, String> rolledOutItemsMap = new HashMap<>();
-        for (RolledOutMenuItem rolledOutItem : rolledOutItems) {
-            MenuItem menuItem = getMenuItemById(rolledOutItem.getMenuItemId());
-            if (menuItem.getMealTypeId() == mealTypeId) {
-                MenuItemRecommendation recommendation = employeeRepository.getRecommendationScoreForMenuItem(menuItem.getId());
-                String recommendationScore = formatRecommendation(menuItem, recommendation);
-                rolledOutItemsMap.put(menuItem.getId(), recommendationScore);
-            }
-        }
-        return rolledOutItemsMap;
     }
 
     private String formatRecommendation(MenuItem menuItem, MenuItemRecommendation recommendation) {

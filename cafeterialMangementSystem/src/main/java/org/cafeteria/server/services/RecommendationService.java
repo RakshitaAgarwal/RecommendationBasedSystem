@@ -21,8 +21,8 @@ public class RecommendationService implements IRecommendationService {
 
     public RecommendationService() {
         IFeedbackService _feedbackService = new FeedbackService();
-        recommendationEngine = new RecommendationEngine(_feedbackService);
         _menuService = new MenuService();
+        recommendationEngine = new RecommendationEngine(_feedbackService, _menuService);
     }
 
     @Override
@@ -30,7 +30,6 @@ public class RecommendationService implements IRecommendationService {
         Map<MealTypeEnum, List<MenuItemRecommendation>> recommendedItemsByMeal = new HashMap<>();
         for (int i = 1; i <= MealTypeEnum.values().length; i++) {
             List<MenuItem> mealTypeMenuItems = _menuService.getByMealTypeId(i);
-            System.out.println("MealTypeMenuItems size: " + mealTypeMenuItems.size());
             List<MenuItemRecommendation> mealRecommendations = recommendationEngine.getTopRecommendedItems(
                     filterMealTypeMenuItemIds(mealTypeMenuItems),
                     5
@@ -42,8 +41,7 @@ public class RecommendationService implements IRecommendationService {
 
     @Override
     public MenuItemRecommendation getRecommendationForMenuItem(int menuItemId) throws SQLException {
-        return recommendationEngine.evaluateMenuItemRecommendation(menuItemId);
+        MenuItem menuItem = _menuService.getById(menuItemId);
+        return recommendationEngine.evaluateMenuItemRecommendation(menuItemId, menuItem.getName());
     }
-
-
 }

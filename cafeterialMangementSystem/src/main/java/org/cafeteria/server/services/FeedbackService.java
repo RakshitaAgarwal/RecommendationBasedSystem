@@ -59,7 +59,7 @@ public class FeedbackService implements IFeedbackService {
     }
 
     @Override
-    public List<Feedback> getFeedbackByMenuItem(int menuItemId) throws SQLException {
-        return _feedbackRepository.getFeedbacksByMenuItem(menuItemId);
+    public List<Feedback> getFeedbackByMenuItemId(int menuItemId) throws SQLException {
+        return _feedbackRepository.getFeedbacksByMenuItemId(menuItemId);
     }
 }

@@ -9,5 +9,5 @@ public interface IFeedbackService extends IValidationService<Feedback>, ICrudSer
     public void getFeedbackReport();
     public void generateFeedbackReport();
 
-    public List<Feedback> getFeedbackByMenuItem(int menuItemId) throws SQLException;
+    public List<Feedback> getFeedbackByMenuItemId(int menuItemId) throws SQLException;
 }
