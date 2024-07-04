@@ -100,7 +100,6 @@ public class MenuRepository implements IMenuRepository {
                 menuItems.add(menuItem);
             }
         }
-
         return menuItems;
     }
 
@@ -138,9 +137,7 @@ public class MenuRepository implements IMenuRepository {
                 }
             }
         }
-
         return menuItem;
-
     }
 
     @Override
@@ -203,7 +200,6 @@ public class MenuRepository implements IMenuRepository {
                 menuItems.add(menuItem);
             }
         }
-
         return menuItems;
     }
 }

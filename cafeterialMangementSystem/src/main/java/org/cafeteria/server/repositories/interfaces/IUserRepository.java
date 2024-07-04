@@ -6,5 +6,5 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface IUserRepository extends ICrudRepository<User> {
-    public List<User> getByUserRoleId(int userRoleId) throws SQLException;
+    List<User> getByUserRoleId(int userRoleId) throws SQLException;
 }

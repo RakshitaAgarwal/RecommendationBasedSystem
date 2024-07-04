@@ -42,9 +42,9 @@ public class RecommendationEngine {
         SentimentResult sentimentResult = calculateAverageSentimentOfMenuItem(menuItemFeedbacks, menuItemName);
 
         double averageRating = calculateAverageRatingOfMenuItem(menuItemFeedbacks);
-        double averageSentimentScore = sentimentResult.getPositiveSentimentScore() + (sentimentResult.getNeutralSentimentScore() * 0.5) - sentimentResult.getNegativeSentimentScore();
+        double averageSentimentScore = sentimentResult.positiveSentimentScore() + (sentimentResult.neutralSentimentScore() * 0.5) - sentimentResult.negativeSentimentScore();
         double recommendationScore = calculateRecommendationScore(averageRating, averageSentimentScore);
-        String sentimentOfMenuItem = sentimentResult.getKeyPhrase() != null ? sentimentResult.getKeyPhrase() : sentimentResult.getSentiment();
+        String sentimentOfMenuItem = sentimentResult.keyPhrase() != null ? sentimentResult.keyPhrase() : sentimentResult.sentiment();
 
         return new MenuItemRecommendation(menuItemId, recommendationScore, sentimentOfMenuItem);
     }

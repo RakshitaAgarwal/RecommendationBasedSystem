@@ -58,7 +58,6 @@ public class DetailedFeedbackRequestRepository implements IDetailedFeedbackReque
                 detailedFeedbackRequests.add(detailedFeedbackRequest);
             }
         }
-
         return detailedFeedbackRequests;
     }
 

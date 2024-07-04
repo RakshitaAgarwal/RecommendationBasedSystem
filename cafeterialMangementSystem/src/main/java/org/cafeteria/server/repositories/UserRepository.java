@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserRepository implements IUserRepository {
-    private Connection connection;
+    private final Connection connection;
 
     public UserRepository() {
         connection = JdbcConnection.getConnection();
@@ -30,13 +30,11 @@ public class UserRepository implements IUserRepository {
 
     @Override
     public boolean delete(User item) {
-
         return false;
     }
 
     @Override
     public boolean update(User item) {
-
         return false;
     }
 

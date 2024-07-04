@@ -10,10 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import static org.cafeteria.common.util.Utils.dateToTimestamp;
-
 public class UserProfileRepository implements IUserProfileRepository {
-    private static Connection connection;
+    private final Connection connection;
 
     public UserProfileRepository() {
         connection = JdbcConnection.getConnection();
@@ -73,7 +71,6 @@ public class UserProfileRepository implements IUserProfileRepository {
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, userId);
-
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     int id = resultSet.getInt("id");
@@ -92,8 +89,6 @@ public class UserProfileRepository implements IUserProfileRepository {
                 }
             }
         }
-
         return userProfile;
-
     }
 }

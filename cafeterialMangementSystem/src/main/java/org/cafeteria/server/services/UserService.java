@@ -22,14 +22,4 @@ public class UserService implements IUserService {
         }
         return null;
     }
-
-    @Override
-    public boolean createUser(User user) {
-        return true;
-    }
-
-    @Override
-    public boolean validate(User item) {
-        return false;
-    }
 }

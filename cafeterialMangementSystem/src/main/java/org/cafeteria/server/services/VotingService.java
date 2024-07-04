@@ -25,12 +25,6 @@ public class VotingService implements IVotingService {
     }
 
     @Override
-    public boolean validate(Vote item) {
-        return false;
-    }
-
-
-    @Override
     public boolean add(Vote userVote) throws SQLException, DuplicateEntryFoundException{
         List<Vote> userVotes = getUserCurrentDayVotes(userVote.getUserId(), userVote.getDateTime());
         if (!userVotes.isEmpty()) {

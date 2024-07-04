@@ -15,7 +15,7 @@ import static org.cafeteria.common.util.Utils.dateToTimestamp;
 import static org.cafeteria.common.util.Utils.timestampToDate;
 
 public class NotificationRepository implements INotificationRepository {
-    private Connection connection;
+    private final Connection connection;
 
     public NotificationRepository() {
         connection = JdbcConnection.getConnection();
@@ -41,7 +41,6 @@ public class NotificationRepository implements INotificationRepository {
 
     @Override
     public boolean delete(Notification item) {
-
         return false;
     }
 

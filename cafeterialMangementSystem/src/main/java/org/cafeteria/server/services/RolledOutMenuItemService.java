@@ -47,11 +47,6 @@ public class RolledOutMenuItemService implements IRolledOutMenuItemService {
     }
 
     @Override
-    public boolean validate(RolledOutMenuItem item) {
-        return false;
-    }
-
-    @Override
     public boolean add(RolledOutMenuItem object) {
         return false;
     }

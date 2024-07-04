@@ -18,10 +18,6 @@ public class PreparedMenuItemService implements IPreparedMenuItemService {
     public PreparedMenuItemService() {
         _preparedMenuItemRepository = new PreparedMenuItemItemRepository();
     }
-    @Override
-    public boolean validate(PreparedMenuItem item) {
-        return false;
-    }
 
     @Override
     public boolean addPreparedMenuItems(List<Integer> preparedMenuItemIds) throws SQLException, CustomExceptions.DuplicateEntryFoundException {
@@ -59,13 +55,5 @@ public class PreparedMenuItemService implements IPreparedMenuItemService {
     @Override
     public PreparedMenuItem getById(int id) {
         return null;
-    }
-
-    @Override
-    public void updateDailyMenu() {
-    }
-
-    @Override
-    public void weeklyMenuCleanUp() {
     }
 }

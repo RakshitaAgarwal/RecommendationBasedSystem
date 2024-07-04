@@ -15,10 +15,6 @@ public class FeedbackService implements IFeedbackService {
     public FeedbackService() {
         _feedbackRepository = new FeedbackRepository();
     }
-    @Override
-    public boolean validate(Feedback item) {
-        return false;
-    }
 
     @Override
     public boolean add(Feedback object) throws SQLException {
@@ -27,35 +23,22 @@ public class FeedbackService implements IFeedbackService {
 
     @Override
     public boolean update(Feedback object) {
-
         return false;
     }
 
     @Override
     public boolean delete(Feedback object) {
-
         return false;
     }
 
     @Override
     public List<Feedback> getAll() {
-
         return null;
     }
 
     @Override
     public Feedback getById(int id) {
         return null;
-    }
-
-    @Override
-    public void getFeedbackReport() {
-
-    }
-
-    @Override
-    public void generateFeedbackReport() {
-
     }
 
     @Override

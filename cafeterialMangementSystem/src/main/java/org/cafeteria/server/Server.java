@@ -28,7 +28,6 @@ public class Server {
         initServices();
         initServerProperties();
         makeClientConnection();
-        closeResources();
     }
 
     private static void initServices() {
@@ -80,8 +79,5 @@ public class Server {
     private static void makeClientConnection() {
         ClientConnection server = new ClientConnection();
         server.connectToClient(SERVER_PORT);
-    }
-
-    private static void closeResources() {
     }
 }

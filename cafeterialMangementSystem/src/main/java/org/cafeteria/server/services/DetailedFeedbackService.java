@@ -38,6 +38,4 @@ public class DetailedFeedbackService implements IDetailedFeedbackService {
     public List<DetailedFeedbackRequest> getDetailedFeedbackRequests() throws SQLException {
         return _detailedFeedbackRequestRepository.getAll();
     }
-
-
 }

@@ -37,31 +37,22 @@ public class NotificationService implements INotificationService {
     }
 
     @Override
-    public boolean validate(Notification item) {
-        return false;
-    }
-
-    @Override
     public boolean add(Notification object) {
-
         return false;
     }
 
     @Override
     public boolean update(Notification object) {
-
         return false;
     }
 
     @Override
     public boolean delete(Notification object) {
-
         return false;
     }
 
     @Override
     public List<Notification> getAll() {
-
         return null;
     }
 
@@ -69,18 +60,4 @@ public class NotificationService implements INotificationService {
     public Notification getById(int id) {
         return null;
     }
-
-    @Override
-    public void markNotificationAsRead() {
-
-    }
-
-    @Override
-    public void cleanUpReadNotification() {
-
-    }
-
-    @Override
-    public void cleanUpExpiredNotification() {}
-
 }

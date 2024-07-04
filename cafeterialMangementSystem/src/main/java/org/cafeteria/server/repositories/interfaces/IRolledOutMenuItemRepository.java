@@ -5,5 +5,5 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface IRolledOutMenuItemRepository extends ICrudRepository<RolledOutMenuItem> {
-    public List<RolledOutMenuItem> getByDate(String recommendationDate) throws SQLException;
+    List<RolledOutMenuItem> getByDate(String recommendationDate) throws SQLException;
 }

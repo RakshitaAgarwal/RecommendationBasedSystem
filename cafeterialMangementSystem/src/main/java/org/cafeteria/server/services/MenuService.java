@@ -43,11 +43,6 @@ public class MenuService implements IMenuService {
     }
 
     @Override
-    public boolean validate(MenuItem item) {
-        return false;
-    }
-
-    @Override
     public boolean add(MenuItem object) throws SQLException {
         return _menuRepository.add(object);
     }
