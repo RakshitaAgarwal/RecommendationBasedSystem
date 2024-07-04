@@ -1,6 +1,5 @@
 package org.cafeteria.client.repositories;
 
-import org.cafeteria.client.global.GlobalData;
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
@@ -70,8 +69,8 @@ public class EmployeeRepository extends UserRepository {
         else throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
 
-    public List<Notification> getNotifications() throws IOException, InvalidResponseException, BadResponseException {
-        String request = createRequest(UserAction.GET_NOTIFICATIONS, serializeData(GlobalData.loggedInUser));
+    public List<Notification> getNotifications(User user) throws IOException, InvalidResponseException, BadResponseException {
+        String request = createRequest(UserAction.GET_NOTIFICATIONS, serializeData(user));
         String response = connection.sendData(request);
         if (response == null)
             throw new IOException("Server Got Disconnected. Please Try again.");

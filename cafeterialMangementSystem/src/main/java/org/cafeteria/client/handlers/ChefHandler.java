@@ -13,15 +13,15 @@ import org.cafeteria.common.model.MenuItemRecommendation;
 import org.cafeteria.common.model.User;
 import org.cafeteria.common.model.enums.MealTypeEnum;
 
+import static org.cafeteria.client.handlers.AdminHandler.handleDisplayMenu;
+import static org.cafeteria.client.repositories.AdminRepository.getMenuItemById;
+import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.cafeteria.client.handlers.AdminHandler.handleDisplayMenu;
-import static org.cafeteria.client.repositories.AdminRepository.getMenuItemById;
-import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 public class ChefHandler extends UserHandler {
     private static ChefRepository chefRepository;

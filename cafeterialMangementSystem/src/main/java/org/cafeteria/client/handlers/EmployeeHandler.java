@@ -1,7 +1,6 @@
 package org.cafeteria.client.handlers;
 
 import org.cafeteria.client.consoleManager.EmployeeConsoleManager;
-import org.cafeteria.client.global.GlobalData;
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.client.repositories.EmployeeRepository;
 import org.cafeteria.common.customException.CustomExceptions.*;
@@ -116,7 +115,7 @@ public class EmployeeHandler extends UserHandler {
         int favCuisineId = EmployeeConsoleManager.takeFavCuisineId();
         boolean isSweetTooth = EmployeeConsoleManager.takeUserBooleanInput("Are you a Sweet Tooth?");
         UserProfile userProfile = new UserProfile(
-                GlobalData.loggedInUser.getId(),
+                user.getId(),
                 dietaryPreferenceId,
                 spiceLevelId,
                 favCuisineId,
@@ -131,7 +130,7 @@ public class EmployeeHandler extends UserHandler {
     }
 
     public List<Notification> getNotifications() throws BadResponseException, IOException, InvalidResponseException {
-        return employeeRepository.getNotifications();
+        return employeeRepository.getNotifications(user);
     }
 
     public void handleNextDayMealVoting() throws IOException, InvalidResponseException, BadResponseException {
@@ -220,7 +219,7 @@ public class EmployeeHandler extends UserHandler {
         if (menuItem != null) {
             Feedback feedback = EmployeeConsoleManager.takeEmployeeFeedback(foodItemName);
             feedback.setMenuItemId(menuItem.getId());
-            feedback.setUserId(GlobalData.loggedInUser.getId());
+            feedback.setUserId(user.getId());
             feedback.setDateTime(new Date());
         } else {
             EmployeeConsoleManager.displayMessage("No Such food item exists in the menu");
@@ -257,17 +256,15 @@ public class EmployeeHandler extends UserHandler {
 
     private List<DetailedFeedback> getDetailedFeedback(int menuItemId) {
         List<DetailedFeedback> detailedFeedbacks = new ArrayList<>();
-        for(int i=1; i<=DetailedFeedbackQuestionEnum.values().length; i++) {
-            int detailedFeedbackQuestionId = i;
+        for (int i = 1; i <= DetailedFeedbackQuestionEnum.values().length; i++) {
             String answer = EmployeeConsoleManager.takeUserStringInput(
-                    getEnumFromOrdinal(DetailedFeedbackQuestionEnum.class, detailedFeedbackQuestionId).toString()
+                    getEnumFromOrdinal(DetailedFeedbackQuestionEnum.class, i).toString()
             );
-            System.out.println("hehe Answer: " + answer);
             DetailedFeedback detailedFeedback = new DetailedFeedback();
             detailedFeedback.setUserId(user.getId());
             detailedFeedback.setMenuItemId(menuItemId);
             detailedFeedback.setDateTime(new Date());
-            detailedFeedback.setFeedbackQuestionId(detailedFeedbackQuestionId);
+            detailedFeedback.setFeedbackQuestionId(i);
             detailedFeedback.setAnswer(answer);
             detailedFeedbacks.add(detailedFeedback);
         }

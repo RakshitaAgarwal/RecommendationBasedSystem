@@ -1,21 +1,21 @@
 package org.cafeteria.client;
 
 import org.cafeteria.client.consoleManager.UserConsoleManager;
-import org.cafeteria.client.global.GlobalData;
-import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.client.handlers.AdminHandler;
-import org.cafeteria.client.repositories.AuthenticationRepository;
 import org.cafeteria.client.handlers.ChefHandler;
 import org.cafeteria.client.handlers.EmployeeHandler;
-import org.cafeteria.common.customException.CustomExceptions.*;
+import org.cafeteria.client.network.ServerConnection;
+import org.cafeteria.client.repositories.AuthenticationRepository;
+import org.cafeteria.common.customException.CustomExceptions.LoginFailedException;
 import org.cafeteria.common.model.User;
 import org.cafeteria.common.model.enums.UserRoleEnum;
-import static org.cafeteria.common.constants.Constants.SERVER_ADDRESS;
-import static org.cafeteria.common.constants.Constants.SERVER_PORT;
-import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 import java.io.IOException;
 import java.util.Properties;
+
+import static org.cafeteria.common.constants.Constants.SERVER_ADDRESS;
+import static org.cafeteria.common.constants.Constants.SERVER_PORT;
+import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 public class Client extends UserConsoleManager {
     private static ServerConnection connection;
@@ -32,8 +32,7 @@ public class Client extends UserConsoleManager {
                 User userToLogin = fetchUserCredentialsForLogin();
                 try {
                     User user = new AuthenticationRepository(connection).login(userToLogin);
-                    updateGlobalData(user);
-                    showUserActionItems();
+                    showUserActionItems(user);
                     choice = 0;
                 } catch (LoginFailedException e) {
                     displayMessage("Login Failed");
@@ -48,23 +47,19 @@ public class Client extends UserConsoleManager {
         }
     }
 
-    private static void updateGlobalData(User user) {
-        GlobalData.loggedInUser = user;
-    }
-
-    private static void showUserActionItems() throws IOException {
-        UserRoleEnum userRole = getEnumFromOrdinal(UserRoleEnum.class, GlobalData.loggedInUser.getUserRoleId());
+    private static void showUserActionItems(User user) throws IOException {
+        UserRoleEnum userRole = getEnumFromOrdinal(UserRoleEnum.class, user.getUserRoleId());
         switch (userRole) {
             case ADMIN -> {
-                AdminHandler adminHandler = new AdminHandler(connection, GlobalData.loggedInUser);
+                AdminHandler adminHandler = new AdminHandler(connection, user);
                 adminHandler.showUserActionItems();
             }
             case CHEF -> {
-                ChefHandler chef = new ChefHandler(connection, GlobalData.loggedInUser);
+                ChefHandler chef = new ChefHandler(connection, user);
                 chef.showUserActionItems();
             }
             case EMP -> {
-                EmployeeHandler employee = new EmployeeHandler(connection, GlobalData.loggedInUser);
+                EmployeeHandler employee = new EmployeeHandler(connection, user);
                 employee.showUserActionItems();
             }
             default -> {

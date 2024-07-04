@@ -2,6 +2,7 @@ package org.cafeteria.client.handlers;
 
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.User;
+
 import java.io.IOException;
 
 public abstract class UserHandler {

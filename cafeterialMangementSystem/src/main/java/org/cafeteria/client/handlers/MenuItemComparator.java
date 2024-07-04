@@ -2,6 +2,7 @@ package org.cafeteria.client.handlers;
 
 import org.cafeteria.common.model.MenuItem;
 import org.cafeteria.common.model.UserProfile;
+
 import java.util.Comparator;
 import java.util.Map;
 
