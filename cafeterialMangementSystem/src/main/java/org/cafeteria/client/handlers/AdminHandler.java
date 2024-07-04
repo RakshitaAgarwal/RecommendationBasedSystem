@@ -114,7 +114,7 @@ public class AdminHandler extends UserHandler {
     }
 
     private void updateAvailability(MenuItem menuItem) {
-        boolean isAvailable = AdminConsoleManager.takeUserBooleanInput("Enter availability (true/false): ");
+        boolean isAvailable = AdminConsoleManager.takeUserBooleanInput("Enter availability:");
         menuItem.setAvailable(isAvailable);
     }
 
@@ -160,7 +160,7 @@ public class AdminHandler extends UserHandler {
             } else {
                 System.out.println("Invalid Discard Menu Item Id.");
             }
-            continueAction = AdminConsoleManager.takeUserBooleanInput("Do you wish to Continue for other Discard Menu Item? true/false");
+            continueAction = AdminConsoleManager.takeUserBooleanInput("Do you wish to Continue for other Discard Menu Item?");
         } while (continueAction);
     }
 
@@ -176,7 +176,7 @@ public class AdminHandler extends UserHandler {
         int choice = AdminConsoleManager.takeUserIntInput("Enter Choice:");
         switch (choice) {
             case 1 -> {
-                if (AdminConsoleManager.takeUserBooleanInput("Are you sure you want to permanently remove food item from menu. true/false"))
+                if (AdminConsoleManager.takeUserBooleanInput("Are you sure you want to permanently remove food item from menu?"))
                     adminRepository.deleteMenuItem(menuItem);
             }
             case 2 -> handleGetDetailedFeedback(menuItem.getId());

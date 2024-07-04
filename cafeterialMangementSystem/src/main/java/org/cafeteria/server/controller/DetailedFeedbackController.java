@@ -1,19 +1,18 @@
 package org.cafeteria.server.controller;
 
-import org.cafeteria.common.customException.CustomExceptions;
-import org.cafeteria.common.model.Notification;
-import org.cafeteria.common.model.ParsedRequest;
-import org.cafeteria.common.model.ResponseCode;
+import org.cafeteria.common.customException.CustomExceptions.DuplicateEntryFoundException;
+import org.cafeteria.common.model.*;
 import org.cafeteria.common.model.enums.NotificationTypeEnum;
+import org.cafeteria.common.model.DetailedFeedback;
 import org.cafeteria.server.services.DetailedFeedbackService;
 import org.cafeteria.server.services.NotificationService;
 import org.cafeteria.server.services.interfaces.IDetailedFeedbackService;
 import org.cafeteria.server.services.interfaces.INotificationService;
+import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 
 import java.sql.SQLException;
 import java.util.Date;
-
-import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
+import java.util.List;
 
 public class DetailedFeedbackController {
     private final IDetailedFeedbackService _detailedFeedbackService;
@@ -37,8 +36,30 @@ public class DetailedFeedbackController {
             } else {
                 response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred while generating detailed Feedback request"));
             }
-        } catch (CustomExceptions.DuplicateEntryFoundException e) {
-            response = createResponse(ResponseCode.BAD_REQUEST, serializeData("Detailed Feedback Request is already generated for " + menuItemId + " Menu Item ID."));
+        } catch (DuplicateEntryFoundException e) {
+            response = createResponse(ResponseCode.BAD_REQUEST, serializeData(e.getMessage()));
+        }
+        return response;
+    }
+
+    public String addDetailedFeedbacks(ParsedRequest request) throws SQLException {
+        List<DetailedFeedback> detailedFeedbacks = deserializeList(request.getJsonData(), DetailedFeedback.class);
+        String response;
+        if(_detailedFeedbackService.addDetailedFeedbacks(detailedFeedbacks)) {
+            response = createResponse(ResponseCode.OK, serializeData("Detailed Feedback added successfully"));
+        } else {
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Some error occurred in adding detailed feedback."));
+        }
+        return response;
+    }
+
+    public String getDetailedFeedbackRequests() throws SQLException {
+        List<DetailedFeedbackRequest> detailedFeedbackRequests = _detailedFeedbackService.getDetailedFeedbackRequests();
+        String response;
+        if(!detailedFeedbackRequests.isEmpty()) {
+            response = createResponse(ResponseCode.OK, serializeData(detailedFeedbackRequests));
+        } else {
+            response = createResponse(ResponseCode.EMPTY_RESPONSE, serializeData("No Detailed Feedback Requests Found."));
         }
         return response;
     }

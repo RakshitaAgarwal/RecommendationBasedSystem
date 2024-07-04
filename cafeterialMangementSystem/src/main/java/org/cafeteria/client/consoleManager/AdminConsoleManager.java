@@ -91,7 +91,7 @@ public class AdminConsoleManager extends UserConsoleManager {
     public static MenuItem takeMenuItemFromUser() {
         String name = takeUserStringInput("Enter name of the food item to add in the menu:");
         float price = takeUserFloatInput("Enter price of the food item:");
-        boolean isAvailable = takeUserBooleanInput("Enter availability of the food item (true/false):");
+        boolean isAvailable = takeUserBooleanInput("Enter availability of the food item:");
         int mealTypeId = takeMealTypeId();
         int menuItemTypeId = takeDietaryPreferenceId();
         int sweetContentLevelId = takeSweetLevelId();

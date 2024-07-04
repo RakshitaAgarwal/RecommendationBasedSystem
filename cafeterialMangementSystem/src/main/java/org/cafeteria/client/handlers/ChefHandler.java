@@ -162,7 +162,7 @@ public class ChefHandler extends UserHandler {
             } else {
                 ChefConsoleManager.displayMessage("Invalid Discard Menu Item Id.");
             }
-            continueAction = ChefConsoleManager.takeUserBooleanInput("Do you wish to Continue for other Discard Menu Item? true/false");
+            continueAction = ChefConsoleManager.takeUserBooleanInput("Do you wish to Continue for other Discard Menu Item? ");
         } while (continueAction);
     }
 
@@ -178,7 +178,7 @@ public class ChefHandler extends UserHandler {
         int choice = ChefConsoleManager.takeUserIntInput("Enter Choice:");
         switch (choice) {
             case 1 -> {
-                if (ChefConsoleManager.takeUserBooleanInput("Are you sure you want to permanently remove food item from menu. true/false"))
+                if (ChefConsoleManager.takeUserBooleanInput("Are you sure you want to permanently remove food item from menu? "))
                     adminRepository.deleteMenuItem(menuItem);
             }
             case 2 -> handleGetDetailedFeedback(menuItem.getId());

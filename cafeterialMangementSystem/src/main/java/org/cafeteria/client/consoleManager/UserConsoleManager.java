@@ -8,12 +8,14 @@ import java.util.Scanner;
 
 public abstract class UserConsoleManager {
     protected static Scanner sc = new Scanner(System.in);
+    private static boolean shouldConsumeNextLine = false;
 
     public static int takeUserIntInput(String message) {
         int choice = 0;
         try {
             System.out.println(message);
             choice = sc.nextInt();
+            shouldConsumeNextLine = true;
         } catch (InputMismatchException e) {
             System.out.println("Invalid input. Please enter a number.");
             sc.next();
@@ -23,7 +25,9 @@ public abstract class UserConsoleManager {
 
     public static String takeUserStringInput(String message) {
         System.out.println(message);
-        sc.nextLine();
+        if(shouldConsumeNextLine)
+            sc.nextLine();
+        shouldConsumeNextLine = false;
         return sc.nextLine();
     }
 
@@ -32,6 +36,7 @@ public abstract class UserConsoleManager {
         try {
             System.out.println(message);
             input = sc.nextFloat();
+            shouldConsumeNextLine = true;
         } catch (InputMismatchException e) {
             System.out.println("Invalid input. Please enter a number in float");
             sc.next();
@@ -47,6 +52,7 @@ public abstract class UserConsoleManager {
                 System.out.println(message + " (true/false):");
                 input = sc.nextBoolean();
                 isValid = true;
+                shouldConsumeNextLine = true;
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please enter 'true' or 'false'.");
                 sc.next();
@@ -61,8 +67,7 @@ public abstract class UserConsoleManager {
         Date inputDate = null;
 
         while (inputDate == null) {
-            System.out.println(message);
-            String date = sc.next();
+            String date = takeUserStringInput(message);
             try {
                 Date currentDate = new Date();
                 Date minDate = dateFormat.parse("1990-01-01");

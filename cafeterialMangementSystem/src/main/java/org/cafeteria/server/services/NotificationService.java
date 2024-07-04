@@ -24,7 +24,6 @@ public class NotificationService implements INotificationService {
     @Override
     public boolean sendNotificationToAllEmployees(Notification notification) throws SQLException {
         List<User> employees = _userRepository.getByUserRoleId(UserRoleEnum.EMP.ordinal()+1);
-        System.out.println("Employees Count: " + employees.get(0).getName());
         for(User employee:employees) {
             notification.setUserId(employee.getId());
             _notificationRepository.add(notification);

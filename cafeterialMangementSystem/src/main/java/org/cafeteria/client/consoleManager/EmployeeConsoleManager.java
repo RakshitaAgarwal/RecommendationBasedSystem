@@ -1,5 +1,6 @@
 package org.cafeteria.client.consoleManager;
 
+import org.cafeteria.common.model.DetailedFeedbackRequest;
 import org.cafeteria.common.model.Feedback;
 import org.cafeteria.common.model.Notification;
 import org.cafeteria.common.model.UserProfile;
@@ -7,11 +8,11 @@ import org.cafeteria.common.model.enums.ContentLevelEnum;
 import org.cafeteria.common.model.enums.CuisineTypeEnum;
 import org.cafeteria.common.model.enums.MealTypeEnum;
 import org.cafeteria.common.model.enums.MenuItemTypeEnum;
+import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
-
-import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 public class EmployeeConsoleManager extends UserConsoleManager {
 
@@ -22,7 +23,8 @@ public class EmployeeConsoleManager extends UserConsoleManager {
         System.out.println("4. Provide Feedback");
         System.out.println("5. Create/Update User Profile");
         System.out.println("6. See User Profile");
-        System.out.println("7. Exit");
+        System.out.println("7. Provide Detailed Feedback");
+        System.out.println("8. Exit");
     }
 
     public static void displayRolledOutMenuItems(Map<Integer, String> rolledOutItemsMap) {
@@ -159,5 +161,15 @@ public class EmployeeConsoleManager extends UserConsoleManager {
             }
         }
         return mealTypeId;
+    }
+
+    public static void displayDetailedFeedbackRequests(List<DetailedFeedbackRequest> feedbackRequests) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        System.out.println(String.format("%-10s | %-15s | %-20s", "ID", "Menu Item ID", "DateTime"));
+        System.out.println("-----------------------------------------------------------");
+        for (DetailedFeedbackRequest request : feedbackRequests) {
+            String dateTime = dateFormat.format(request.getDateTime());
+            System.out.println(String.format("%-10s | %-15s | %-20s", request.getId(), request.getMenuItemId(), dateTime));
+        }
     }
 }

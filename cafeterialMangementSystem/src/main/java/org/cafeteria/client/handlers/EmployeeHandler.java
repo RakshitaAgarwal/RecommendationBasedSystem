@@ -6,7 +6,10 @@ import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.client.repositories.EmployeeRepository;
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
+import org.cafeteria.common.model.enums.DetailedFeedbackQuestionEnum;
 import org.cafeteria.common.model.enums.MealTypeEnum;
+import org.cafeteria.common.model.DetailedFeedback;
+
 import static org.cafeteria.client.handlers.AdminHandler.handleDisplayMenu;
 import static org.cafeteria.client.repositories.AdminRepository.getFoodItemByName;
 import static org.cafeteria.client.repositories.AdminRepository.getMenuItemById;
@@ -37,7 +40,8 @@ public class EmployeeHandler extends UserHandler {
                     case 4 -> handleProvideFeedback();
                     case 5 -> handleCreateUpdateUserProfile();
                     case 6 -> handleDisplayUserProfile();
-                    case 7 -> {
+                    case 7 -> handleProvideDetailedFeedback();
+                    case 8 -> {
                         employeeRepository.closeConnection();
                         return;
                     }
@@ -99,7 +103,7 @@ public class EmployeeHandler extends UserHandler {
                 userProfile.setFavCuisineId(favCuisineId);
             }
             case 4 -> {
-                boolean isSweetTooth = EmployeeConsoleManager.takeUserBooleanInput("Are you a Sweet Tooth ");
+                boolean isSweetTooth = EmployeeConsoleManager.takeUserBooleanInput("Are you a Sweet Tooth?");
                 userProfile.setSweetTooth(isSweetTooth);
             }
             default -> throw new InvalidChoiceException("Invalid Choice");
@@ -110,7 +114,7 @@ public class EmployeeHandler extends UserHandler {
         int dietaryPreferenceId = EmployeeConsoleManager.takeDietaryPreferenceId();
         int spiceLevelId = EmployeeConsoleManager.takeSpiceLevelId();
         int favCuisineId = EmployeeConsoleManager.takeFavCuisineId();
-        boolean isSweetTooth = EmployeeConsoleManager.takeUserBooleanInput("Are you a Sweet Tooth ");
+        boolean isSweetTooth = EmployeeConsoleManager.takeUserBooleanInput("Are you a Sweet Tooth?");
         UserProfile userProfile = new UserProfile(
                 GlobalData.loggedInUser.getId(),
                 dietaryPreferenceId,
@@ -222,5 +226,51 @@ public class EmployeeHandler extends UserHandler {
             EmployeeConsoleManager.displayMessage("No Such food item exists in the menu");
         }
         return null;
+    }
+
+    private void handleProvideDetailedFeedback() throws IOException, InvalidResponseException {
+        try {
+            List<DetailedFeedbackRequest> detailedFeedbackRequests = employeeRepository.getDetailedFeedbackRequest();
+            EmployeeConsoleManager.displayDetailedFeedbackRequests(detailedFeedbackRequests);
+
+            int inputDetailedFeedbackId = EmployeeConsoleManager.takeUserIntInput("Choose Id to provide feedback: ");
+            DetailedFeedbackRequest feedbackRequest = getDetailedFeedbackRequest(inputDetailedFeedbackId, detailedFeedbackRequests);
+            if (feedbackRequest != null) {
+                List<DetailedFeedback> detailedFeedbacks = getDetailedFeedback(feedbackRequest.getMenuItemId());
+                employeeRepository.addDetailedFeedbacks(detailedFeedbacks);
+            } else {
+                EmployeeConsoleManager.displayMessage("Invalid Id Selected");
+            }
+
+        } catch (BadResponseException e) {
+            EmployeeConsoleManager.displayMessage(e.getMessage());
+        }
+    }
+
+    private DetailedFeedbackRequest getDetailedFeedbackRequest(int inputDetailedFeedbackId, List<DetailedFeedbackRequest> detailedFeedbackRequests) {
+        for (DetailedFeedbackRequest feedbackRequest : detailedFeedbackRequests) {
+            if (inputDetailedFeedbackId == feedbackRequest.getId())
+                return feedbackRequest;
+        }
+        return null;
+    }
+
+    private List<DetailedFeedback> getDetailedFeedback(int menuItemId) {
+        List<DetailedFeedback> detailedFeedbacks = new ArrayList<>();
+        for(int i=1; i<=DetailedFeedbackQuestionEnum.values().length; i++) {
+            int detailedFeedbackQuestionId = i;
+            String answer = EmployeeConsoleManager.takeUserStringInput(
+                    getEnumFromOrdinal(DetailedFeedbackQuestionEnum.class, detailedFeedbackQuestionId).toString()
+            );
+            System.out.println("hehe Answer: " + answer);
+            DetailedFeedback detailedFeedback = new DetailedFeedback();
+            detailedFeedback.setUserId(user.getId());
+            detailedFeedback.setMenuItemId(menuItemId);
+            detailedFeedback.setDateTime(new Date());
+            detailedFeedback.setFeedbackQuestionId(detailedFeedbackQuestionId);
+            detailedFeedback.setAnswer(answer);
+            detailedFeedbacks.add(detailedFeedback);
+        }
+        return detailedFeedbacks;
     }
 }

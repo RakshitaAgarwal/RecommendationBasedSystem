@@ -4,13 +4,12 @@ import org.cafeteria.common.customException.CustomExceptions;
 import org.cafeteria.common.model.DetailedFeedbackRequest;
 import org.cafeteria.server.network.JdbcConnection;
 import org.cafeteria.server.repositories.interfaces.IDetailedFeedbackRequestRepository;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.List;
-
 import static org.cafeteria.common.util.Utils.dateToTimestamp;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class DetailedFeedbackRequestRepository implements IDetailedFeedbackRequestRepository {
     private final Connection connection;
@@ -40,11 +39,48 @@ public class DetailedFeedbackRequestRepository implements IDetailedFeedbackReque
 
     @Override
     public List<DetailedFeedbackRequest> getAll() throws SQLException {
-        return null;
+        String query = "SELECT * FROM DetailedFeedbackRequest";
+        List<DetailedFeedbackRequest> detailedFeedbackRequests = new ArrayList<>();
+
+        try (PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                int menuItemId = resultSet.getInt("menuItemId");
+                Date dateTime = resultSet.getTimestamp("dateTime");
+
+                DetailedFeedbackRequest detailedFeedbackRequest = new DetailedFeedbackRequest();
+                detailedFeedbackRequest.setId(id);
+                detailedFeedbackRequest.setMenuItemId(menuItemId);
+                detailedFeedbackRequest.setDateTime(dateTime);
+
+                detailedFeedbackRequests.add(detailedFeedbackRequest);
+            }
+        }
+
+        return detailedFeedbackRequests;
     }
 
     @Override
     public DetailedFeedbackRequest getById(int id) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public DetailedFeedbackRequest getByMenuItemId(int menuItemId) throws SQLException {
+        String query = "SELECT * FROM DetailedFeedbackRequest WHERE menuItemId = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, menuItemId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                DetailedFeedbackRequest detailedFeedbackRequest = new DetailedFeedbackRequest();
+                detailedFeedbackRequest.setId(resultSet.getInt("id"));
+                detailedFeedbackRequest.setMenuItemId(resultSet.getInt("menuItemId"));
+                detailedFeedbackRequest.setDateTime(resultSet.getTimestamp("dateTime"));
+                return detailedFeedbackRequest;
+            }
+        }
         return null;
     }
 }

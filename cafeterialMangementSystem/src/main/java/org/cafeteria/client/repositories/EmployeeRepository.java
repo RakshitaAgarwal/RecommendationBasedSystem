@@ -4,6 +4,7 @@ import org.cafeteria.client.global.GlobalData;
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
+import org.cafeteria.common.model.DetailedFeedback;
 
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.deserializeData;
@@ -112,6 +113,33 @@ public class EmployeeRepository extends UserRepository {
 
     public String updateUserProfile(UserProfile userProfile) throws IOException, InvalidResponseException, BadResponseException {
         String request = createRequest(UserAction.UPDATE_USER_PROFILE, serializeData(userProfile));
+        String response = connection.sendData(request);
+        if (response == null)
+            throw new IOException("Server Got Disconnected. Please Try again.");
+
+        ParsedResponse parsedResponse = parseResponse(response);
+        ResponseCode responseCode = parsedResponse.getResponseCode();
+        if (responseCode == ResponseCode.OK)
+            return deserializeData(parsedResponse.getJsonData(), String.class);
+        else
+            throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
+    }
+
+    public List<DetailedFeedbackRequest> getDetailedFeedbackRequest() throws IOException, InvalidResponseException, BadResponseException {
+        String request = createRequest(UserAction.GET_DETAILED_FEEDBACK_REQUESTS, null);
+        String response = connection.sendData(request);
+        if (response == null)
+            throw new IOException("Server Got Disconnected. Please Try again.");
+
+        ParsedResponse parsedResponse = parseResponse(response);
+        ResponseCode responseCode = parsedResponse.getResponseCode();
+        if (responseCode == ResponseCode.OK) {
+            return deserializeList(parsedResponse.getJsonData(), DetailedFeedbackRequest.class);
+        } else throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
+    }
+
+    public String addDetailedFeedbacks(List<DetailedFeedback> detailedFeedbacks) throws IOException, InvalidResponseException, BadResponseException {
+        String request = createRequest(UserAction.ADD_DETAILED_FEEDBACKS, serializeData(detailedFeedbacks));
         String response = connection.sendData(request);
         if (response == null)
             throw new IOException("Server Got Disconnected. Please Try again.");
