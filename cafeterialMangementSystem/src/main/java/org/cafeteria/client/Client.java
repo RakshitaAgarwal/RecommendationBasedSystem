@@ -1,21 +1,20 @@
 package org.cafeteria.client;
 
 import org.cafeteria.client.consoleManager.UserConsoleManager;
+import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.client.handlers.AdminHandler;
+import org.cafeteria.client.repositories.AuthenticationRepository;
 import org.cafeteria.client.handlers.ChefHandler;
 import org.cafeteria.client.handlers.EmployeeHandler;
-import org.cafeteria.client.network.ServerConnection;
-import org.cafeteria.client.repositories.AuthenticationRepository;
-import org.cafeteria.common.customException.CustomExceptions.LoginFailedException;
+import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.User;
 import org.cafeteria.common.model.enums.UserRoleEnum;
-
-import java.io.IOException;
-import java.util.Properties;
-
 import static org.cafeteria.common.constants.Constants.SERVER_ADDRESS;
 import static org.cafeteria.common.constants.Constants.SERVER_PORT;
 import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
+
+import java.io.IOException;
+import java.util.Properties;
 
 public class Client extends UserConsoleManager {
     private static ServerConnection connection;
@@ -41,7 +40,8 @@ public class Client extends UserConsoleManager {
             } while (choice == 1);
 
         } catch (IOException e) {
-            displayMessage("Server Got Disconnected");
+            displayMessage(e.getMessage());
+//            displayMessage("Server Got Disconnected");
         } finally {
             closeResources();
         }

@@ -24,11 +24,18 @@ public abstract class UserConsoleManager {
     }
 
     public static String takeUserStringInput(String message) {
-        System.out.println(message);
-        if(shouldConsumeNextLine)
-            sc.nextLine();
-        shouldConsumeNextLine = false;
-        return sc.nextLine();
+        String input;
+        do {
+            System.out.println(message);
+            if (shouldConsumeNextLine)
+                sc.nextLine();
+            shouldConsumeNextLine = false;
+            input = sc.nextLine();
+            if (input.isEmpty()) {
+                System.out.println("Empty Input. Please Enter valid input.");
+            }
+        } while (input.isEmpty());
+        return input;
     }
 
     public static float takeUserFloatInput(String message) {

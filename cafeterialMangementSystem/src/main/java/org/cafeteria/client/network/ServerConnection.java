@@ -31,17 +31,27 @@ public class ServerConnection {
 
     public String sendData(String message) {
         try {
-            out.println(message);
-            return in.readLine();
+            if (socket != null && socket.isConnected() && !socket.isClosed()) {
+                out.println(message);
+                return in.readLine();
+            } else {
+                System.out.println("Socket is not connected or already closed.");
+                return null;
+            }
         } catch (IOException e) {
-            System.out.println("Server got disconnected. Please Try again.");
+            System.out.println("Server got disconnected. Please try again.");
             return null;
         }
     }
 
-    public void close() throws IOException {
-        in.close();
-        out.close();
-        socket.close();
+    public void close() {
+        try {
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+                System.out.println("Connection to Server closed.");
+            }
+        } catch (IOException e) {
+            System.out.println("Error occurred while closing the server connection.");
+        }
     }
 }

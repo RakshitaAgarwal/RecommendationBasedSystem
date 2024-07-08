@@ -5,6 +5,7 @@ import org.cafeteria.common.model.ParsedRequest;
 import org.cafeteria.common.model.ResponseCode;
 import org.cafeteria.common.model.User;
 import org.cafeteria.common.model.UserProfile;
+import org.cafeteria.server.network.SessionManager;
 import org.cafeteria.server.services.UserProfileService;
 import org.cafeteria.server.services.UserService;
 import org.cafeteria.server.services.interfaces.IUserProfileService;
@@ -22,16 +23,24 @@ public class UserController {
         _userProfileService = new UserProfileService();
     }
 
-    public String handleUserLogin(@NotNull ParsedRequest request) throws SQLException {
+    public String handleUserLogin(@NotNull ParsedRequest request, SessionManager sessionManager) throws SQLException {
         User user = deserializeData(request.getJsonData(), User.class);
         User loggedInUser = _userService.loginUser(user);
         String response;
         if (loggedInUser != null) {
             response = createResponse(ResponseCode.OK, serializeData(loggedInUser));
+            createUserSession(sessionManager, loggedInUser);
         } else {
             response = createResponse(ResponseCode.UNAUTHORIZED, serializeData("No such user exist."));
         }
         return response;
+    }
+
+    private void createUserSession(SessionManager sessionManager, User user) throws SQLException {
+        boolean isRetry;
+        do {
+            isRetry = !sessionManager.createUserSession(user.getId());
+        } while (isRetry);
     }
 
     public String addUserProfile(@NotNull ParsedRequest request) throws SQLException {

@@ -10,4 +10,6 @@ public interface IVotingRepository extends ICrudRepository<Vote> {
     List<Vote> getByUserCurrentDate(int userId, String date) throws SQLException;
 
     Map<Integer, Integer> getNextDayMenuOptionsVotes(String date) throws SQLException;
+
+    List<Vote> getAllByDate(String date) throws SQLException;
 }

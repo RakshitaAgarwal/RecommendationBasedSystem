@@ -19,7 +19,7 @@ public class ClientConnection {
                 pool.execute(clientHandler);
             }
         } catch(IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 }
