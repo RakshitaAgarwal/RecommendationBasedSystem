@@ -7,7 +7,7 @@ CREATE TABLE UserSession (
 );
 
 CREATE TABLE UserActivity (
-    activityId INT AUTO_INCREMENT PRIMARY KEY,
+    Id INT AUTO_INCREMENT PRIMARY KEY,
     sessionId INT NOT NULL,
     activityDescription VARCHAR(255) NOT NULL,
     activityTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

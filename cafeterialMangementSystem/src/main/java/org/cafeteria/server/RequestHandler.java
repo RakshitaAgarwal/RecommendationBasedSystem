@@ -3,6 +3,7 @@ package org.cafeteria.server;
 import org.cafeteria.common.customException.CustomExceptions;
 import org.cafeteria.common.model.ParsedRequest;
 import org.cafeteria.common.model.ResponseCode;
+import org.cafeteria.common.model.UserAction;
 import org.cafeteria.server.network.SessionManager;
 
 import java.sql.SQLException;
@@ -13,9 +14,11 @@ import static org.cafeteria.server.Server.*;
 
 public class RequestHandler {
     public SessionManager sessionManager;
+
     public RequestHandler() {
         sessionManager = new SessionManager();
     }
+
     public String handleRequest(ParsedRequest request) throws CustomExceptions.DuplicateEntryFoundException {
         String response = null;
         try {
@@ -45,7 +48,8 @@ public class RequestHandler {
                 case CREATE_DETAILED_FEEDBACK_REQUEST ->
                         response = detailedFeedbackController.createDetailedFeedbackRequest(request);
 
-                case GET_DETAILED_FEEDBACK_REQUESTS -> response = detailedFeedbackController.getDetailedFeedbackRequests();
+                case GET_DETAILED_FEEDBACK_REQUESTS ->
+                        response = detailedFeedbackController.getDetailedFeedbackRequests();
 
                 case ADD_DETAILED_FEEDBACKS -> response = detailedFeedbackController.addDetailedFeedbacks(request);
 
@@ -72,7 +76,9 @@ public class RequestHandler {
                 case GET_NEXT_DAY_MENU_OPTIONS -> response = rolledOutMenuItemController.getNextDayMenuOptions();
 
                 case UPDATE_NEXT_DAY_FINAL_MENU -> response = preparedMenuItemController.updateDailyFoodMenu(request);
-
+            }
+            if (request.getUserAction() != UserAction.LOGIN) {
+                sessionManager.recordUserActivity(request.getUserAction().name());
             }
         } catch (SQLException e) {
             response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Error Occurred while processing your request."));

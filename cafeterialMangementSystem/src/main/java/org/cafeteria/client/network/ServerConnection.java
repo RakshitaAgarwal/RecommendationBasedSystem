@@ -48,7 +48,6 @@ public class ServerConnection {
         try {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
-                System.out.println("Connection to Server closed.");
             }
         } catch (IOException e) {
             System.out.println("Error occurred while closing the server connection.");
