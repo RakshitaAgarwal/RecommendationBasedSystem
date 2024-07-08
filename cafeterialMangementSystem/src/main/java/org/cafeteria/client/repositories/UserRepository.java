@@ -1,7 +1,6 @@
 package org.cafeteria.client.repositories;
 
 import org.cafeteria.client.network.ServerConnection;
-import java.io.IOException;
 
 public abstract class UserRepository {
 
