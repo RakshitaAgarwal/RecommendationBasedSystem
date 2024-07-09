@@ -26,19 +26,18 @@ public class Client extends UserConsoleManager {
             if (setUpApplication()) {
                 displayMessage("Welcome to Cafeteria Management System");
 
-                int choice;
+                boolean choice;
                 do {
                     displayMessage("Please Login to proceed.");
                     User userToLogin = fetchUserCredentialsForLogin();
                     try {
                         User user = new AuthenticationRepository(connection).login(userToLogin);
-                        showUserActionItems(user);
-                        choice = 0;
+                        choice  = showUserActionItems(user);
                     } catch (LoginFailedException e) {
                         displayMessage("Login Failed");
-                        choice = takeUserIntInput("Do you want to try again? If yes please enter 1.");
+                        choice = takeUserBooleanInput("Do you want to try again? If yes please enter 1.");
                     }
-                } while (choice == 1);
+                } while (choice);
             }
 
         } catch (IOException e) {
@@ -48,24 +47,25 @@ public class Client extends UserConsoleManager {
         }
     }
 
-    private static void showUserActionItems(User user) throws IOException {
+    private static boolean showUserActionItems(User user) throws IOException {
         UserRoleEnum userRole = getEnumFromOrdinal(UserRoleEnum.class, user.getUserRoleId());
         switch (userRole) {
             case ADMIN -> {
                 AdminHandler adminHandler = new AdminHandler(connection, user);
-                adminHandler.showUserActionItems();
+                return adminHandler.showUserActionItems();
             }
             case CHEF -> {
                 ChefHandler chef = new ChefHandler(connection, user);
-                chef.showUserActionItems();
+                return chef.showUserActionItems();
             }
             case EMP -> {
                 EmployeeHandler employee = new EmployeeHandler(connection, user);
-                employee.showUserActionItems();
+                return employee.showUserActionItems();
             }
             default -> {
                 displayMessage("Some Error Occurred");
                 connection.close();
+                return false;
             }
         }
     }

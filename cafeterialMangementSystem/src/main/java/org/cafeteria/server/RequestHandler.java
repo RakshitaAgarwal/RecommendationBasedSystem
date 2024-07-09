@@ -25,6 +25,8 @@ public class RequestHandler {
             switch (request.getUserAction()) {
                 case LOGIN -> response = userController.handleUserLogin(request, sessionManager);
 
+                case LOGOUT -> response = userController.handleUserLogout(sessionManager);
+
                 case ADD_USER_PROFILE -> response = userController.addUserProfile(request);
 
                 case UPDATE_USER_PROFILE -> response = userController.updateUserProfile(request);
@@ -77,13 +79,17 @@ public class RequestHandler {
 
                 case UPDATE_NEXT_DAY_FINAL_MENU -> response = preparedMenuItemController.updateDailyFoodMenu(request);
             }
-            if (request.getUserAction() != UserAction.LOGIN) {
-                sessionManager.recordUserActivity(request.getUserAction().name());
-            }
+            handleUserSession(request);
         } catch (SQLException e) {
             response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Error Occurred while processing your request."));
         }
         return response;
+    }
+
+    void handleUserSession(ParsedRequest request) {
+        if (request.getUserAction() != UserAction.LOGIN && request.getUserAction() != UserAction.LOGOUT) {
+            sessionManager.recordUserActivity(request.getUserAction().name());
+        }
     }
 
     public void endUserSession() {

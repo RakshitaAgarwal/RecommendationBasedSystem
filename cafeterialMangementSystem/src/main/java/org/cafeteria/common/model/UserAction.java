@@ -2,6 +2,7 @@ package org.cafeteria.common.model;
 
 public enum UserAction {
     LOGIN,
+    LOGOUT,
     ADD_USER_PROFILE,
     UPDATE_USER_PROFILE,
     GET_USER_PROFILE,

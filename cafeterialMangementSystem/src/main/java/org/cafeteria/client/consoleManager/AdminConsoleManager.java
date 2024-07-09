@@ -22,7 +22,8 @@ public class AdminConsoleManager extends UserConsoleManager {
         System.out.println("3. Delete Menu Item");
         System.out.println("4. Update Menu Item");
         System.out.println("5. See Discarded Menu Items");
-        System.out.println("6. Exit");
+        System.out.println("6. Logout");
+        System.out.println("7. Exit");
     }
 
     public static void displayMenuItemUpdateOptions() {

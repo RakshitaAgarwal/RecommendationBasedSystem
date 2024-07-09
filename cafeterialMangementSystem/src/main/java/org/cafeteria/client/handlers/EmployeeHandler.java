@@ -22,12 +22,12 @@ public class EmployeeHandler extends UserHandler {
     private static EmployeeRepository employeeRepository;
 
     public EmployeeHandler(ServerConnection connection, User user) {
-        super(user);
+        super(user, connection);
         employeeRepository = new EmployeeRepository(connection);
     }
 
     @Override
-    public void showUserActionItems() throws IOException {
+    public boolean showUserActionItems() throws IOException {
         while (true) {
             EmployeeConsoleManager.displayUserActionItems();
             int choice = EmployeeConsoleManager.takeUserIntInput("Enter your Choice: ");
@@ -41,8 +41,11 @@ public class EmployeeHandler extends UserHandler {
                     case 6 -> handleDisplayUserProfile();
                     case 7 -> handleProvideDetailedFeedback();
                     case 8 -> {
+                        return handleLogout();
+                    }
+                    case 9 -> {
                         employeeRepository.closeConnection();
-                        return;
+                        return false;
                     }
                     default -> throw new InvalidChoiceException("Invalid Choice");
                 }

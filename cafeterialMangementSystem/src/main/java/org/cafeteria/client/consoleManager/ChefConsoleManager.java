@@ -15,7 +15,8 @@ public class ChefConsoleManager extends UserConsoleManager{
         System.out.println("3. See Voting for Rolled out Menu Items");
         System.out.println("4. Update Next Day final Menu Items");
         System.out.println("5. See Discarded Menu Items");
-        System.out.println("6. Exit");
+        System.out.println("6. Logout");
+        System.out.println("7. Exit");
     }
 
     public static void displayVoting(Map<MealTypeEnum, List<String>> categorizedVotes) {

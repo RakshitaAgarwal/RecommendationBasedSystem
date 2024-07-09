@@ -44,14 +44,16 @@ public class SessionManager {
         }
     }
 
-    public void endUserSession() {
+    public boolean endUserSession() {
         if (userSession != null) {
             userSession.setLogoutDateTime(new Date());
             try {
                 _userSessionService.endUserSession(userSession);
+                return true;
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
         }
+        return false;
     }
 }

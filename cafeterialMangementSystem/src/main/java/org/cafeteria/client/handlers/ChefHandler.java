@@ -28,13 +28,13 @@ public class ChefHandler extends UserHandler {
     private static AdminRepository adminRepository;
 
     public ChefHandler(ServerConnection connection, User user) {
-        super(user);
+        super(user, connection);
         chefRepository = new ChefRepository(connection);
         adminRepository = new AdminRepository(connection);
     }
 
     @Override
-    public void showUserActionItems() throws IOException {
+    public boolean showUserActionItems() throws IOException {
         while (true) {
             ChefConsoleManager.displayUserActionItems();
             int choice = ChefConsoleManager.takeUserIntInput("Enter your Choice: ");
@@ -46,8 +46,11 @@ public class ChefHandler extends UserHandler {
                     case 4 -> handleUpdateNextDayFinalMenu();
                     case 5 -> handleDiscardMenuItems();
                     case 6 -> {
+                        return handleLogout();
+                    }
+                    case 7 -> {
                         chefRepository.closeConnection();
-                        return;
+                        return false;
                     }
                     default -> throw new InvalidChoiceException("Invalid choice");
                 }
@@ -80,7 +83,6 @@ public class ChefHandler extends UserHandler {
                 menuItemIds.add(menuItemRecommendation.getMenuItemId());
             }
         }
-
         return menuItemIds;
     }
 

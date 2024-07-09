@@ -1,7 +1,6 @@
 package org.cafeteria.client.handlers;
 
 import org.cafeteria.client.consoleManager.AdminConsoleManager;
-import org.cafeteria.client.consoleManager.ChefConsoleManager;
 import org.cafeteria.client.network.ServerConnection;
 import org.cafeteria.client.repositories.AdminRepository;
 import org.cafeteria.common.customException.CustomExceptions.BadResponseException;
@@ -15,16 +14,18 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import static org.cafeteria.client.consoleManager.UserConsoleManager.displayMessage;
+
 public class AdminHandler extends UserHandler {
     private static AdminRepository adminRepository;
 
     public AdminHandler(ServerConnection connection, User user) {
-        super(user);
+        super(user, connection);
         adminRepository = new AdminRepository(connection);
     }
 
     @Override
-    public void showUserActionItems() throws IOException {
+    public boolean showUserActionItems() throws IOException {
         while (true) {
             AdminConsoleManager.displayUserActionItems();
             int choice = AdminConsoleManager.takeUserIntInput("Enter your Choice: ");
@@ -36,13 +37,16 @@ public class AdminHandler extends UserHandler {
                     case 4 -> handleUpdateMenuItem();
                     case 5 -> handleDiscardMenuItems();
                     case 6 -> {
+                        return handleLogout();
+                    }
+                    case 7 -> {
                         adminRepository.closeConnection();
-                        return;
+                        return false;
                     }
                     default -> throw new InvalidChoiceException("Invalid Choice");
                 }
             } catch (InvalidResponseException | BadResponseException | InvalidChoiceException e) {
-                AdminConsoleManager.displayMessage(e.getMessage());
+                displayMessage(e.getMessage());
             }
         }
     }
@@ -55,16 +59,16 @@ public class AdminHandler extends UserHandler {
     public void handleAddMenuItem() throws IOException, InvalidResponseException, BadResponseException {
         MenuItem menuItem = AdminConsoleManager.takeMenuItemFromUser();
         String response = adminRepository.addMenuItem(menuItem);
-        AdminConsoleManager.displayMessage(response);
+        displayMessage(response);
     }
 
     private void handleDeleteMenuItem() throws IOException, InvalidResponseException, BadResponseException {
         String menuItemName = AdminConsoleManager.takeUserStringInput("Enter name of the food Item you want to delete from menu:");
         MenuItem menuItem = AdminRepository.getFoodItemByName(menuItemName);
         if (menuItem != null) {
-            AdminConsoleManager.displayMessage(adminRepository.deleteMenuItem(menuItem));
+            displayMessage(adminRepository.deleteMenuItem(menuItem));
         } else {
-            AdminConsoleManager.displayMessage("No such food item exists in the menu");
+            displayMessage("No such food item exists in the menu");
         }
     }
 
@@ -72,10 +76,10 @@ public class AdminHandler extends UserHandler {
         try {
             MenuItem menuItem = getUpdatedMenuItem();
             if (menuItem != null) {
-                AdminConsoleManager.displayMessage(adminRepository.updateMenuItem(menuItem));
+                displayMessage(adminRepository.updateMenuItem(menuItem));
             }
         } catch (InvalidChoiceException e) {
-            AdminConsoleManager.displayMessage(e.getMessage());
+            displayMessage(e.getMessage());
         }
     }
 
@@ -83,13 +87,13 @@ public class AdminHandler extends UserHandler {
         String menuItemName = AdminConsoleManager.takeUserStringInput("Enter the name of the food item you want to update: ");
         try {
             MenuItem menuItem = AdminRepository.getFoodItemByName(menuItemName);
-            AdminConsoleManager.displayMessage("Food item found: " + menuItem.getName());
+            displayMessage("Food item found: " + menuItem.getName());
             AdminConsoleManager.displayMenuItemUpdateOptions();
             int option = AdminConsoleManager.takeUserIntInput("Choose an option to update (1/2/3/4/5/6/7/8): ");
             updateMenuItem(menuItem, option);
             return menuItem;
         } catch (BadResponseException e) {
-            AdminConsoleManager.displayMessage(e.getMessage());
+            displayMessage(e.getMessage());
             return null;
         }
     }
@@ -180,7 +184,7 @@ public class AdminHandler extends UserHandler {
                     adminRepository.deleteMenuItem(menuItem);
             }
             case 2 -> handleGetDetailedFeedback(menuItem.getId());
-            default -> AdminConsoleManager.displayMessage("Invalid choice selected");
+            default -> displayMessage("Invalid choice selected");
         }
     }
 
@@ -191,6 +195,6 @@ public class AdminHandler extends UserHandler {
         } catch (BadResponseException e) {
             response = e.getMessage();
         }
-        ChefConsoleManager.displayMessage(response);
+        displayMessage(response);
     }
 }

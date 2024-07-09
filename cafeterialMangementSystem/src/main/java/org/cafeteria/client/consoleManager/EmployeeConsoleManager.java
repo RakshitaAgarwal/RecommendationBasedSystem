@@ -24,7 +24,8 @@ public class EmployeeConsoleManager extends UserConsoleManager {
         System.out.println("5. Create/Update User Profile");
         System.out.println("6. See User Profile");
         System.out.println("7. Provide Detailed Feedback");
-        System.out.println("8. Exit");
+        System.out.println("8. Logout");
+        System.out.println("9. Exit");
     }
 
     public static void displayRolledOutMenuItems(Map<Integer, String> rolledOutItemsMap) {

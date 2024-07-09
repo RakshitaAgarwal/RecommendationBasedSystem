@@ -36,6 +36,16 @@ public class UserController {
         return response;
     }
 
+    public String handleUserLogout(SessionManager sessionManager) {
+        String response;
+        if(sessionManager.endUserSession()){
+            response = createResponse(ResponseCode.OK, serializeData("Successfully Logged out"));
+        } else {
+            response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Error Logging out User"));
+        }
+        return response;
+    }
+
     private void createUserSession(SessionManager sessionManager, User user) throws SQLException {
         boolean isRetry;
         do {
