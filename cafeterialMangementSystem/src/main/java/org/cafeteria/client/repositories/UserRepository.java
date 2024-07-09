@@ -2,6 +2,8 @@ package org.cafeteria.client.repositories;
 
 import org.cafeteria.client.network.ServerConnection;
 
+import java.io.IOException;
+
 public abstract class UserRepository {
 
     protected static ServerConnection connection;
@@ -9,7 +11,7 @@ public abstract class UserRepository {
         UserRepository.connection = connection;
     }
 
-    public void closeConnection() {
+    public void closeConnection() throws IOException {
         connection.close();
     }
 }

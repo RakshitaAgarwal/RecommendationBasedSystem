@@ -29,8 +29,7 @@ public class AuthenticationRepository {
                 return deserializeData(parsedResponse.getJsonData(), User.class);
             } else throw new LoginFailedException("Login Unsuccessful");
         } catch (InvalidResponseException e) {
-            System.out.println("Invalid Response Received from Server");
-            throw new IOException("Server might got disconnected");
+            throw new IOException("Invalid Response Received from Server. Server might got disconnected");
         }
     }
 }

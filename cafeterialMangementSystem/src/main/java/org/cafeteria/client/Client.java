@@ -9,6 +9,7 @@ import org.cafeteria.client.handlers.EmployeeHandler;
 import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.User;
 import org.cafeteria.common.model.enums.UserRoleEnum;
+
 import static org.cafeteria.common.constants.Constants.SERVER_ADDRESS;
 import static org.cafeteria.common.constants.Constants.SERVER_PORT;
 import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
@@ -22,26 +23,26 @@ public class Client extends UserConsoleManager {
 
     public static void main(String[] args) {
         try {
-            setUpApplication();
-            displayMessage("Welcome to Cafeteria Management System");
+            if (setUpApplication()) {
+                displayMessage("Welcome to Cafeteria Management System");
 
-            int choice;
-            do {
-                displayMessage("Please Login to proceed.");
-                User userToLogin = fetchUserCredentialsForLogin();
-                try {
-                    User user = new AuthenticationRepository(connection).login(userToLogin);
-                    showUserActionItems(user);
-                    choice = 0;
-                } catch (LoginFailedException e) {
-                    displayMessage("Login Failed");
-                    choice = takeUserIntInput("Do you want to try again? If yes please enter 1.");
-                }
-            } while (choice == 1);
+                int choice;
+                do {
+                    displayMessage("Please Login to proceed.");
+                    User userToLogin = fetchUserCredentialsForLogin();
+                    try {
+                        User user = new AuthenticationRepository(connection).login(userToLogin);
+                        showUserActionItems(user);
+                        choice = 0;
+                    } catch (LoginFailedException e) {
+                        displayMessage("Login Failed");
+                        choice = takeUserIntInput("Do you want to try again? If yes please enter 1.");
+                    }
+                } while (choice == 1);
+            }
 
         } catch (IOException e) {
-            displayMessage(e.getMessage());
-//            displayMessage("Server Got Disconnected");
+            displayMessage("Server Got Disconnected. " + e.getMessage());
         } finally {
             closeResources();
         }
@@ -69,9 +70,9 @@ public class Client extends UserConsoleManager {
         }
     }
 
-    private static void setUpApplication() throws IOException {
+    private static boolean setUpApplication() throws IOException {
         initProperties();
-        createConnection();
+        return createConnection();
     }
 
     private static void initProperties() throws IOException {
@@ -81,9 +82,15 @@ public class Client extends UserConsoleManager {
         SERVER_ADDRESS = connectionProperties.getProperty("server.address");
     }
 
-    private static void createConnection() {
-        connection = ServerConnection.getInstance(SERVER_ADDRESS, SERVER_PORT);
-        displayMessage("Server Got Connected");
+    private static boolean createConnection() {
+        try {
+            connection = ServerConnection.getInstance(SERVER_ADDRESS, SERVER_PORT);
+            displayMessage("Server Got Connected");
+            return true;
+        } catch (IOException e) {
+            displayMessage("Server is not connected. " + e.getMessage());
+        }
+        return false;
     }
 
     private static User fetchUserCredentialsForLogin() {
