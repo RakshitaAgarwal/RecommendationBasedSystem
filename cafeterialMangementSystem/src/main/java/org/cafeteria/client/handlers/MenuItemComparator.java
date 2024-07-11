@@ -21,14 +21,14 @@ public class MenuItemComparator implements Comparator<Map.Entry<Integer, String>
         MenuItem menuItem1 = menuItemMap.get(entry1.getKey());
         MenuItem menuItem2 = menuItemMap.get(entry2.getKey());
 
-        int comparison = compareDietaryPreference(menuItem1, menuItem2);
-        if (comparison != 0) return comparison;
+        int rank = compareDietaryPreference(menuItem1, menuItem2);
+        if (rank != 0) return rank;
 
-        comparison = compareCuisineType(menuItem1, menuItem2);
-        if (comparison != 0) return comparison;
+        rank = compareCuisineType(menuItem1, menuItem2);
+        if (rank != 0) return rank;
 
-        comparison = compareSpiceLevel(menuItem1, menuItem2);
-        if (comparison != 0) return comparison;
+        rank = compareSpiceLevel(menuItem1, menuItem2);
+        if (rank != 0) return rank;
 
         return compareSweetTooth(menuItem1, menuItem2);
     }

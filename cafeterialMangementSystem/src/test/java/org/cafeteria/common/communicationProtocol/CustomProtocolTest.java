@@ -3,9 +3,11 @@ package org.cafeteria.common.communicationProtocol;
 import org.cafeteria.common.customException.CustomExceptions.InvalidRequestException;
 import org.cafeteria.common.customException.CustomExceptions.InvalidResponseException;
 import org.cafeteria.common.model.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CustomProtocolTest {
 
@@ -36,10 +38,11 @@ public class CustomProtocolTest {
         assertEquals(expectedParsedRequest.getJsonData(), actualParsedRequest.getJsonData());
     }
 
-    @Test(expected = InvalidRequestException.class)
-    public void testParseRequest_invalidRequestFormat() throws InvalidRequestException {
+    @Test
+    public void testParseRequest_invalidRequestFormat() {
         String request = "invalid_request_format";
-        CustomProtocol.parseRequest(request);
+        Executable executable = () -> CustomProtocol.parseRequest(request);
+        assertThrows(InvalidRequestException.class, executable);
     }
 
     @Test
@@ -53,9 +56,10 @@ public class CustomProtocolTest {
         assertEquals(expectedParsedResponse.getJsonData(), actualParsedResponse.getJsonData());
     }
 
-    @Test(expected = InvalidResponseException.class)
-    public void testParseResponse_invalidResponseFormat() throws InvalidResponseException {
+    @Test
+    public void testParseResponse_invalidResponseFormat() {
         String response = "invalid_response_format";
-        CustomProtocol.parseResponse(response);
+        Executable executable = () -> CustomProtocol.parseResponse(response);
+        assertThrows(InvalidResponseException.class, executable);
     }
 }

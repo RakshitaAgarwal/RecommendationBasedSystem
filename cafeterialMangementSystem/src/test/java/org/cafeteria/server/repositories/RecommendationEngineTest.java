@@ -5,21 +5,20 @@ import org.cafeteria.common.model.MenuItem;
 import org.cafeteria.common.model.MenuItemRecommendation;
 import org.cafeteria.server.services.interfaces.IFeedbackService;
 import org.cafeteria.server.services.interfaces.IMenuService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RecommendationEngineTest {
 
     @Mock
@@ -31,7 +30,7 @@ public class RecommendationEngineTest {
     @InjectMocks
     private RecommendationEngine recommendationEngine;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         recommendationEngine = new RecommendationEngine(feedbackService, menuService);
     }
