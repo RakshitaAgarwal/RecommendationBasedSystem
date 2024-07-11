@@ -23,8 +23,8 @@ public class NotificationService implements INotificationService {
 
     @Override
     public boolean sendNotificationToAllEmployees(Notification notification) throws SQLException {
-        List<User> employees = _userRepository.getByUserRoleId(UserRoleEnum.EMP.ordinal()+1);
-        for(User employee:employees) {
+        List<User> employees = _userRepository.getByUserRoleId(UserRoleEnum.EMP.ordinal() + 1);
+        for (User employee : employees) {
             notification.setUserId(employee.getId());
             _notificationRepository.add(notification);
         }
@@ -37,13 +37,24 @@ public class NotificationService implements INotificationService {
     }
 
     @Override
+    public boolean updateNotificationReadStatus(List<Notification> notifications) throws SQLException {
+        boolean status = true;
+        for (Notification notification : notifications) {
+            if (!update(notification)) {
+                status = false;
+            }
+        }
+        return status;
+    }
+
+    @Override
     public boolean add(Notification object) {
         return false;
     }
 
     @Override
-    public boolean update(Notification object) {
-        return false;
+    public boolean update(Notification object) throws SQLException {
+        return _notificationRepository.update(object);
     }
 
     @Override

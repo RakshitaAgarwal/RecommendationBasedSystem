@@ -39,4 +39,15 @@ public class NotificationController {
         }
         return response;
     }
+
+    public String updateNotificationReadStatus(ParsedRequest request) throws SQLException {
+        List<Notification> notifications = deserializeList(request.getJsonData(), Notification.class);
+        String response;
+        if(_notificationService.updateNotificationReadStatus(notifications)) {
+            response = createResponse(ResponseCode.OK, serializeData("Notification Read Status Updated Successfully"));
+        } else {
+            response = createResponse(ResponseCode.BAD_REQUEST, serializeData("Some Error occurred while updating notification read status"));
+        }
+        return response;
+    }
 }

@@ -9,6 +9,7 @@ import org.cafeteria.common.model.enums.DetailedFeedbackQuestionEnum;
 import org.cafeteria.common.model.enums.MealTypeEnum;
 import org.cafeteria.common.model.DetailedFeedback;
 
+import static org.cafeteria.client.consoleManager.UserConsoleManager.displayMessage;
 import static org.cafeteria.client.handlers.AdminHandler.handleDisplayMenu;
 import static org.cafeteria.client.repositories.AdminRepository.getFoodItemByName;
 import static org.cafeteria.client.repositories.AdminRepository.getMenuItemById;
@@ -34,7 +35,7 @@ public class EmployeeHandler extends UserHandler {
             try {
                 switch (choice) {
                     case 1 -> handleDisplayMenu();
-                    case 2 -> EmployeeConsoleManager.displayEmployeeNotifications(getNotifications());
+                    case 2 -> handleDisplayNotifications();
                     case 3 -> handleNextDayMealVoting();
                     case 4 -> handleProvideFeedback();
                     case 5 -> handleCreateUpdateUserProfile();
@@ -50,8 +51,35 @@ public class EmployeeHandler extends UserHandler {
                     default -> throw new InvalidChoiceException("Invalid Choice");
                 }
             } catch (InvalidResponseException | BadResponseException | InvalidChoiceException e) {
-                EmployeeConsoleManager.displayMessage(e.getMessage());
+                displayMessage(e.getMessage());
             }
+        }
+    }
+
+    private void handleDisplayNotifications() throws IOException, InvalidResponseException {
+        try {
+            List<Notification> notifications = getNotifications();
+            EmployeeConsoleManager.displayEmployeeNotifications(notifications);
+            updateNotificationsReadStatus(notifications);
+        } catch (EmptyResponseException e) {
+            displayMessage(e.getMessage());
+        }
+    }
+
+    public List<Notification> getNotifications() throws IOException, InvalidResponseException, EmptyResponseException {
+        return employeeRepository.getNotifications(user);
+    }
+
+    public void updateNotificationsReadStatus(List<Notification> notifications) throws IOException, InvalidResponseException {
+        for (Notification notification:
+             notifications) {
+            notification.setNotificationRead(true);
+        }
+        try {
+            String response = employeeRepository.updateNotificationReadStatus(notifications);
+            displayMessage(response);
+        } catch (BadResponseException e) {
+            displayMessage(e.getMessage());
         }
     }
 
@@ -61,7 +89,7 @@ public class EmployeeHandler extends UserHandler {
             userProfile = employeeRepository.getUserProfile(user.getId());
             EmployeeConsoleManager.displayEmployeeProfile(userProfile);
         } catch (EmptyResponseException e) {
-            EmployeeConsoleManager.displayMessage(e.getMessage());
+            displayMessage(e.getMessage());
         }
     }
 
@@ -73,7 +101,7 @@ public class EmployeeHandler extends UserHandler {
                 processUpdateUserProfile(userProfile);
             }
         } catch (EmptyResponseException e) {
-            EmployeeConsoleManager.displayMessage("Your User Profile does not exist. Please create your User Profile.");
+            displayMessage("Your User Profile does not exist. Please create your User Profile.");
             createUserProfile();
         }
     }
@@ -82,9 +110,9 @@ public class EmployeeHandler extends UserHandler {
         try {
             updateUserProfile(userProfile);
             String response = employeeRepository.updateUserProfile(userProfile);
-            EmployeeConsoleManager.displayMessage(response);
+            displayMessage(response);
         } catch (InvalidChoiceException e) {
-            EmployeeConsoleManager.displayMessage(e.getMessage());
+            displayMessage(e.getMessage());
         }
     }
 
@@ -125,15 +153,11 @@ public class EmployeeHandler extends UserHandler {
                 isSweetTooth
         );
         String response = employeeRepository.addUserProfile(userProfile);
-        EmployeeConsoleManager.displayMessage(response);
+        displayMessage(response);
     }
 
     public void handleProvideFeedback() throws IOException, InvalidResponseException, BadResponseException {
-        EmployeeConsoleManager.displayMessage(employeeRepository.provideFeedback(getUserFeedback()));
-    }
-
-    public List<Notification> getNotifications() throws BadResponseException, IOException, InvalidResponseException {
-        return employeeRepository.getNotifications(user);
+        displayMessage(employeeRepository.provideFeedback(getUserFeedback()));
     }
 
     public void handleNextDayMealVoting() throws IOException, InvalidResponseException, BadResponseException {
@@ -151,7 +175,7 @@ public class EmployeeHandler extends UserHandler {
             } catch (EmptyResponseException e) {
                 System.out.println(e.getMessage() + "Getting default order of menu options. ");
             }
-            EmployeeConsoleManager.displayMessage(getEnumFromOrdinal(MealTypeEnum.class, mealTypeId).name() + " Menu Options");
+            displayMessage(getEnumFromOrdinal(MealTypeEnum.class, mealTypeId).name() + " Menu Options");
             processVotingForMealType(rolledOutItemsForMealType);
             continueVoting = EmployeeConsoleManager.takeUserIntInput("Do you wish to cast vote for another Meal Type? Enter 1-Yes / 0-No: ");
         } while (continueVoting == 1);
@@ -197,16 +221,16 @@ public class EmployeeHandler extends UserHandler {
 
     private void processVotingForMealType(Map<Integer, String> rolledOutItemsMap) throws BadResponseException, IOException, InvalidResponseException {
         if (rolledOutItemsMap.isEmpty())
-            EmployeeConsoleManager.displayMessage("No Items Rolled out yet. Please come back later");
+            displayMessage("No Items Rolled out yet. Please come back later");
         else {
             EmployeeConsoleManager.displayRolledOutMenuItems(rolledOutItemsMap);
             int menuItemId = EmployeeConsoleManager.takeUserIntInput("Enter the Menu Item Id you want to vote for: ");
 
             if (rolledOutItemsMap.containsKey(menuItemId)) {
                 Vote userVote = new Vote(menuItemId, user.getId(), new Date());
-                EmployeeConsoleManager.displayMessage(employeeRepository.voteForMenuItem(userVote));
+                displayMessage(employeeRepository.voteForMenuItem(userVote));
             } else {
-                EmployeeConsoleManager.displayMessage("Invalid selection");
+                displayMessage("Invalid selection");
             }
         }
     }
@@ -225,7 +249,7 @@ public class EmployeeHandler extends UserHandler {
             feedback.setUserId(user.getId());
             feedback.setDateTime(new Date());
         } else {
-            EmployeeConsoleManager.displayMessage("No Such food item exists in the menu");
+            displayMessage("No Such food item exists in the menu");
         }
         return null;
     }
@@ -241,11 +265,11 @@ public class EmployeeHandler extends UserHandler {
                 List<DetailedFeedback> detailedFeedbacks = getDetailedFeedback(feedbackRequest.getMenuItemId());
                 employeeRepository.addDetailedFeedbacks(detailedFeedbacks);
             } else {
-                EmployeeConsoleManager.displayMessage("Invalid Id Selected");
+                displayMessage("Invalid Id Selected");
             }
 
         } catch (BadResponseException e) {
-            EmployeeConsoleManager.displayMessage(e.getMessage());
+            displayMessage(e.getMessage());
         }
     }
 

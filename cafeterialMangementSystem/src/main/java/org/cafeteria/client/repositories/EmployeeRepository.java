@@ -69,7 +69,7 @@ public class EmployeeRepository extends UserRepository {
         else throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
 
-    public List<Notification> getNotifications(User user) throws IOException, InvalidResponseException, BadResponseException {
+    public List<Notification> getNotifications(User user) throws IOException, InvalidResponseException, EmptyResponseException {
         String request = createRequest(UserAction.GET_NOTIFICATIONS, serializeData(user));
         String response = connection.sendData(request);
         if (response == null)
@@ -79,7 +79,19 @@ public class EmployeeRepository extends UserRepository {
         ResponseCode responseCode = parsedResponse.getResponseCode();
         if (responseCode == ResponseCode.OK) {
             return deserializeList(parsedResponse.getJsonData(), Notification.class);
-        } else throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
+        } else throw new EmptyResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
+    }
+
+    public String updateNotificationReadStatus(List<Notification> notifications) throws IOException, InvalidResponseException, BadResponseException {
+        String request = createRequest(UserAction.UPDATE_NOTIFICATIONS_READ_STATUS, serializeData(notifications));
+        String response = connection.sendData(request);
+        if(response == null)
+            throw new IOException("Server got Disconnected. Please Try again.");
+        ParsedResponse parsedResponse = parseResponse(response);
+        ResponseCode responseCode = parsedResponse.getResponseCode();
+        if (responseCode == ResponseCode.OK)
+            return deserializeData(parsedResponse.getJsonData(), String.class);
+        else throw new BadResponseException(deserializeData(parsedResponse.getJsonData(), String.class));
     }
 
     public String addUserProfile(UserProfile userProfile) throws IOException, InvalidResponseException, BadResponseException {

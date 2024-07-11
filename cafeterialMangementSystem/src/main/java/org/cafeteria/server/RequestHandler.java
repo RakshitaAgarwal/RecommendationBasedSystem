@@ -62,6 +62,8 @@ public class RequestHandler {
 
                 case GET_NOTIFICATIONS -> response = notificationController.getUserNotification(request);
 
+                case UPDATE_NOTIFICATIONS_READ_STATUS -> response = notificationController.updateNotificationReadStatus(request);
+
                 case VOTE_NEXT_DAY_MENU -> response = votingController.voteForNextDayMenu(request);
 
                 case GET_VOTING_FOR_NEXT_DAY_MENU -> response = votingController.getVotingForNextDayMenu(request);
