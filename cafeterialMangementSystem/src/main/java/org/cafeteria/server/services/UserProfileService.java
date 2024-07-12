@@ -35,7 +35,7 @@ public class UserProfileService implements IUserProfileService {
     }
 
     @Override
-    public List<UserProfile> GetAll() throws SQLException {
+    public List<UserProfile> getAll() throws SQLException {
         return null;
     }
 

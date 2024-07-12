@@ -12,6 +12,17 @@ import java.util.List;
 
 public class MenuRepository implements IMenuRepository {
     private final Connection connection;
+    private static final String TABLE_MENU_ITEM = "MenuItem";
+    private static final String COLUMN_PK_ID = "Id";
+    private static final String COLUMN_NAME = "name";
+    private static final String COLUMN_PRICE = "price";
+    private static final String COLUMN_IS_AVAILABLE = "isAvailable";
+    private static final String COLUMN_LAST_TIME_PREPARED = "lastTimePrepared";
+    private static final String COLUMN_FK_MEAL_TYPE_ID = "mealTypeId";
+    private static final String COLUMN_FK_MENU_ITEM_TYPE_ID = "menuItemTypeId";
+    private static final String COLUMN_FK_SWEET_CONTENT_LEVEL_ID = "sweetContentLevelId";
+    private static final String COLUMN_FK_SPICE_CONTENT_LEVEL_ID = "spiceContentLevelId";
+    private static final String COLUMN_FK_CUISINE_TYPE_ID = "cuisineTypeId";
 
     public MenuRepository() {
         connection = JdbcConnection.getConnection();
@@ -19,7 +30,16 @@ public class MenuRepository implements IMenuRepository {
 
     @Override
     public boolean add(MenuItem item) throws SQLException {
-        String query = "INSERT INTO menuItem (name, price, isAvailable, mealTypeId, menuItemTypeId, sweetContentLevelId, spiceContentLevelId, cuisineTypeId) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+        String query = "INSERT INTO " + TABLE_MENU_ITEM + " (" +
+                COLUMN_NAME + ", " +
+                COLUMN_PRICE + ", " +
+                COLUMN_IS_AVAILABLE + ", " +
+                COLUMN_FK_MEAL_TYPE_ID + ", " +
+                COLUMN_FK_MENU_ITEM_TYPE_ID + ", " +
+                COLUMN_FK_SWEET_CONTENT_LEVEL_ID + ", " +
+                COLUMN_FK_SPICE_CONTENT_LEVEL_ID + ", " +
+                COLUMN_FK_CUISINE_TYPE_ID + ") " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, item.getName());
             statement.setFloat(2, item.getPrice());
@@ -40,7 +60,7 @@ public class MenuRepository implements IMenuRepository {
 
     @Override
     public boolean delete(MenuItem item) throws SQLException {
-        String query = "DELETE FROM menuItem WHERE id = ?";
+        String query = "DELETE FROM " + TABLE_MENU_ITEM + " WHERE " + COLUMN_PK_ID + " = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, item.getId());
             int rowsDeleted = statement.executeUpdate();
@@ -50,7 +70,16 @@ public class MenuRepository implements IMenuRepository {
 
     @Override
     public boolean update(MenuItem item) throws SQLException {
-        String query = "UPDATE menuItem SET price = ?, isAvailable = ?, lastTimePrepared = ?, mealTypeId = ?, menuItemTypeId = ?, sweetContentLevelId = ?, spiceContentLevelId =?, cuisineTypeId =? WHERE id = ?";
+        String query = "UPDATE " + TABLE_MENU_ITEM + " SET " +
+                COLUMN_PRICE + " = ?, " +
+                COLUMN_IS_AVAILABLE + " = ?, " +
+                COLUMN_LAST_TIME_PREPARED + " = ?, " +
+                COLUMN_FK_MEAL_TYPE_ID + " = ?, " +
+                COLUMN_FK_MENU_ITEM_TYPE_ID + " = ?, " +
+                COLUMN_FK_SWEET_CONTENT_LEVEL_ID + " = ?, " +
+                COLUMN_FK_SPICE_CONTENT_LEVEL_ID + " = ?, " +
+                COLUMN_FK_CUISINE_TYPE_ID + " = ? " +
+                "WHERE " + COLUMN_PK_ID + " = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setFloat(1, item.getPrice());
             statement.setBoolean(2, item.isAvailable());
@@ -66,7 +95,7 @@ public class MenuRepository implements IMenuRepository {
     }
 
     @Override
-    public List<MenuItem> GetAll() throws SQLException {
+    public List<MenuItem> getAll() throws SQLException {
         String query = "SELECT * FROM menuItem";
         List<MenuItem> menuItems = new ArrayList<>();
 
@@ -74,28 +103,18 @@ public class MenuRepository implements IMenuRepository {
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                String name = resultSet.getString("name");
-                float price = resultSet.getFloat("price");
-                boolean isAvailable = resultSet.getBoolean("isAvailable");
-                Timestamp lastTimePreparedTimestamp = resultSet.getTimestamp("lastTimePrepared");
-                int mealTypeId = resultSet.getInt("mealTypeId");
-                int menuItemTypeId = resultSet.getInt("menuItemTypeId");
-                int sweetContentLevelId = resultSet.getInt("sweetContentLevelId");
-                int spiceContentLevelId = resultSet.getInt("spiceContentLevelId");
-                int cuisineTypeId = resultSet.getInt("cuisineTypeId");
-
                 MenuItem menuItem = new MenuItem();
-                menuItem.setId(id);
-                menuItem.setName(name);
-                menuItem.setPrice(price);
-                menuItem.setAvailable(isAvailable);
-                menuItem.setLastTimePrepared(timestampToDate(lastTimePreparedTimestamp));
-                menuItem.setMealTypeId(mealTypeId);
-                menuItem.setMenuItemTypeId(menuItemTypeId);
-                menuItem.setSweetContentLevelId(sweetContentLevelId);
-                menuItem.setSpiceContentLevelId(spiceContentLevelId);
-                menuItem.setCuisineTypeId(cuisineTypeId);
+                menuItem.setId(resultSet.getInt(COLUMN_PK_ID));
+                menuItem.setName(resultSet.getString(COLUMN_NAME));
+                menuItem.setPrice(resultSet.getFloat(COLUMN_PRICE));
+                menuItem.setAvailable(resultSet.getBoolean(COLUMN_IS_AVAILABLE));
+                menuItem.setMealTypeId(resultSet.getInt(COLUMN_FK_MEAL_TYPE_ID));
+                Timestamp timestamp = resultSet.getTimestamp(COLUMN_LAST_TIME_PREPARED);
+                menuItem.setLastTimePrepared(timestampToDate(timestamp));
+                menuItem.setMenuItemTypeId(resultSet.getInt(COLUMN_FK_MENU_ITEM_TYPE_ID));
+                menuItem.setSweetContentLevelId(resultSet.getInt(COLUMN_FK_SWEET_CONTENT_LEVEL_ID));
+                menuItem.setSpiceContentLevelId(resultSet.getInt(COLUMN_FK_SPICE_CONTENT_LEVEL_ID));
+                menuItem.setCuisineTypeId(resultSet.getInt(COLUMN_FK_CUISINE_TYPE_ID));
 
                 menuItems.add(menuItem);
             }
@@ -113,27 +132,18 @@ public class MenuRepository implements IMenuRepository {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    String name = resultSet.getString("name");
-                    float price = resultSet.getFloat("price");
-                    boolean isAvailable = resultSet.getBoolean("isAvailable");
-                    Timestamp lastTimePreparedTimestamp = resultSet.getTimestamp("lastTimePrepared");
-                    int mealTypeId = resultSet.getInt("mealTypeId");
-                    int menuItemTypeId = resultSet.getInt("menuItemTypeId");
-                    int sweetContentLevelId = resultSet.getInt("sweetContentLevelId");
-                    int spiceContentLevelId = resultSet.getInt("spiceContentLevelId");
-                    int cuisineTypeId = resultSet.getInt("cuisineTypeId");
-
                     menuItem = new MenuItem();
-                    menuItem.setId(id);
-                    menuItem.setName(name);
-                    menuItem.setPrice(price);
-                    menuItem.setAvailable(isAvailable);
-                    menuItem.setLastTimePrepared(timestampToDate(lastTimePreparedTimestamp));
-                    menuItem.setMealTypeId(mealTypeId);
-                    menuItem.setMenuItemTypeId(menuItemTypeId);
-                    menuItem.setSweetContentLevelId(sweetContentLevelId);
-                    menuItem.setSpiceContentLevelId(spiceContentLevelId);
-                    menuItem.setCuisineTypeId(cuisineTypeId);
+                    menuItem.setId(resultSet.getInt(COLUMN_PK_ID));
+                    menuItem.setName(resultSet.getString(COLUMN_NAME));
+                    menuItem.setPrice(resultSet.getFloat(COLUMN_PRICE));
+                    menuItem.setAvailable(resultSet.getBoolean(COLUMN_IS_AVAILABLE));
+                    menuItem.setMealTypeId(resultSet.getInt(COLUMN_FK_MEAL_TYPE_ID));
+                    Timestamp timestamp = resultSet.getTimestamp(COLUMN_LAST_TIME_PREPARED);
+                    menuItem.setLastTimePrepared(timestampToDate(timestamp));
+                    menuItem.setMenuItemTypeId(resultSet.getInt(COLUMN_FK_MENU_ITEM_TYPE_ID));
+                    menuItem.setSweetContentLevelId(resultSet.getInt(COLUMN_FK_SWEET_CONTENT_LEVEL_ID));
+                    menuItem.setSpiceContentLevelId(resultSet.getInt(COLUMN_FK_SPICE_CONTENT_LEVEL_ID));
+                    menuItem.setCuisineTypeId(resultSet.getInt(COLUMN_FK_CUISINE_TYPE_ID));
                 }
             }
         }
@@ -148,17 +158,17 @@ public class MenuRepository implements IMenuRepository {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 MenuItem menuItem = new MenuItem();
-                menuItem.setId(resultSet.getInt("id"));
-                menuItem.setName(resultSet.getString("name"));
-                menuItem.setPrice(resultSet.getFloat("price"));
-                menuItem.setAvailable(resultSet.getBoolean("isAvailable"));
-                menuItem.setMealTypeId(resultSet.getInt("mealTypeId"));
-                Timestamp timestamp = resultSet.getTimestamp("lastTimePrepared");
+                menuItem.setId(resultSet.getInt(COLUMN_PK_ID));
+                menuItem.setName(resultSet.getString(COLUMN_NAME));
+                menuItem.setPrice(resultSet.getFloat(COLUMN_PRICE));
+                menuItem.setAvailable(resultSet.getBoolean(COLUMN_IS_AVAILABLE));
+                menuItem.setMealTypeId(resultSet.getInt(COLUMN_FK_MEAL_TYPE_ID));
+                Timestamp timestamp = resultSet.getTimestamp(COLUMN_LAST_TIME_PREPARED);
                 menuItem.setLastTimePrepared(timestampToDate(timestamp));
-                menuItem.setMenuItemTypeId(resultSet.getInt("menuItemTypeId"));
-                menuItem.setSweetContentLevelId(resultSet.getInt("sweetContentLevelId"));
-                menuItem.setSpiceContentLevelId(resultSet.getInt("spiceContentLevelId"));
-                menuItem.setCuisineTypeId(resultSet.getInt("cuisineTypeId"));
+                menuItem.setMenuItemTypeId(resultSet.getInt(COLUMN_FK_MENU_ITEM_TYPE_ID));
+                menuItem.setSweetContentLevelId(resultSet.getInt(COLUMN_FK_SWEET_CONTENT_LEVEL_ID));
+                menuItem.setSpiceContentLevelId(resultSet.getInt(COLUMN_FK_SPICE_CONTENT_LEVEL_ID));
+                menuItem.setCuisineTypeId(resultSet.getInt(COLUMN_FK_CUISINE_TYPE_ID));
 
                 return menuItem;
             }
@@ -175,27 +185,18 @@ public class MenuRepository implements IMenuRepository {
             statement.setInt(1,mealTypeId);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                String name = resultSet.getString("name");
-                float price = resultSet.getFloat("price");
-                boolean isAvailable = resultSet.getBoolean("isAvailable");
-                Timestamp lastTimePreparedTimestamp = resultSet.getTimestamp("lastTimePrepared");
-                int menuItemTypeId = resultSet.getInt("menuItemTypeId");
-                int sweetContentLevelId = resultSet.getInt("sweetContentLevelId");
-                int spiceContentLevelId = resultSet.getInt("spiceContentLevelId");
-                int cuisineTypeId = resultSet.getInt("cuisineTypeId");
-
                 MenuItem menuItem = new MenuItem();
-                menuItem.setId(id);
-                menuItem.setName(name);
-                menuItem.setPrice(price);
-                menuItem.setAvailable(isAvailable);
-                menuItem.setLastTimePrepared(timestampToDate(lastTimePreparedTimestamp));
-                menuItem.setMealTypeId(mealTypeId);
-                menuItem.setMenuItemTypeId(menuItemTypeId);
-                menuItem.setSweetContentLevelId(sweetContentLevelId);
-                menuItem.setSpiceContentLevelId(spiceContentLevelId);
-                menuItem.setCuisineTypeId(cuisineTypeId);
+                menuItem.setId(resultSet.getInt(COLUMN_PK_ID));
+                menuItem.setName(resultSet.getString(COLUMN_NAME));
+                menuItem.setPrice(resultSet.getFloat(COLUMN_PRICE));
+                menuItem.setAvailable(resultSet.getBoolean(COLUMN_IS_AVAILABLE));
+                menuItem.setMealTypeId(resultSet.getInt(COLUMN_FK_MEAL_TYPE_ID));
+                Timestamp timestamp = resultSet.getTimestamp(COLUMN_LAST_TIME_PREPARED);
+                menuItem.setLastTimePrepared(timestampToDate(timestamp));
+                menuItem.setMenuItemTypeId(resultSet.getInt(COLUMN_FK_MENU_ITEM_TYPE_ID));
+                menuItem.setSweetContentLevelId(resultSet.getInt(COLUMN_FK_SWEET_CONTENT_LEVEL_ID));
+                menuItem.setSpiceContentLevelId(resultSet.getInt(COLUMN_FK_SPICE_CONTENT_LEVEL_ID));
+                menuItem.setCuisineTypeId(resultSet.getInt(COLUMN_FK_CUISINE_TYPE_ID));
 
                 menuItems.add(menuItem);
             }

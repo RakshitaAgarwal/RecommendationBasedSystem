@@ -16,6 +16,13 @@ import static org.cafeteria.common.util.Utils.timestampToDate;
 
 public class NotificationRepository implements INotificationRepository {
     private final Connection connection;
+    private static final String TABLE_NOTIFICATION = "notification";
+    private static final String COLUMN_PK_ID = "id";
+    private static final String COLUMN_FK_USER_ID = "userId";
+    private static final String COLUMN_FK_NOTIFICATION_TYPE_ID = "notificationTypeId";
+    private static final String COLUMN_NOTIFICATION_MESSAGE = "notificationMessage";
+    private static final String COLUMN_DATE_TIME = "dateTime";
+    private static final String COLUMN_IS_NOTIFICATION_READ = "isNotificationRead";
 
     public NotificationRepository() {
         connection = JdbcConnection.getConnection();
@@ -23,7 +30,12 @@ public class NotificationRepository implements INotificationRepository {
 
     @Override
     public boolean add(Notification item) throws SQLException {
-        String query = "INSERT INTO notification (userId, notificationTypeId, notificationMessage, dateTime, isNotificationRead) VALUES (?, ?, ?, ?, ?);";
+        String query = "INSERT INTO " + TABLE_NOTIFICATION + " (" +
+                COLUMN_FK_USER_ID + ", " +
+                COLUMN_FK_NOTIFICATION_TYPE_ID + ", " +
+                COLUMN_NOTIFICATION_MESSAGE + ", " +
+                COLUMN_DATE_TIME + ", " +
+                COLUMN_IS_NOTIFICATION_READ + ") VALUES (?, ?, ?, ?, ?);";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, item.getUserId());
             statement.setInt(2, item.getNotificationTypeId());
@@ -46,7 +58,12 @@ public class NotificationRepository implements INotificationRepository {
 
     @Override
     public boolean update(Notification item) throws SQLException {
-        String query = "UPDATE notification SET userId = ?, notificationTypeId = ?, notificationMessage = ?, dateTime = ?, isNotificationRead = ? WHERE id = ?;";
+        String query = "UPDATE " + TABLE_NOTIFICATION + " SET " +
+                COLUMN_FK_USER_ID + " = ?, " +
+                COLUMN_FK_NOTIFICATION_TYPE_ID + " = ?, " +
+                COLUMN_NOTIFICATION_MESSAGE + " = ?, " +
+                COLUMN_DATE_TIME + " = ?, " +
+                COLUMN_IS_NOTIFICATION_READ + " = ? WHERE " + COLUMN_PK_ID + " = ?;";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, item.getUserId());
             statement.setInt(2, item.getNotificationTypeId());
@@ -59,19 +76,19 @@ public class NotificationRepository implements INotificationRepository {
     }
 
     @Override
-    public List<Notification> GetAll() throws SQLException {
-        String query = "SELECT * FROM notification;";
+    public List<Notification> getAll() throws SQLException {
+        String query = "SELECT * FROM " + TABLE_NOTIFICATION + ";";
         try (PreparedStatement statement = connection.prepareStatement(query);
              ResultSet resultSet = statement.executeQuery()) {
             List<Notification> notifications = new ArrayList<>();
             while (resultSet.next()) {
                 Notification notification = new Notification();
-                notification.setNotificationTypeId(resultSet.getInt("notificationTypeId"));
-                notification.setNotificationMessage(resultSet.getString("notificationMessage"));
-                notification.setId(resultSet.getInt("id"));
-                notification.setUserId(resultSet.getInt("userId"));
-                notification.setDateTime(timestampToDate(resultSet.getTimestamp("dateTime")));
-                notification.setNotificationRead(resultSet.getBoolean("isNotificationRead"));
+                notification.setNotificationTypeId(resultSet.getInt(COLUMN_FK_NOTIFICATION_TYPE_ID));
+                notification.setNotificationMessage(resultSet.getString(COLUMN_NOTIFICATION_MESSAGE));
+                notification.setId(resultSet.getInt(COLUMN_PK_ID));
+                notification.setUserId(resultSet.getInt(COLUMN_FK_USER_ID));
+                notification.setDateTime(timestampToDate(resultSet.getTimestamp(COLUMN_DATE_TIME)));
+                notification.setNotificationRead(resultSet.getBoolean(COLUMN_IS_NOTIFICATION_READ));
                 notifications.add(notification);
             }
             return notifications;
@@ -80,18 +97,18 @@ public class NotificationRepository implements INotificationRepository {
 
     @Override
     public Notification getById(int id) throws SQLException {
-        String query = "SELECT * FROM notification WHERE id = ?;";
+        String query = "SELECT * FROM " + TABLE_NOTIFICATION + " WHERE " + COLUMN_PK_ID + " = ?;";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     Notification notification = new Notification();
-                    notification.setNotificationMessage(resultSet.getString("notificationMessage"));
-                    notification.setNotificationTypeId(resultSet.getInt("notificationTypeId"));
-                    notification.setId(resultSet.getInt("id"));
-                    notification.setUserId(resultSet.getInt("userId"));
-                    notification.setDateTime(timestampToDate(resultSet.getTimestamp("dateTime")));
-                    notification.setNotificationRead(resultSet.getBoolean("isNotificationRead"));
+                    notification.setNotificationTypeId(resultSet.getInt(COLUMN_FK_NOTIFICATION_TYPE_ID));
+                    notification.setNotificationMessage(resultSet.getString(COLUMN_NOTIFICATION_MESSAGE));
+                    notification.setId(resultSet.getInt(COLUMN_PK_ID));
+                    notification.setUserId(resultSet.getInt(COLUMN_FK_USER_ID));
+                    notification.setDateTime(timestampToDate(resultSet.getTimestamp(COLUMN_DATE_TIME)));
+                    notification.setNotificationRead(resultSet.getBoolean(COLUMN_IS_NOTIFICATION_READ));
                     return notification;
                 }
                 return null;
@@ -101,19 +118,19 @@ public class NotificationRepository implements INotificationRepository {
 
     @Override
     public List<Notification> getNotificationByUserId(int userId) throws SQLException {
-        String query = "SELECT * FROM notification WHERE userId = ?;";
+        String query = "SELECT * FROM " + TABLE_NOTIFICATION + " WHERE " + COLUMN_FK_USER_ID + " = ?;";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, userId);
             try (ResultSet resultSet = statement.executeQuery()) {
                 List<Notification> notifications = new ArrayList<>();
                 while (resultSet.next()) {
                     Notification notification = new Notification();
-                    notification.setNotificationTypeId(resultSet.getInt("notificationTypeId"));
-                    notification.setNotificationMessage(resultSet.getString("notificationMessage"));
-                    notification.setId(resultSet.getInt("id"));
-                    notification.setUserId(resultSet.getInt("userId"));
-                    notification.setDateTime(resultSet.getTimestamp("dateTime"));
-                    notification.setNotificationRead(resultSet.getBoolean("isNotificationRead"));
+                    notification.setNotificationTypeId(resultSet.getInt(COLUMN_FK_NOTIFICATION_TYPE_ID));
+                    notification.setNotificationMessage(resultSet.getString(COLUMN_NOTIFICATION_MESSAGE));
+                    notification.setId(resultSet.getInt(COLUMN_PK_ID));
+                    notification.setUserId(resultSet.getInt(COLUMN_FK_USER_ID));
+                    notification.setDateTime(timestampToDate(resultSet.getTimestamp(COLUMN_DATE_TIME)));
+                    notification.setNotificationRead(resultSet.getBoolean(COLUMN_IS_NOTIFICATION_READ));
                     notifications.add(notification);
                 }
                 return notifications;

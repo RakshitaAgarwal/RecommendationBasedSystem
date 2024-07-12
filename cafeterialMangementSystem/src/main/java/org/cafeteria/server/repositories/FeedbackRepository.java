@@ -4,7 +4,6 @@ import org.cafeteria.common.model.Feedback;
 import org.cafeteria.server.network.JdbcConnection;
 import org.cafeteria.server.repositories.interfaces.IFeedbackRepository;
 import static org.cafeteria.common.util.Utils.dateToTimestamp;
-import static org.cafeteria.common.util.Utils.timestampToDate;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,13 +11,26 @@ import java.util.List;
 
 public class FeedbackRepository implements IFeedbackRepository {
     private final Connection connection;
+    private static final String TABLE_FEEDBACK = "Feedback";
+    private static final String COLUMN_PK_ID = "id";
+    private static final String COLUMN_FK_USER_ID = "userId";
+    private static final String COLUMN_FK_MENU_ITEM_ID = "menuItemId";
+    private static final String COLUMN_RATING = "rating";
+    private static final String COLUMN_COMMENT = "comment";
+    private static final String COLUMN_DATE_TIME = "dateTime";
 
     public FeedbackRepository() {
         connection = JdbcConnection.getConnection();
     }
     @Override
     public boolean add(Feedback feedback) throws SQLException {
-        String query = "INSERT INTO feedback (userId, menuItemId, rating, comment, dateTime) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO " + TABLE_FEEDBACK +
+                " (" + COLUMN_FK_USER_ID + ", " +
+                COLUMN_FK_MENU_ITEM_ID + ", " +
+                COLUMN_RATING + ", " +
+                COLUMN_COMMENT + ", " +
+                COLUMN_DATE_TIME + ") " +
+                "VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, feedback.getUserId());
@@ -47,13 +59,13 @@ public class FeedbackRepository implements IFeedbackRepository {
     }
 
     @Override
-    public List<Feedback> GetAll() {
+    public List<Feedback> getAll() {
         return null;
     }
 
     @Override
     public Feedback getById(int id) throws SQLException {
-        String query = "SELECT * FROM feedback WHERE feedback_id = ?";
+        String query = "SELECT * FROM " + TABLE_FEEDBACK + " WHERE " + COLUMN_PK_ID + " = ?";
         Feedback feedback = null;
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -62,12 +74,12 @@ public class FeedbackRepository implements IFeedbackRepository {
 
             if (resultSet.next()) {
                 feedback = new Feedback();
-                feedback.setFeedbackId(resultSet.getInt("id"));
-                feedback.setUserId(resultSet.getInt("userId"));
-                feedback.setMenuItemId(resultSet.getInt("menuItemId"));
-                feedback.setRating(resultSet.getFloat("rating"));
-                feedback.setComment(resultSet.getString("comment"));
-                feedback.setDateTime(resultSet.getDate("dateTime"));
+                feedback.setFeedbackId(resultSet.getInt(COLUMN_PK_ID));
+                feedback.setMenuItemId(resultSet.getInt(COLUMN_FK_MENU_ITEM_ID));
+                feedback.setComment(resultSet.getString(COLUMN_COMMENT));
+                feedback.setUserId(resultSet.getInt(COLUMN_FK_USER_ID));
+                feedback.setRating(resultSet.getFloat(COLUMN_RATING));
+                feedback.setDateTime(resultSet.getTimestamp(COLUMN_DATE_TIME));
             }
         }
         return feedback;
@@ -75,20 +87,19 @@ public class FeedbackRepository implements IFeedbackRepository {
 
     @Override
     public List<Feedback> getFeedbacksByMenuItemId(int menuItemId) throws SQLException {
-        String query = "SELECT * FROM Feedback where menuItemId = ?";
+        String query = "SELECT * FROM " + TABLE_FEEDBACK + " WHERE " + COLUMN_FK_MENU_ITEM_ID + " = ?";
         List<Feedback> feedbacks = new ArrayList<>();
         try(PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, menuItemId);
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()) {
                 Feedback feedback = new Feedback();
-                feedback.setFeedbackId(resultSet.getInt("id"));
-                feedback.setMenuItemId(menuItemId);
-                feedback.setComment(resultSet.getString("comment"));
-                feedback.setUserId(resultSet.getInt("userId"));
-                feedback.setRating(resultSet.getFloat("rating"));
-                Timestamp timestamp = resultSet.getTimestamp("dateTime");
-                feedback.setDateTime(timestampToDate(timestamp));
+                feedback.setFeedbackId(resultSet.getInt(COLUMN_PK_ID));
+                feedback.setMenuItemId(resultSet.getInt(COLUMN_FK_MENU_ITEM_ID));
+                feedback.setComment(resultSet.getString(COLUMN_COMMENT));
+                feedback.setUserId(resultSet.getInt(COLUMN_FK_USER_ID));
+                feedback.setRating(resultSet.getFloat(COLUMN_RATING));
+                feedback.setDateTime(resultSet.getTimestamp(COLUMN_DATE_TIME));
 
                 feedbacks.add(feedback);
             }

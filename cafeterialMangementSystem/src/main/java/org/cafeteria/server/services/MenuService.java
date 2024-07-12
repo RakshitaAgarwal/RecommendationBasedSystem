@@ -59,7 +59,7 @@ public class MenuService implements IMenuService {
 
     @Override
     public List<MenuItem> getAll() throws SQLException {
-        return _menuRepository.GetAll();
+        return _menuRepository.getAll();
     }
 
     @Override

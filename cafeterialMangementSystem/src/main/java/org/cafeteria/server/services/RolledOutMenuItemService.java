@@ -24,7 +24,7 @@ public class RolledOutMenuItemService implements IRolledOutMenuItemService {
     public boolean rollOutNextDayMenuOptions(List<Integer> rolledOutMenuItemIds) throws SQLException, DuplicateEntryFoundException {
         List<RolledOutMenuItem> rolledOutMenuItems = new ArrayList<>();
         Date rolledOutDate = new Date();
-        if(!_rollOutMenuItemRepository.getByDate(extractDate(rolledOutDate)).isEmpty())
+        if (!_rollOutMenuItemRepository.getByDate(extractDate(rolledOutDate)).isEmpty())
             throw new DuplicateEntryFoundException("Items have already been rolled out for " + extractDate(rolledOutDate));
 
         for (int menuItemId : rolledOutMenuItemIds) {
@@ -40,30 +40,5 @@ public class RolledOutMenuItemService implements IRolledOutMenuItemService {
     @Override
     public List<RolledOutMenuItem> getNextDayMenuOptions() throws SQLException {
         return _rollOutMenuItemRepository.getByDate(extractDate(new Date()));
-    }
-
-    @Override
-    public boolean add(RolledOutMenuItem object) {
-        return false;
-    }
-
-    @Override
-    public boolean update(RolledOutMenuItem object) {
-        return false;
-    }
-
-    @Override
-    public boolean delete(RolledOutMenuItem object) {
-        return false;
-    }
-
-    @Override
-    public List<RolledOutMenuItem> getAll() {
-        return null;
-    }
-
-    @Override
-    public RolledOutMenuItem getById(int id) {
-        return null;
     }
 }

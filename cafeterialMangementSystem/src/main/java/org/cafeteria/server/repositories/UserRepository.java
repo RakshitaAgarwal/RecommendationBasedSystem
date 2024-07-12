@@ -13,6 +13,11 @@ import java.util.List;
 
 public class UserRepository implements IUserRepository {
     private final Connection connection;
+    private static final String TABLE_USER = "user";
+    private static final String COLUMN_PK_ID = "id";
+    private static final String COLUMN_NAME = "name";
+    private static final String COLUMN_FK_USER_ROLE_ID = "userRoleId";
+    private static final String COLUMN_PASSWORD = "password";
 
     public UserRepository() {
         connection = JdbcConnection.getConnection();
@@ -39,21 +44,16 @@ public class UserRepository implements IUserRepository {
     }
 
     @Override
-    public List<User> GetAll() throws SQLException {
-        String query = "SELECT * FROM user";
+    public List<User> getAll() throws SQLException {
+        String query = "SELECT * FROM " + TABLE_USER;
         List<User> users = new ArrayList<>();
         try (PreparedStatement statement = connection.prepareStatement(query); ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
-                int userId = resultSet.getInt("id");
-                String name = resultSet.getString("name");
-                int userRoleId = resultSet.getInt("userRoleId");
-                String password = resultSet.getString("password");
-
                 User user = new User();
-                user.setId(userId);
-                user.setName(name);
-                user.setUserRoleId(userRoleId);
-                user.setPassword(password);
+                user.setId(resultSet.getInt(COLUMN_PK_ID));
+                user.setName(resultSet.getString(COLUMN_NAME));
+                user.setUserRoleId(resultSet.getInt(COLUMN_FK_USER_ROLE_ID));
+                user.setPassword(resultSet.getString(COLUMN_PASSWORD));
                 users.add(user);
             }
         }
@@ -62,7 +62,7 @@ public class UserRepository implements IUserRepository {
 
     @Override
     public List<User> getByUserRoleId(int userRoleId) throws SQLException {
-        String query = "SELECT * FROM user where userRoleId=?";
+        String query = "SELECT * FROM " + TABLE_USER + " WHERE " + COLUMN_FK_USER_ROLE_ID + " = ?";
         List<User> employees = new ArrayList<>();
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, userRoleId);
@@ -85,22 +85,17 @@ public class UserRepository implements IUserRepository {
 
     @Override
     public User getById(int id) throws SQLException {
-        String query = "SELECT * FROM user WHERE id = ?";
+        String query = "SELECT * FROM " + TABLE_USER + " WHERE " + COLUMN_PK_ID + " = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    int userId = resultSet.getInt("id");
-                    String name = resultSet.getString("name");
-                    int userRoleId = resultSet.getInt("userRoleId");
-                    String password = resultSet.getString("password");
-
                     User user = new User();
-                    user.setId(userId);
-                    user.setName(name);
-                    user.setUserRoleId(userRoleId);
-                    user.setPassword(password);
+                    user.setId(resultSet.getInt(COLUMN_PK_ID));
+                    user.setName(resultSet.getString(COLUMN_NAME));
+                    user.setUserRoleId(resultSet.getInt(COLUMN_FK_USER_ROLE_ID));
+                    user.setPassword(resultSet.getString(COLUMN_PASSWORD));
 
                     return user;
                 }

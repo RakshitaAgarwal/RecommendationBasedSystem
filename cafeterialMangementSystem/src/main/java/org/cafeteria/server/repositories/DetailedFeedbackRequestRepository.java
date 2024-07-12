@@ -1,6 +1,6 @@
 package org.cafeteria.server.repositories;
 
-import org.cafeteria.common.customException.CustomExceptions;
+import org.cafeteria.common.customException.CustomExceptions.DuplicateEntryFoundException;
 import org.cafeteria.common.model.DetailedFeedbackRequest;
 import org.cafeteria.server.network.JdbcConnection;
 import org.cafeteria.server.repositories.interfaces.IDetailedFeedbackRequestRepository;
@@ -13,13 +13,20 @@ import java.util.List;
 
 public class DetailedFeedbackRequestRepository implements IDetailedFeedbackRequestRepository {
     private final Connection connection;
+    private static final String TABLE_DETAILED_FEEDBACK_REQUEST = "DetailedFeedbackRequest";
+    public static final String COLUMN_PK_ID = "Id";
+    private static final String COLUMN_FK_MENU_ITEM_ID = "menuItemId";
+    private static final String COLUMN_DATE_TIME = "dateTime";
 
     public DetailedFeedbackRequestRepository() {
         connection = JdbcConnection.getConnection();
     }
     @Override
-    public boolean add(DetailedFeedbackRequest feedbackRequest) throws SQLException, CustomExceptions.DuplicateEntryFoundException {
-        String query = "INSERT INTO DetailedFeedbackRequest (menuItemId, dateTime) VALUES (?, ?);";
+    public boolean add(DetailedFeedbackRequest feedbackRequest) throws SQLException, DuplicateEntryFoundException {
+        String query = "INSERT INTO " + TABLE_DETAILED_FEEDBACK_REQUEST +
+                " (" + COLUMN_FK_MENU_ITEM_ID + ", " +
+                COLUMN_DATE_TIME + ") " +
+                "VALUES (?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, feedbackRequest.getMenuItemId());
             statement.setTimestamp(2, dateToTimestamp(feedbackRequest.getDateTime()));
@@ -39,16 +46,16 @@ public class DetailedFeedbackRequestRepository implements IDetailedFeedbackReque
 
     @Override
     public List<DetailedFeedbackRequest> getAll() throws SQLException {
-        String query = "SELECT * FROM DetailedFeedbackRequest";
+        String query = "SELECT * FROM " + TABLE_DETAILED_FEEDBACK_REQUEST;
         List<DetailedFeedbackRequest> detailedFeedbackRequests = new ArrayList<>();
 
         try (PreparedStatement statement = connection.prepareStatement(query);
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                int menuItemId = resultSet.getInt("menuItemId");
-                Date dateTime = resultSet.getTimestamp("dateTime");
+                int id = resultSet.getInt(COLUMN_PK_ID);
+                int menuItemId = resultSet.getInt(COLUMN_FK_MENU_ITEM_ID);
+                Date dateTime = resultSet.getTimestamp(COLUMN_DATE_TIME);
 
                 DetailedFeedbackRequest detailedFeedbackRequest = new DetailedFeedbackRequest();
                 detailedFeedbackRequest.setId(id);
@@ -68,15 +75,16 @@ public class DetailedFeedbackRequestRepository implements IDetailedFeedbackReque
 
     @Override
     public DetailedFeedbackRequest getByMenuItemId(int menuItemId) throws SQLException {
-        String query = "SELECT * FROM DetailedFeedbackRequest WHERE menuItemId = ?";
+        String query = "SELECT * FROM " + TABLE_DETAILED_FEEDBACK_REQUEST +
+                " WHERE " + COLUMN_FK_MENU_ITEM_ID + " = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, menuItemId);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 DetailedFeedbackRequest detailedFeedbackRequest = new DetailedFeedbackRequest();
-                detailedFeedbackRequest.setId(resultSet.getInt("id"));
-                detailedFeedbackRequest.setMenuItemId(resultSet.getInt("menuItemId"));
-                detailedFeedbackRequest.setDateTime(resultSet.getTimestamp("dateTime"));
+                detailedFeedbackRequest.setId(resultSet.getInt(COLUMN_PK_ID));
+                detailedFeedbackRequest.setMenuItemId(resultSet.getInt(COLUMN_FK_MENU_ITEM_ID));
+                detailedFeedbackRequest.setDateTime(resultSet.getTimestamp(COLUMN_DATE_TIME));
                 return detailedFeedbackRequest;
             }
         }
