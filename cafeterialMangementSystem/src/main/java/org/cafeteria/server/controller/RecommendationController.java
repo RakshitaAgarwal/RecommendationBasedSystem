@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
+import static org.cafeteria.common.communicationProtocol.JSONSerializer.*;
 
 public class RecommendationController {
     private static IRecommendationService _recommendationService;

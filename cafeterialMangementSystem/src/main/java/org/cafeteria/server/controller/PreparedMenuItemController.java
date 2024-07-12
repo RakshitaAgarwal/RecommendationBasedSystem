@@ -11,6 +11,7 @@ import org.cafeteria.server.services.PreparedMenuItemService;
 import org.cafeteria.server.services.interfaces.INotificationService;
 import org.cafeteria.server.services.interfaces.IPreparedMenuItemService;
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
+import static org.cafeteria.common.communicationProtocol.JSONSerializer.*;
 import static org.cafeteria.common.util.Utils.extractDate;
 
 import java.sql.SQLException;

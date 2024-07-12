@@ -6,7 +6,7 @@ import org.cafeteria.common.model.*;
 import org.cafeteria.common.model.DetailedFeedback;
 
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
-import static org.cafeteria.common.communicationProtocol.CustomProtocol.deserializeData;
+import static org.cafeteria.common.communicationProtocol.JSONSerializer.*;
 
 import java.io.IOException;
 import java.util.List;

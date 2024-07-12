@@ -5,7 +5,7 @@ import org.cafeteria.common.model.ResponseCode;
 import org.cafeteria.server.services.DiscardMenuItemService;
 import org.cafeteria.server.services.interfaces.IDiscardMenuItemService;
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.createResponse;
-import static org.cafeteria.common.communicationProtocol.CustomProtocol.serializeData;
+import static org.cafeteria.common.communicationProtocol.JSONSerializer.serializeData;
 
 import java.sql.SQLException;
 import java.util.List;

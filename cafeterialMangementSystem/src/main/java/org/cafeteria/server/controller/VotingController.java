@@ -8,6 +8,7 @@ import org.cafeteria.common.model.ResponseCode;
 import org.cafeteria.server.services.VotingService;
 import org.cafeteria.server.services.interfaces.IVotingService;
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
+import static org.cafeteria.common.communicationProtocol.JSONSerializer.*;
 
 import java.sql.SQLException;
 import java.util.Date;

@@ -14,7 +14,7 @@ public class CustomProtocolTest {
     @Test
     public void testCreateRequest() {
         User user = new User(1, "testUser", 2, "password");
-        String json = CustomProtocol.serializeData(user);
+        String json = JSONSerializer.serializeData(user);
         String request = CustomProtocol.createRequest(UserAction.LOGIN, json);
         assertEquals("request|LOGIN|" + json, request);
     }
@@ -22,7 +22,7 @@ public class CustomProtocolTest {
     @Test
     public void testCreateResponse() {
         User user = new User(1, "testUser", 2, "password");
-        String json = CustomProtocol.serializeData(user);
+        String json = JSONSerializer.serializeData(user);
         String response = CustomProtocol.createResponse(ResponseCode.OK, json);
         assertEquals("response|200 OK|" + json, response);
     }
@@ -30,7 +30,7 @@ public class CustomProtocolTest {
     @Test
     public void testParseRequest_validRequest() throws InvalidRequestException {
         User user = new User(1, "testUser", 2, "password");
-        String json = CustomProtocol.serializeData(user);
+        String json = JSONSerializer.serializeData(user);
         String request = "request|LOGIN|" + json;
         ParsedRequest actualParsedRequest = CustomProtocol.parseRequest(request);
         ParsedRequest expectedParsedRequest = new ParsedRequest(UserAction.LOGIN, json);
@@ -48,7 +48,7 @@ public class CustomProtocolTest {
     @Test
     public void testParseResponse_validResponse() throws InvalidResponseException {
         User user = new User(1, "testUser", 2, "password");
-        String json = CustomProtocol.serializeData(user);
+        String json = JSONSerializer.serializeData(user);
         String response = "response|200 OK|" + json;
         ParsedResponse actualParsedResponse = CustomProtocol.parseResponse(response);
         ParsedResponse expectedParsedResponse = new ParsedResponse(ResponseCode.OK, json);

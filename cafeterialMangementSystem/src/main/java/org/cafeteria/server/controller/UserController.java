@@ -10,10 +10,11 @@ import org.cafeteria.server.services.UserProfileService;
 import org.cafeteria.server.services.UserService;
 import org.cafeteria.server.services.interfaces.IUserProfileService;
 import org.cafeteria.server.services.interfaces.IUserService;
-import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
-import static org.cafeteria.common.communicationProtocol.CustomProtocol.createResponse;
 
 import java.sql.SQLException;
+
+import static org.cafeteria.common.communicationProtocol.CustomProtocol.createResponse;
+import static org.cafeteria.common.communicationProtocol.JSONSerializer.*;
 
 public class UserController {
     private static IUserService _userService;

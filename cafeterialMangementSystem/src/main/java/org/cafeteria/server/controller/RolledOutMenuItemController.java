@@ -9,6 +9,8 @@ import org.cafeteria.server.services.NotificationService;
 import org.cafeteria.server.services.interfaces.IRolledOutMenuItemService;
 import org.cafeteria.server.services.interfaces.INotificationService;
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
+import static org.cafeteria.common.communicationProtocol.JSONSerializer.deserializeList;
+import static org.cafeteria.common.communicationProtocol.JSONSerializer.serializeData;
 
 import java.sql.SQLException;
 import java.util.Date;

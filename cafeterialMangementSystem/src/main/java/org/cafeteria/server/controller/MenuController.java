@@ -2,6 +2,9 @@ package org.cafeteria.server.controller;
 
 import com.sun.istack.NotNull;
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
+import static org.cafeteria.common.communicationProtocol.JSONSerializer.deserializeData;
+import static org.cafeteria.common.communicationProtocol.JSONSerializer.serializeData;
+
 import org.cafeteria.common.customException.CustomExceptions.DuplicateEntryFoundException;
 import org.cafeteria.common.model.*;
 import org.cafeteria.common.model.enums.NotificationTypeEnum;

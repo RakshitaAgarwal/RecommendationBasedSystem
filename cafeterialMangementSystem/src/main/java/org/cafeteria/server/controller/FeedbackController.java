@@ -11,6 +11,8 @@ import org.cafeteria.server.services.interfaces.IFeedbackService;
 import java.sql.SQLException;
 
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
+import static org.cafeteria.common.communicationProtocol.JSONSerializer.deserializeData;
+import static org.cafeteria.common.communicationProtocol.JSONSerializer.serializeData;
 
 public class FeedbackController {
     private static IFeedbackService _feedbackService;

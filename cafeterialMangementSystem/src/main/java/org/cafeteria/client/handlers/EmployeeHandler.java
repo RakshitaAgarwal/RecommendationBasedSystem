@@ -263,7 +263,7 @@ public class EmployeeHandler extends UserHandler {
             DetailedFeedbackRequest feedbackRequest = getDetailedFeedbackRequest(inputDetailedFeedbackId, detailedFeedbackRequests);
             if (feedbackRequest != null) {
                 List<DetailedFeedback> detailedFeedbacks = getDetailedFeedback(feedbackRequest.getMenuItemId());
-                employeeRepository.addDetailedFeedbacks(detailedFeedbacks);
+                displayMessage(employeeRepository.addDetailedFeedbacks(detailedFeedbacks));
             } else {
                 displayMessage("Invalid Id Selected");
             }

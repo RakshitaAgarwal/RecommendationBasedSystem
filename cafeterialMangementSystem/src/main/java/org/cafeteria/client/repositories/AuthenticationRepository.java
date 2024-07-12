@@ -12,6 +12,8 @@ import org.cafeteria.common.model.UserAction;
 import java.io.IOException;
 
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
+import static org.cafeteria.common.communicationProtocol.JSONSerializer.deserializeData;
+import static org.cafeteria.common.communicationProtocol.JSONSerializer.serializeData;
 
 public class AuthenticationRepository {
     private static ServerConnection connection;

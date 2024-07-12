@@ -6,6 +6,7 @@ import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.*;
 
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
+import static org.cafeteria.common.communicationProtocol.JSONSerializer.*;
 
 import java.io.IOException;
 import java.util.List;

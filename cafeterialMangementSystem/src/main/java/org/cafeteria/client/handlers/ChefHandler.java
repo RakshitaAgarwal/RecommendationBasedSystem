@@ -153,7 +153,7 @@ public class ChefHandler extends UserHandler {
     }
 
     public void handleDiscardMenuItems() throws IOException, BadResponseException, InvalidResponseException {
-        List<DiscardMenuItem> discardedMenuItems = adminRepository.getDiscardMenuItems();
+        List<DiscardMenuItem> discardedMenuItems = chefRepository.getDiscardMenuItems();
         boolean continueAction;
         do {
             ChefConsoleManager.displayDiscardedMenuItems(discardedMenuItems);

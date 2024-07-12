@@ -9,7 +9,7 @@ import org.cafeteria.server.network.SessionManager;
 import java.sql.SQLException;
 
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.createResponse;
-import static org.cafeteria.common.communicationProtocol.CustomProtocol.serializeData;
+import static org.cafeteria.common.communicationProtocol.JSONSerializer.serializeData;
 import static org.cafeteria.server.Server.*;
 
 public class RequestHandler {
