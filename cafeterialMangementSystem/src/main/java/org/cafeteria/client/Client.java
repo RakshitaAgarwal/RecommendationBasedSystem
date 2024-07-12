@@ -10,8 +10,6 @@ import org.cafeteria.common.customException.CustomExceptions.*;
 import org.cafeteria.common.model.User;
 import org.cafeteria.common.model.enums.UserRoleEnum;
 
-import static org.cafeteria.common.constants.Constants.SERVER_ADDRESS;
-import static org.cafeteria.common.constants.Constants.SERVER_PORT;
 import static org.cafeteria.common.util.Utils.getEnumFromOrdinal;
 
 import java.io.IOException;
@@ -20,6 +18,8 @@ import java.util.Properties;
 public class Client extends UserConsoleManager {
     private static ServerConnection connection;
     private static final String SERVER_PROPERTIES_FILE = "server.properties";
+    private static String serverAddress;
+    private static int serverPort;
 
     public static void main(String[] args) {
         try {
@@ -32,7 +32,7 @@ public class Client extends UserConsoleManager {
                     User userToLogin = fetchUserCredentialsForLogin();
                     try {
                         User user = new AuthenticationRepository(connection).login(userToLogin);
-                        choice  = showUserActionItems(user);
+                        choice = showUserActionItems(user);
                     } catch (LoginFailedException e) {
                         displayMessage("Login Failed");
                         choice = takeUserBooleanInput("Do you want to try again? If yes please enter 1.");
@@ -78,13 +78,13 @@ public class Client extends UserConsoleManager {
     private static void initProperties() throws IOException {
         Properties connectionProperties = new Properties();
         connectionProperties.load(Client.class.getClassLoader().getResourceAsStream(SERVER_PROPERTIES_FILE));
-        SERVER_PORT = Integer.parseInt(connectionProperties.getProperty("server.port"));
-        SERVER_ADDRESS = connectionProperties.getProperty("server.address");
+        serverPort = Integer.parseInt(connectionProperties.getProperty("server.port"));
+        serverAddress = connectionProperties.getProperty("server.address");
     }
 
     private static boolean createConnection() {
         try {
-            connection = ServerConnection.getInstance(SERVER_ADDRESS, SERVER_PORT);
+            connection = ServerConnection.getInstance(serverAddress, serverPort);
             displayMessage("Server Got Connected");
             return true;
         } catch (IOException e) {

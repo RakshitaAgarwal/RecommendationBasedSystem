@@ -5,14 +5,13 @@ import org.cafeteria.common.model.RolledOutMenuItem;
 import org.cafeteria.server.repositories.RolledOutMenuItemRepository;
 import org.cafeteria.server.repositories.interfaces.IRolledOutMenuItemRepository;
 import org.cafeteria.server.services.interfaces.IRolledOutMenuItemService;
-import static org.cafeteria.common.constants.Constants.DATE_FORMAT;
-import static org.cafeteria.common.util.Utils.extractDate;
 
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static org.cafeteria.common.util.Utils.extractDate;
 
 public class RolledOutMenuItemService implements IRolledOutMenuItemService {
     private static IRolledOutMenuItemRepository _rollOutMenuItemRepository;
@@ -40,10 +39,7 @@ public class RolledOutMenuItemService implements IRolledOutMenuItemService {
 
     @Override
     public List<RolledOutMenuItem> getNextDayMenuOptions() throws SQLException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-        String currentDate = dateFormat.format(new Date());
-        System.out.println(currentDate);
-        return _rollOutMenuItemRepository.getByDate(currentDate);
+        return _rollOutMenuItemRepository.getByDate(extractDate(new Date()));
     }
 
     @Override

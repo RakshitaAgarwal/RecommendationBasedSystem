@@ -7,7 +7,19 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ClientConnection {
-    private static final ExecutorService pool = Executors.newFixedThreadPool(10);
+    private static ClientConnection instance;
+    private static ExecutorService pool;
+
+    private ClientConnection() {
+        pool = Executors.newFixedThreadPool(10);
+    }
+
+    public static ClientConnection getInstance() {
+        if (instance == null) {
+            instance = new ClientConnection();
+        }
+        return instance;
+    }
 
     public void connectToClient(int port) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
@@ -18,7 +30,7 @@ public class ClientConnection {
                 ClientHandler clientHandler = new ClientHandler(clientSocket);
                 pool.execute(clientHandler);
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
     }

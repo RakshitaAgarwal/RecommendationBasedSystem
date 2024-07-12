@@ -4,9 +4,8 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static org.cafeteria.common.constants.Constants.DATE_FORMAT;
-
 public class Utils {
+    private final static String DATE_FORMAT = "yyyy-MM-dd";
     public static <E extends Enum<E>> E getEnumFromOrdinal(Class<E> enumClass, int ordinal) {
         E[] enumConstants = enumClass.getEnumConstants();
         if (ordinal > 0 && ordinal <= enumConstants.length) {
