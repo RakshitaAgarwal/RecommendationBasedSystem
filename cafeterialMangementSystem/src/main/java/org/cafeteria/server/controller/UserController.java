@@ -1,10 +1,8 @@
 package org.cafeteria.server.controller;
 
 import com.sun.istack.NotNull;
-import org.cafeteria.common.model.ParsedRequest;
-import org.cafeteria.common.model.ResponseCode;
-import org.cafeteria.common.model.User;
-import org.cafeteria.common.model.UserProfile;
+import org.cafeteria.common.model.*;
+import org.cafeteria.server.helper.UserActionHandler;
 import org.cafeteria.server.network.SessionManager;
 import org.cafeteria.server.services.UserProfileService;
 import org.cafeteria.server.services.UserService;
@@ -16,14 +14,16 @@ import java.sql.SQLException;
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.createResponse;
 import static org.cafeteria.common.communicationProtocol.JSONSerializer.*;
 
-public class UserController {
+public class UserController extends BaseController {
     private static IUserService _userService;
     private static IUserProfileService _userProfileService;
+
     public UserController() {
         _userService = new UserService();
         _userProfileService = new UserProfileService();
     }
 
+    @UserActionHandler(UserAction.LOGIN)
     public String handleUserLogin(@NotNull ParsedRequest request, SessionManager sessionManager) throws SQLException {
         User user = deserializeData(request.getJsonData(), User.class);
         User loggedInUser = _userService.loginUser(user);
@@ -37,9 +37,10 @@ public class UserController {
         return response;
     }
 
-    public String handleUserLogout(SessionManager sessionManager) {
+    @UserActionHandler(UserAction.LOGOUT)
+    public String handleUserLogout(@NotNull ParsedRequest request, SessionManager sessionManager) {
         String response;
-        if(sessionManager.endUserSession()){
+        if (sessionManager.endUserSession()) {
             response = createResponse(ResponseCode.OK, serializeData("Successfully Logged out"));
         } else {
             response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, serializeData("Error Logging out User"));
@@ -54,10 +55,11 @@ public class UserController {
         } while (isRetry);
     }
 
+    @UserActionHandler(UserAction.ADD_USER_PROFILE)
     public String addUserProfile(@NotNull ParsedRequest request) throws SQLException {
         UserProfile userProfile = deserializeData(request.getJsonData(), UserProfile.class);
         String response;
-        if(_userProfileService.add(userProfile)) {
+        if (_userProfileService.add(userProfile)) {
             response = createResponse(ResponseCode.OK, serializeData("User Profile Successfully created for " + userProfile.getUserId() + " user."));
         } else {
             response = createResponse(ResponseCode.INTERNAL_SERVER_ERROR, "Some Error Occurred while creating User Profile");
@@ -65,10 +67,11 @@ public class UserController {
         return response;
     }
 
+    @UserActionHandler(UserAction.UPDATE_USER_PROFILE)
     public String updateUserProfile(@NotNull ParsedRequest request) throws SQLException {
         UserProfile userProfile = deserializeData(request.getJsonData(), UserProfile.class);
         String response;
-        if(_userProfileService.update(userProfile)) {
+        if (_userProfileService.update(userProfile)) {
             response = createResponse(ResponseCode.OK, serializeData("User Profile Updated Successfully"));
         } else {
             response = createResponse(ResponseCode.EMPTY_RESPONSE, serializeData("No User Profile found for " + userProfile.getUserId() + " user."));
@@ -76,11 +79,12 @@ public class UserController {
         return response;
     }
 
+    @UserActionHandler(UserAction.GET_USER_PROFILE)
     public String getUserProfile(@NotNull ParsedRequest request) throws SQLException {
         int userId = deserializeData(request.getJsonData(), Integer.class);
         String response;
         UserProfile userProfile = _userProfileService.getByUserId(userId);
-        if(userProfile != null) {
+        if (userProfile != null) {
             response = createResponse(ResponseCode.OK, serializeData(userProfile));
         } else {
             response = createResponse(ResponseCode.EMPTY_RESPONSE, serializeData("No User Profile found for " + userId + " user."));

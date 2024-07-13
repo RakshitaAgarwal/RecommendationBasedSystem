@@ -26,7 +26,7 @@ public class DetailedFeedbackService implements IDetailedFeedbackService {
         if(_detailedFeedbackRequestRepository.getByMenuItemId(menuItemId) == null ) {
             DetailedFeedbackRequest feedbackRequest = new DetailedFeedbackRequest(menuItemId, new Date());
             return _detailedFeedbackRequestRepository.add(feedbackRequest);
-        } else throw new DuplicateEntryFoundException("Detailed Feedback Request for " + menuItemId + " already exists.");
+        } else throw new DuplicateEntryFoundException("Detailed Feedback Request for Menu Item ID: " + menuItemId + " already exists.");
     }
 
     @Override

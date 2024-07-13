@@ -5,6 +5,8 @@ import org.cafeteria.common.customException.CustomExceptions.DuplicateEntryFound
 import org.cafeteria.common.model.Feedback;
 import org.cafeteria.common.model.ParsedRequest;
 import org.cafeteria.common.model.ResponseCode;
+import org.cafeteria.common.model.UserAction;
+import org.cafeteria.server.helper.UserActionHandler;
 import org.cafeteria.server.services.FeedbackService;
 import org.cafeteria.server.services.interfaces.IFeedbackService;
 
@@ -14,12 +16,14 @@ import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 import static org.cafeteria.common.communicationProtocol.JSONSerializer.deserializeData;
 import static org.cafeteria.common.communicationProtocol.JSONSerializer.serializeData;
 
-public class FeedbackController {
+public class FeedbackController extends BaseController {
     private static IFeedbackService _feedbackService;
+
     public FeedbackController() {
         _feedbackService = new FeedbackService();
     }
 
+    @UserActionHandler(UserAction.ADD_FEEDBACK)
     public String addFeedback(@NotNull ParsedRequest request) throws SQLException, DuplicateEntryFoundException {
         Feedback feedback = deserializeData(request.getJsonData(), Feedback.class);
         String response;

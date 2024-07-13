@@ -2,11 +2,14 @@ package org.cafeteria.server.controller;
 
 import com.sun.istack.NotNull;
 import org.cafeteria.common.customException.CustomExceptions.DuplicateEntryFoundException;
+import org.cafeteria.common.model.UserAction;
 import org.cafeteria.common.model.Vote;
 import org.cafeteria.common.model.ParsedRequest;
 import org.cafeteria.common.model.ResponseCode;
+import org.cafeteria.server.helper.UserActionHandler;
 import org.cafeteria.server.services.VotingService;
 import org.cafeteria.server.services.interfaces.IVotingService;
+
 import static org.cafeteria.common.communicationProtocol.CustomProtocol.*;
 import static org.cafeteria.common.communicationProtocol.JSONSerializer.*;
 
@@ -14,13 +17,14 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.Map;
 
-public class VotingController {
+public class VotingController extends BaseController {
     private static IVotingService _votingService;
 
     public VotingController() {
         _votingService = new VotingService();
     }
 
+    @UserActionHandler(UserAction.VOTE_NEXT_DAY_MENU)
     public String voteForNextDayMenu(@NotNull ParsedRequest request) throws SQLException {
         Vote userVote = deserializeData(request.getJsonData(), Vote.class);
         String response;
@@ -36,7 +40,8 @@ public class VotingController {
         return response;
     }
 
-    public String getVotingForNextDayMenu(@NotNull ParsedRequest request) throws SQLException {
+    @UserActionHandler(UserAction.GET_NEXT_DAY_MENU_VOTING)
+    public String getNextDayMenuVoting(@NotNull ParsedRequest request) throws SQLException {
         Date date = deserializeData(request.getJsonData(), Date.class);
         Map<Integer, Integer> nextDayMenuOptionsVotes = _votingService.getNextDayMenuOptionsVotes(date);
         String response;

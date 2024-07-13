@@ -21,7 +21,7 @@ public class ChefRepository extends UserRepository {
     }
 
     public Map<Integer, Integer> getVotingForMenuItem() throws IOException, BadResponseException, InvalidResponseException {
-        String request = createRequest(UserAction.GET_VOTING_FOR_NEXT_DAY_MENU, serializeData(new Date()));
+        String request = createRequest(UserAction.GET_NEXT_DAY_MENU_VOTING, serializeData(new Date()));
         String response = connection.sendData(request);
 
         if (response == null) {
@@ -37,7 +37,7 @@ public class ChefRepository extends UserRepository {
     }
 
     public Map<MealTypeEnum, List<MenuItemRecommendation>> getRecommendationsForNextDayMenu() throws IOException, InvalidResponseException, BadResponseException {
-        String request = createRequest(UserAction.GET_RECOMMENDATION_FOR_NEXT_DAY_MENU, null);
+        String request = createRequest(UserAction.GET_NEXT_DAY_MENU_RECOMMENDATIONS, null);
         String response = connection.sendData(request);
 
         if (response == null) {

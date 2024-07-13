@@ -140,7 +140,7 @@ public class ChefHandler extends UserHandler {
     }
 
     private boolean isValidMenuItem(MenuItem menuItem, MealTypeEnum mealType) {
-        return menuItem != null && menuItem.getMealTypeId() == mealType.ordinal();
+        return menuItem != null && menuItem.getMealTypeId() == mealType.ordinal()+1;
     }
 
     private void finalizeMenu(List<Integer> preparedMenuItemIds) throws IOException, InvalidResponseException, BadResponseException {

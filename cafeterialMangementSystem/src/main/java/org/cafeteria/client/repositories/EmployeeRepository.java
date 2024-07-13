@@ -57,7 +57,7 @@ public class EmployeeRepository extends UserRepository {
     }
 
     public String provideFeedback(Feedback feedback) throws IOException, InvalidResponseException, BadResponseException {
-        String request = createRequest(UserAction.PROVIDE_FEEDBACK, serializeData(feedback));
+        String request = createRequest(UserAction.ADD_FEEDBACK, serializeData(feedback));
         String response = connection.sendData(request);
         if (response == null)
             throw new IOException("Server Got Disconnected. Please Try again.");
@@ -70,7 +70,7 @@ public class EmployeeRepository extends UserRepository {
     }
 
     public List<Notification> getNotifications(User user) throws IOException, InvalidResponseException, EmptyResponseException {
-        String request = createRequest(UserAction.GET_NOTIFICATIONS, serializeData(user));
+        String request = createRequest(UserAction.GET_USER_NOTIFICATIONS, serializeData(user));
         String response = connection.sendData(request);
         if (response == null)
             throw new IOException("Server Got Disconnected. Please Try again.");

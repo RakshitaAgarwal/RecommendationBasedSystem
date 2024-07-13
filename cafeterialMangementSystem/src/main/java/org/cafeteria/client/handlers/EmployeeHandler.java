@@ -175,8 +175,7 @@ public class EmployeeHandler extends UserHandler {
             } catch (EmptyResponseException e) {
                 System.out.println(e.getMessage() + "Getting default order of menu options. ");
             }
-            displayMessage(getEnumFromOrdinal(MealTypeEnum.class, mealTypeId).name() + " Menu Options");
-            processVotingForMealType(rolledOutItemsForMealType);
+            processVotingForMealType(rolledOutItemsForMealType, getEnumFromOrdinal(MealTypeEnum.class, mealTypeId).name());
             continueVoting = EmployeeConsoleManager.takeUserIntInput("Do you wish to cast vote for another Meal Type? Enter 1-Yes / 0-No: ");
         } while (continueVoting == 1);
     }
@@ -219,10 +218,11 @@ public class EmployeeHandler extends UserHandler {
                 ));
     }
 
-    private void processVotingForMealType(Map<Integer, String> rolledOutItemsMap) throws BadResponseException, IOException, InvalidResponseException {
+    private void processVotingForMealType(Map<Integer, String> rolledOutItemsMap, String mealType) throws BadResponseException, IOException, InvalidResponseException {
         if (rolledOutItemsMap.isEmpty())
             displayMessage("No Items Rolled out yet. Please come back later");
         else {
+            displayMessage(mealType + " Menu Options");
             EmployeeConsoleManager.displayRolledOutMenuItems(rolledOutItemsMap);
             int menuItemId = EmployeeConsoleManager.takeUserIntInput("Enter the Menu Item Id you want to vote for: ");
 
@@ -248,6 +248,7 @@ public class EmployeeHandler extends UserHandler {
             feedback.setMenuItemId(menuItem.getId());
             feedback.setUserId(user.getId());
             feedback.setDateTime(new Date());
+            return feedback;
         } else {
             displayMessage("No Such food item exists in the menu");
         }

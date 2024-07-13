@@ -1,9 +1,8 @@
 package org.cafeteria.server.network;
 
-import org.cafeteria.common.customException.CustomExceptions.DuplicateEntryFoundException;
 import org.cafeteria.common.customException.CustomExceptions.InvalidRequestException;
 import org.cafeteria.common.model.ParsedRequest;
-import org.cafeteria.server.RequestHandler;
+import org.cafeteria.server.helper.RequestHandler;
 
 import java.io.*;
 import java.net.Socket;
@@ -30,14 +29,13 @@ public class ClientHandler implements Runnable {
                 System.out.println();
                 System.out.println("message that is received from client: " + message);
                 ParsedRequest request = parseRequest(message);
-                System.out.println("parsed request that is received from client: " + request.getUserAction() + " " + request.getJsonData());
                 String response = requestHandler.handleRequest(request);
                 System.out.println("response that is sent to client: " + response);
                 out.println(response);
             }
             System.out.println("Client Got disconnected");
             requestHandler.endUserSession();
-        } catch (DuplicateEntryFoundException | InvalidRequestException e) {
+        } catch (InvalidRequestException e) {
             System.out.println(e.getMessage());
         } catch (SocketException e) {
             System.out.println("Client Got disconnected");
