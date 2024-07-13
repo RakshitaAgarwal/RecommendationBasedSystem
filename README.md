@@ -35,10 +35,6 @@ The Food Recommendation System is designed to enhance the dining experience for 
 - **Feedback**:
   - Employees can give feedback on any food item from the menu, including breakfast, lunch, and dinner.
 
-### Reporting
-- **Monthly Report**:
-  - Generates a monthly report for food items for the chef.
-
 ### Notifications
 - **Real-Time Notifications**:
   - Sent through socket.
