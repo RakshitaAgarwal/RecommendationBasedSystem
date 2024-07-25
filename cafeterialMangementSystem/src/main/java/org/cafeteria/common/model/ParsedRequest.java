@@ -8,16 +8,8 @@ public class ParsedRequest {
         return userAction;
     }
 
-    public void setUserAction(UserAction userAction) {
-        this.userAction = userAction;
-    }
-
     public String getJsonData() {
         return jsonData;
-    }
-
-    public void setJsonData(String jsonData) {
-        this.jsonData = jsonData;
     }
 
     public ParsedRequest(UserAction userAction, String jsonData) {

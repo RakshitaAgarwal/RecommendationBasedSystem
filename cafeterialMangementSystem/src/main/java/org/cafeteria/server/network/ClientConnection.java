@@ -3,12 +3,23 @@ package org.cafeteria.server.network;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ClientConnection {
-    private static ExecutorService pool = Executors.newFixedThreadPool(10);
+    private static ClientConnection instance;
+    private static ExecutorService pool;
+
+    private ClientConnection() {
+        pool = Executors.newFixedThreadPool(10);
+    }
+
+    public static ClientConnection getInstance() {
+        if (instance == null) {
+            instance = new ClientConnection();
+        }
+        return instance;
+    }
 
     public void connectToClient(int port) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
@@ -19,10 +30,8 @@ public class ClientConnection {
                 ClientHandler clientHandler = new ClientHandler(clientSocket);
                 pool.execute(clientHandler);
             }
-        } catch(SocketException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 }

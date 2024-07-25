@@ -1,0 +1,3 @@
+ALTER TABLE DailyRecommendation MODIFY COLUMN rolledOutDate TIMESTAMP;
+
+ALTER TABLE Notification MODIFY COLUMN dateTime TIMESTAMP;

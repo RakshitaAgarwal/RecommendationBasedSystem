@@ -16,16 +16,10 @@ public class UserService implements IUserService {
 
     @Override
     public User loginUser(User user) throws SQLException {
-        return _userRepository.getById(user.getUserId());
-    }
-
-    @Override
-    public boolean createUser(User user) {
-        return true;
-    }
-
-    @Override
-    public boolean validate(User item) {
-        return false;
+        User existingUser = _userRepository.getById(user.getId());
+        if (existingUser!= null && existingUser.getName().equalsIgnoreCase(user.getName())) {
+            return existingUser;
+        }
+        return null;
     }
 }

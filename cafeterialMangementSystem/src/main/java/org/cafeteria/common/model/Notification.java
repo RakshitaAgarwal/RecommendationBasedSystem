@@ -3,25 +3,43 @@ package org.cafeteria.common.model;
 import java.util.Date;
 
 public class Notification {
-    private String notificationId;
-    private String notificationTypeId;
+    private int id;
+    private int userId;
+    private int notificationTypeId;
     private String notificationMessage;
     private Date dateTime;
     private Boolean isNotificationRead;
 
-    public String getNotificationId() {
-        return notificationId;
+    public Notification() {}
+
+    public Notification(int notificationTypeId, String notificationMessage, Date dateTime) {
+        this.notificationTypeId = notificationTypeId;
+        this.notificationMessage = notificationMessage;
+        this.isNotificationRead = false;
+        this.dateTime = dateTime;
     }
 
-    public void setNotificationId(String notificationId) {
-        this.notificationId = notificationId;
+    public int getId() {
+        return id;
     }
 
-    public String getNotificationTypeId() {
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public int getNotificationTypeId() {
         return notificationTypeId;
     }
 
-    public void setNotificationTypeId(String notificationTypeId) {
+    public void setNotificationTypeId(int notificationTypeId) {
         this.notificationTypeId = notificationTypeId;
     }
 

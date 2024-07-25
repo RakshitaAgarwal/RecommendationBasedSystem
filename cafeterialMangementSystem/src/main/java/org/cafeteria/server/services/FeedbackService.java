@@ -1,45 +1,48 @@
 package org.cafeteria.server.services;
 
 import org.cafeteria.common.model.Feedback;
+import org.cafeteria.server.repositories.FeedbackRepository;
+import org.cafeteria.server.repositories.interfaces.IFeedbackRepository;
 import org.cafeteria.server.services.interfaces.IFeedbackService;
+
+import java.sql.SQLException;
+import java.util.List;
+
 public class FeedbackService implements IFeedbackService {
+
+    private static IFeedbackRepository _feedbackRepository;
+
+    public FeedbackService() {
+        _feedbackRepository = new FeedbackRepository();
+    }
+
     @Override
-    public boolean validate(Feedback item) {
+    public boolean add(Feedback object) throws SQLException {
+        return _feedbackRepository.add(object);
+    }
+
+    @Override
+    public boolean update(Feedback object) {
         return false;
     }
 
     @Override
-    public void add(Feedback object) {
-
+    public boolean delete(Feedback object) {
+        return false;
     }
 
     @Override
-    public void update(Feedback object) {
-
+    public List<Feedback> getAll() {
+        return null;
     }
 
     @Override
-    public void delete(Feedback object) {
-
+    public Feedback getById(int id) {
+        return null;
     }
 
     @Override
-    public void getAll(Feedback object) {
-
-    }
-
-    @Override
-    public void getById(Feedback object) {
-
-    }
-
-    @Override
-    public void getFeedbackReport() {
-
-    }
-
-    @Override
-    public void generateFeedbackReport() {
-
+    public List<Feedback> getFeedbackByMenuItemId(int menuItemId) throws SQLException {
+        return _feedbackRepository.getFeedbacksByMenuItemId(menuItemId);
     }
 }

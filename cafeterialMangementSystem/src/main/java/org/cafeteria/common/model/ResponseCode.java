@@ -6,6 +6,7 @@ public enum ResponseCode {
     UNAUTHORIZED("401 Unauthorized"),
     FORBIDDEN("403 Forbidden"),
     NOT_FOUND("404 Not Found"),
+    EMPTY_RESPONSE("405 Empty Response"),
     INTERNAL_SERVER_ERROR("500 Internal Server Error");
 
     private final String code;
