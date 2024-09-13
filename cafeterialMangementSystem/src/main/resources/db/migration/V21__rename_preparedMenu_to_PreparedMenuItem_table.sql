@@ -1,0 +1,1 @@
+ALTER TABLE PreparedMenu RENAME TO PreparedMenuItem;

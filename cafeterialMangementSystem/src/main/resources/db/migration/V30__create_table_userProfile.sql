@@ -1,0 +1,12 @@
+CREATE TABLE UserProfile (
+    id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    userId INT NOT NULL UNIQUE,
+    dietaryPreferenceId INT,
+    spiceLevelId INT,
+    favCuisineId INT,
+    isSweetTooth BOOLEAN,
+    FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (dietaryPreferenceId) REFERENCES MenuItemType(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (spiceLevelId) REFERENCES contentLevel(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (favCuisineId) REFERENCES cuisineType(id) ON DELETE CASCADE ON UPDATE CASCADE
+);

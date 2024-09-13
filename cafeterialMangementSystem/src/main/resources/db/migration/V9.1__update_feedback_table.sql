@@ -1,0 +1,12 @@
+DROP TABLE IF EXISTS Feedback;
+
+CREATE TABLE Feedback (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    userId INT NOT NULL,
+    menuItemId INT NOT NULL,
+    rating FLOAT NOT NULL,
+    comment VARCHAR(255) NOT NULL,
+    dateTime TIMESTAMP NOT NULL,
+    FOREIGN KEY (menuItemId) REFERENCES Menu(Id),
+    FOREIGN KEY (userId) REFERENCES User(Id)
+);

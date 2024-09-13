@@ -1,29 +1,35 @@
 package org.cafeteria.server.network;
 
-import java.sql.*;
-
-import static org.cafeteria.common.constants.Constants.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class JdbcConnection {
+    private static JdbcConnection instance;
     private static Connection connection;
 
-    public void connectToDatabase() {
-        try {
-            connection = DriverManager.getConnection(DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD);
-            System.out.println("Database connection successfully made");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+    private JdbcConnection() {
+    }
+
+    public static JdbcConnection getInstance() {
+        if (instance == null) {
+            instance = new JdbcConnection();
+        }
+        return instance;
+    }
+
+    public void connectToDatabase(String databaseUrl, String databaseUser, String databasePassword) {
+        if (connection == null) {
+            try {
+                connection = DriverManager.getConnection(databaseUrl, databaseUser, databasePassword);
+                System.out.println("Database connection successfully made");
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
     public static Connection getConnection() {
         return connection;
     }
-
-//    public static ResultSet executeStatement(String query) throws SQLException {
-//        PreparedStatement preparedStatement = connection.prepareStatement(query);
-//        preparedStatement.set
-//        ResultSet resultSet = statement.executeQuery(query);
-//        return resultSet;
-//    }
 }

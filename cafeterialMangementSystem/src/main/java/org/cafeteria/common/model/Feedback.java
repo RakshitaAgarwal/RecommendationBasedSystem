@@ -1,20 +1,26 @@
 package org.cafeteria.common.model;
 
-import java.sql.Date;
+import java.util.Date;
 
 public class Feedback {
-    private String feedbackId;
+    private int feedbackId;
     private int userId;
-    private String menuItemId;
+    private int menuItemId;
     private float rating;
     private String comment;
     private Date dateTime;
 
-    public String getFeedbackId() {
+    public Feedback() {}
+    public Feedback(String comment, float rating) {
+        this.comment = comment;
+        this.rating = rating;
+    }
+
+    public int getFeedbackId() {
         return feedbackId;
     }
 
-    public void setFeedbackId(String feedbackId) {
+    public void setFeedbackId(int feedbackId) {
         this.feedbackId = feedbackId;
     }
 
@@ -26,11 +32,11 @@ public class Feedback {
         this.userId = userId;
     }
 
-    public String getMenuItemId() {
+    public int getMenuItemId() {
         return menuItemId;
     }
 
-    public void setMenuItemId(String menuItemId) {
+    public void setMenuItemId(int menuItemId) {
         this.menuItemId = menuItemId;
     }
 
